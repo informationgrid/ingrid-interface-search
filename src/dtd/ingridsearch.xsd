@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.wemove.com/ingrid/opensearchextension/0.1/" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:ingridsearch="http://www.wemove.com/ingrid/opensearchextension/0.1/">
+  <xs:import schemaLocation="ingrid-opensearch.xsd"/>
+  <xs:import namespace="http://a9.com/-/spec/opensearch/1.1/" schemaLocation="opensearch.xsd"/>
+  <xs:element name="datasource" type="xs:integer"/>
+  <xs:element name="plugid" type="xs:string"/>
+  <xs:element name="docid" type="xs:integer"/>
+  <xs:element name="altdocid" type="xs:string"/>
+  <xs:element name="provider" type="xs:string"/>
+  <xs:element name="partner" type="xs:string"/>
+  <xs:element name="source" type="xs:string"/>
+  <xs:element name="udk-class" type="xs:integer"/>
+  <xs:element name="udk-addr-class" type="xs:integer"/>
+  <xs:element name="wms-url" type="xs:anyURI"/>
+  <xs:element name="details">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="ingridsearch:detail"/>
+        <xs:element ref="ingridsearch:detail-subrecord" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="detail-subrecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="ingridsearch:detail"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="detail">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ingridsearch:detail-key"/>
+        <xs:element ref="ingridsearch:detail-key-localized" minOccurs="0"/>
+        <xs:element ref="ingridsearch:detail-value"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="detail-key" type="xs:string">
+  </xs:element>
+  <xs:element name="detail-key-localized" type="xs:string">
+  </xs:element>
+  <xs:element name="detail-value" type="xs:string">
+  </xs:element>
+</xs:schema>
