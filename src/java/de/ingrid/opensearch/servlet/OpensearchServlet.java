@@ -15,16 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 import com.thoughtworks.xstream.XStream;
 
 import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.RequestWrapper;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.query.IngridQuery;
-import de.ingrid.utils.queryparser.ParseException;
-import de.ingrid.utils.queryparser.QueryStringParser;
 
 /**
  * TODO Describe your created type (class, etc.) here.
- *
+ * 
  * @author joachim@wemove.com
  */
 public class OpensearchServlet extends HttpServlet {
@@ -35,48 +34,32 @@ public class OpensearchServlet extends HttpServlet {
     private static final long serialVersionUID = 597250457306006899L;
 
     private BusClient client;
+
     private IBus bus;
-    private XStream xstream;    
-    
+
+    private XStream xstream;
+
     /**
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        // get result page to display
-        int page = 1;
-        try {
-            page = Integer.parseInt(request.getParameter("p"));
-        } catch (NumberFormatException e) {}
-        if (page <= 0) {
-            page = 1;
-        }
-        
-        // get number of hits for result page
-        int requestedHits = 10;
-        try {
-            requestedHits = Integer.parseInt(request.getParameter("hpp"));
-        } catch (NumberFormatException e) {}
-        if (requestedHits <= 0) {
-            requestedHits = 1;
-        }
-        
-        // get query
-        IngridQuery query = null;
-        try {
-            query = QueryStringParser.parse(request.getParameter("q"));
-        } catch (ParseException e) {
-            throw new ServletException(e);
-        }
+
+        RequestWrapper r = new RequestWrapper(request);
+
+        IngridQuery query = r.getQuery();
+        int page = r.getRequestedPage();
+        int hitsPerPage = r.getHitsPerPage();
+
         // switch ranking ON
         query.put(IngridQuery.RANKED, IngridQuery.SCORE_RANKED);
-        
+
         client = BusClient.instance();
         bus = client.getBus();
         IngridHits hits = null;
         IngridHitDetail[] details = null;
         try {
-            hits = bus.search(query, requestedHits, page, requestedHits, 60000);
+            hits = bus.search(query, hitsPerPage, page, hitsPerPage, 60000);
             details = bus.getDetails(hits.getHits(), query, null);
             for (int i = 0; i < hits.getHits().length; i++) {
                 hits.getHits()[i].put("detail", details[i]);
@@ -84,25 +67,27 @@ public class OpensearchServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
-        
+
         // transform IngridHit to XML
 
         request.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html");
-        
-        PrintWriter pout= response.getWriter();
-        
+        response.setContentType("application/rss+xml");
+
+        PrintWriter pout = response.getWriter();
+
         pout.write(xstream.toXML(hits));
         pout.close();
         request.getInputStream().close();
-        
+
         super.doGet(request, response);
     }
 
     /**
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
+     *      javax.servlet.http.HttpServletResponse)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException {
         doGet(request, response);
     }
 
