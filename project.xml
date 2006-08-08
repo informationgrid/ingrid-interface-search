@@ -201,6 +201,13 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
+	    <dependency>
+	      <id>commons-collections</id>
+	      <version>3.1</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
