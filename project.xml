@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-    <pomVersion>1</pomVersion>
-    <name>ingrid-opensearch</name>
+    <pomVersion>3</pomVersion>
+    <artifactId>ingrid-opensearch</artifactId>
+    <name>Ingrid Opensearch Interface</name>
+    <groupId>de.ingrid.opensearch</groupId>
+    <currentVersion>0.1</currentVersion>
     <organization>
         <name>wemove digital solutions GmbH</name>
         <url>http://www.wemove.com/</url>
@@ -10,218 +13,216 @@
     <package>de.ingrid.opensearch</package>
     <shortDescription>ingrid opensearch interface</shortDescription>
     <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
-    <siteAddress>http://torwald.gistec-online.de/ingrid/ingrid-opensearch</siteAddress>
+    <siteAddress>http://213.144.28.209/ingrid/ingrid-opensearch</siteAddress>
     <siteDirectory>/srv/www/htdocs/ingrid/ingrid-opensearch</siteDirectory>
-	<developers>
-    <developer>
-      <id>jm</id>
-      <name>Joachim Müller</name>
-      <email>joachim(at)wemove.com</email>
-      <organization>wemove digital solutions GmbH</organization>
-      <organizationUrl>http://www.wemove.com/</organizationUrl>
-      <roles>
-		  <role>project leader</role>
-		  <role>developer</role>
-	  </roles>
-    </developer>
+    <developers>
+        <developer>
+            <id>jm</id>
+            <name>Joachim Müller</name>
+            <email>joachim(at)wemove.com</email>
+            <organization>wemove digital solutions GmbH</organization>
+            <organizationUrl>http://www.wemove.com/</organizationUrl>
+            <roles>
+                <role>project leader</role>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
     <repository>
-        <connection>scm:svn:https://mb@127.0.0.1:444/svn/ingrid/ingrid-opensearch</connection>
+        <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-opensearch</connection>
     </repository>
     <dependencies>
-      <dependency>
-        <groupId>ingrid</groupId>
-        <artifactId>ingrid-ibus</artifactId>
-        <version>0.1-SNAPSHOT</version>
-	    <type>jar</type>
-      </dependency>
-       <dependency>
+        <dependency>
             <groupId>xpp3</groupId>
             <artifactId>xpp3</artifactId>
             <version>1.1.2a</version>
             <type>jar</type>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>xstream</groupId>
             <artifactId>xstream</artifactId>
             <version>1.1.2</version>
             <type>jar</type>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>jetty</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5-6.0.0beta6</version>
             <type>jar</type>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>jetty</groupId>
             <artifactId>org.mortbay.jetty</artifactId>
             <version>5.1.8</version>
             <type>jar</type>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
-          <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.8</version>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-utils</artifactId>
+            <version>0.1-SNAPSHOT</version>
             <type>jar</type>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-utils</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-ibus</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-ibus-client</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-dsc</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-fpn</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-se</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-sns</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-g2k</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-tamino</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-	    <dependency>
-	      <groupId>ingrid</groupId>
-	      <artifactId>ingrid-iplug-udk</artifactId>
-	      <version>0.1-SNAPSHOT</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-
-
-		<dependency>
-			<groupId>weta-components</groupId>
-			<artifactId>communication</artifactId>
-			<version>SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>weta-components</groupId>
-			<artifactId>communication-jxta</artifactId>
-			<version>SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>jxta</groupId>
-			<artifactId>jxta</artifactId>
-			<version>2.3.6</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.0.4</version>
-			<type>jar</type>
-			<url>http://jakarta.apache.org/commons/logging/</url>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.8</version>
-			<type>jar</type>
-			<url>http://ibiblio.org/maven</url>
-		</dependency>
-		<dependency>
-			<groupId>jaxen</groupId>
-			<artifactId>jaxen</artifactId>
-			<version>1.1-beta-4</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov</artifactId>
-			<version>jdk14-124</version>
-			<type>jar</type>
-		</dependency>
-	    <dependency>
-	      <id>dom4j</id>
-	      <version>1.4-dev-8</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
-      </dependencies>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-ibus-client</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-dsc</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-fpn</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-se</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-sns</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-g2k</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-tamino</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-iplug-udk</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>weta-components</groupId>
+            <artifactId>communication</artifactId>
+            <version>SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>weta-components</groupId>
+            <artifactId>communication-jxta</artifactId>
+            <version>SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>jxta</groupId>
+            <artifactId>jxta</artifactId>
+            <version>2.3.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.4</version>
+            <type>jar</type>
+            <url>http://jakarta.apache.org/commons/logging/</url>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.1</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.1</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+            <version>1.1-beta-4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov</artifactId>
+            <version>jdk14-124</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.4-dev-8</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+    </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
@@ -231,8 +232,8 @@
             </includes>
         </unitTest>
     </build>
-	<reports>
-		<report>maven-junit-report-plugin</report>
+    <reports>
+        <report>maven-junit-report-plugin</report>
         <report>maven-jcoverage-plugin</report>
         <report>maven-simian-plugin</report>
         <report>maven-javadoc-plugin</report>
@@ -246,7 +247,7 @@
         <report>maven-checkstyle-plugin</report>
         <report>maven-jxr-plugin</report>
         <report>maven-changelog-plugin</report>
-	</reports>
-    <properties/>
+    </reports>
+    <properties />
 </project>
 

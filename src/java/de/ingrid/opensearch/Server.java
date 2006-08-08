@@ -8,6 +8,8 @@ import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.servlet.ServletHandler;
 
+import de.ingrid.opensearch.util.OpensearchConfig;
+
 /**
  * TODO Describe your created type (class, etc.) here.
  *
@@ -25,7 +27,7 @@ public class Server {
           
         // Create a port listener
         SocketListener listener=new SocketListener();
-        listener.setPort(8181);
+        listener.setPort(OpensearchConfig.getInstance().getInt(OpensearchConfig.SERVER_PORT, 80));
         server.addListener(listener);
 
         // Create a context 

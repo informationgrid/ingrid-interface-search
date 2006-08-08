@@ -49,15 +49,16 @@ public class RequestWrapper extends HashMap {
         this.put(RequestWrapper.PAGE, new Integer(page));
 
         // get number of hits for result page
-        int requestedHits = 10;
+        int maxRequestedHits = OpensearchConfig.getInstance().getInt(OpensearchConfig.MAX_REQUESTED_HITS, 10);
+        int requestedHits = maxRequestedHits;
         try {
             requestedHits = Integer.parseInt(request.getParameter("h"));
         } catch (NumberFormatException e) {
         }
         if (requestedHits <= 0) {
             requestedHits = 1;
-        } else if (requestedHits > 10) {
-            requestedHits = 10;
+        } else if (requestedHits > maxRequestedHits) {
+            requestedHits = maxRequestedHits;
         }
         this.put(RequestWrapper.HITS_PER_PAGE, new Integer(requestedHits));
 

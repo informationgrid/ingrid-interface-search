@@ -76,9 +76,7 @@ public class OpensearchServlet extends HttpServlet {
             requestedMetadata[8] = "provider";
         }
 
-        // switch ranking ON
-        // query.put(IngridQuery.RANKED, IngridQuery.SCORE_RANKED);
-
+        // search
         client = BusClient.instance();
         bus = client.getBus();
         IngridHits hits = null;
@@ -94,7 +92,6 @@ public class OpensearchServlet extends HttpServlet {
         }
 
         // transform IngridHit to XML
-
         request.setCharacterEncoding("UTF-8");
         // response.setContentType("application/rss+xml");
         response.setContentType("text/xml");
@@ -122,6 +119,9 @@ public class OpensearchServlet extends HttpServlet {
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = r.getAltDocId();
+            String udkClass = null;
+            String udkAddrClass = null;
+            String wmsURL = null;
             Element item = channel.addElement("item");
             String url = null;
             if (iplugClass != null
@@ -145,6 +145,16 @@ public class OpensearchServlet extends HttpServlet {
                 if (altDocId != null && altDocId.length() > 0) {
                     url.concat("&altdocid=").concat(altDocId);
                 }
+                
+                udkClass = getDetailValue(detail, "T01_object.obj_class");
+                udkAddrClass = getDetailValue(detail, "T02_address.typ");
+                Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
+                if (obj instanceof String[]) {
+                    wmsURL = ((String[]) obj)[0];
+                } else {
+                    wmsURL = getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
+                }
+                
             } else {
                 // handle the title (default)
                 item.addElement("title").addText(detail.getTitle());
@@ -170,33 +180,17 @@ public class OpensearchServlet extends HttpServlet {
             item.addElement("partner", "ingridsearch").addText(partner);
             item.addElement("source", "ingridsearch").addText(detail.getDataSourceName());
 
-            if (iplugClass != null
-                    && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
-                            || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
-                            || iplugClass.equals("de.ingrid.iplug.udk.CSWPlug") || iplugClass
-                            .equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
-
-                // handle udk class
-                String udkClass = getDetailValue(detail, "T01_object.obj_class");
-                if (udkClass != null && udkClass.length() > 0) {
-                    item.addElement("udk-class", "ingridsearch").addText(udkClass);
-                }
-                // handle udk addr class
-                String udkAddrClass = getDetailValue(detail, "T02_address.typ");
-                if (udkAddrClass != null && udkAddrClass.length() > 0) {
-                    item.addElement("udk-addr-class", "ingridsearch").addText(udkAddrClass);
-                }
-                // handle wms url
-                String wmsURL = null;
-                Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
-                if (obj instanceof String[]) {
-                    wmsURL = ((String[]) obj)[0];
-                } else {
-                    wmsURL = getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
-                }
-                if (wmsURL != null && wmsURL.length() > 0) {
-                    item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
-                }
+            // handle udk class
+            if (udkClass != null && udkClass.length() > 0) {
+                item.addElement("udk-class", "ingridsearch").addText(udkClass);
+            }
+            // handle udk addr class
+            if (udkAddrClass != null && udkAddrClass.length() > 0) {
+                item.addElement("udk-addr-class", "ingridsearch").addText(udkAddrClass);
+            }
+            // handle wms url
+            if (wmsURL != null && wmsURL.length() > 0) {
+                item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
             }
         }
 
