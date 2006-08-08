@@ -162,18 +162,37 @@
             <artifactId>communication</artifactId>
             <version>SNAPSHOT</version>
             <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>weta-components</groupId>
             <artifactId>communication-jxta</artifactId>
             <version>SNAPSHOT</version>
             <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>jxta</groupId>
             <artifactId>jxta</artifactId>
             <version>2.3.6</version>
             <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.8</version>
+            <type>jar</type>
+            <url>http://ibiblio.org/maven</url>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -181,6 +200,9 @@
             <version>1.0.4</version>
             <type>jar</type>
             <url>http://jakarta.apache.org/commons/logging/</url>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
@@ -214,12 +236,18 @@
             <artifactId>jaxen</artifactId>
             <version>1.1-beta-4</version>
             <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>bouncycastle</groupId>
             <artifactId>bcprov</artifactId>
             <version>jdk14-124</version>
             <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>
@@ -240,10 +268,7 @@
             </includes>
 	        <resources>
 	            <resource>
-	                <directory>src/java/</directory>
-		            <excludes>
-		              	<exclude>**/*.java</exclude>
-		            </excludes>
+	                <directory>src/conf/</directory>
 	            </resource>
 	        </resources>
         </unitTest>
