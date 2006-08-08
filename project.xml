@@ -2,15 +2,14 @@
 <project>
     <pomVersion>3</pomVersion>
     <artifactId>ingrid-opensearch</artifactId>
-    <name>Ingrid Opensearch Interface</name>
-    <groupId>de.ingrid.opensearch</groupId>
-    <currentVersion>0.1</currentVersion>
+    <name>ingrid-opensearch</name>
+    <groupId>ingrid</groupId>
+    <currentVersion>0.1-SNAPSHOT</currentVersion>
     <organization>
         <name>wemove digital solutions GmbH</name>
         <url>http://www.wemove.com/</url>
     </organization>
     <inceptionYear>2006</inceptionYear>
-    <package>de.ingrid.opensearch</package>
     <shortDescription>ingrid opensearch interface</shortDescription>
     <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
     <siteAddress>http://213.144.28.209/ingrid/ingrid-opensearch</siteAddress>
@@ -29,7 +28,7 @@
         </developer>
     </developers>
     <repository>
-        <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-opensearch</connection>
+        <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-opensearch/trunk</connection>
     </repository>
     <dependencies>
         <dependency>
@@ -201,13 +200,15 @@
                 <war.bundle>true</war.bundle>
             </properties>
         </dependency>
-	    <dependency>
-	      <id>commons-collections</id>
-	      <version>3.1</version>
-		  <properties>
-	        <war.bundle>true</war.bundle>
-	      </properties>
-	    </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.1</version>
+            <type>jar</type>
+            <properties>
+                <war.bundle>true</war.bundle>
+            </properties>
+        </dependency>
         <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
