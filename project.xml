@@ -241,6 +241,9 @@
 	        <resources>
 	            <resource>
 	                <directory>src/conf/</directory>
+		            <excludes>
+		              	<exclude>**/*.java</exclude>
+		            </excludes>
 	            </resource>
 	        </resources>
         </unitTest>
