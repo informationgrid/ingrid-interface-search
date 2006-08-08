@@ -30,7 +30,7 @@ public class OpensearchConfig extends PropertiesConfiguration {
             } catch (Exception e) {
                 if (log.isFatalEnabled()) {
                     log.fatal(
-                            "Error loading the portal config application config file. (ingrid-portal-apps.properties)",
+                            "Error loading the portal config application config file. (ingrid-opensearch.properties)",
                             e);
                 }
             }

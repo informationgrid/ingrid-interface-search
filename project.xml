@@ -240,7 +240,7 @@
             </includes>
 	        <resources>
 	            <resource>
-	                <directory>src/conf/</directory>
+	                <directory>src/java/</directory>
 		            <excludes>
 		              	<exclude>**/*.java</exclude>
 		            </excludes>
