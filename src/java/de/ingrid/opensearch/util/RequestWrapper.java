@@ -27,9 +27,13 @@ public class RequestWrapper extends HashMap {
 
     public static final String HITS_PER_PAGE = "hitsPerPage";
 
-    public static final String GET_DETAILS = "getDetails";
-
     public static final String QUERY = "query";
+    public static final String QUERY_STR = "query_str";
+    
+    public static final String PLUG_ID = "iplug_id";
+    public static final String DOC_ID = "doc_id";
+    public static final String ALT_DOC_ID = "alt_doc_id";
+    
 
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
@@ -57,26 +61,41 @@ public class RequestWrapper extends HashMap {
         }
         this.put(RequestWrapper.HITS_PER_PAGE, new Integer(requestedHits));
 
-        // get details mode
-        int getDetails = 0;
+        // get doc id
+        int docId = 0;
         try {
-            getDetails = Integer.parseInt(request.getParameter("d"));
+            docId = Integer.parseInt(request.getParameter("docid"));
         } catch (NumberFormatException e) {
         }
-        if (getDetails > 0) {
-            this.put(RequestWrapper.GET_DETAILS, new Boolean(true));
-        } else {
-            this.put(RequestWrapper.GET_DETAILS, new Boolean(false));
-        }
+        this.put(RequestWrapper.DOC_ID, new Integer(docId));
 
+        // get alternative doc id
+        String altDocId = null;
+        altDocId = request.getParameter("altdocid");
+        this.put(RequestWrapper.ALT_DOC_ID, altDocId);
+
+        
+        // get plug id
+        String plugId = null;
+        plugId = request.getParameter("plugid");
+        this.put(RequestWrapper.PLUG_ID, plugId);
+        
+        
         // get query
         IngridQuery query = null;
+        String queryString = request.getParameter("q");
+        if (queryString == null) {
+            queryString = "";
+        }
+        this.put(RequestWrapper.QUERY_STR, queryString);
         try {
-            query = QueryStringParser.parse(request.getParameter("q"));
+            query = QueryStringParser.parse(queryString);
         } catch (Throwable t) {
             throw new ServletException(t);
         }
         this.put(RequestWrapper.QUERY, query);
+        
+        
 
     }
 
@@ -88,12 +107,25 @@ public class RequestWrapper extends HashMap {
         return ((Integer) this.get(RequestWrapper.PAGE)).intValue();
     }
 
-    public boolean getRequestedDetails() {
-        return ((Boolean) this.get(RequestWrapper.GET_DETAILS)).booleanValue();
+    public int getDocId() {
+        return ((Integer) this.get(RequestWrapper.DOC_ID)).intValue();
+    }
+    
+    public String getAltDocId() {
+        return (String) this.get(RequestWrapper.ALT_DOC_ID);
     }
 
+    public String getPlugId() {
+        return (String) this.get(RequestWrapper.PLUG_ID);
+    }
+    
+    
     public IngridQuery getQuery() {
         return (IngridQuery) this.get(RequestWrapper.QUERY);
+    }
+
+    public String getQueryString() {
+        return (String) this.get(RequestWrapper.QUERY_STR);
     }
 
 }

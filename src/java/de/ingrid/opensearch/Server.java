@@ -6,7 +6,6 @@ package de.ingrid.opensearch;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
-import org.mortbay.http.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.ServletHandler;
 
 /**
@@ -41,6 +40,7 @@ public class Server {
         // Map a servlet onto the container
         servlets.setAutoInitializeServlets(true);
         servlets.addServlet("OpenSearch","/query","de.ingrid.opensearch.servlet.OpensearchServlet");
+        servlets.addServlet("OpenSearchDetail","/detail","de.ingrid.opensearch.servlet.OpensearchDetailServlet");
         servlets.initialize(context);
 
         // Start the http server

@@ -104,18 +104,78 @@
 	        <war.bundle>true</war.bundle>
 	      </properties>
 	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-dsc</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-fpn</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-se</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-sns</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-g2k</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-tamino</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+	    <dependency>
+	      <groupId>ingrid</groupId>
+	      <artifactId>ingrid-iplug-udk</artifactId>
+	      <version>0.1-SNAPSHOT</version>
+		  <properties>
+	        <war.bundle>true</war.bundle>
+	      </properties>
+	    </dependency>
+
+
 		<dependency>
 			<groupId>weta-components</groupId>
 			<artifactId>communication</artifactId>
 			<version>SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
-		<!-- 		<dependency>
-			<groupId>weta-components</groupId>
-			<artifactId>communication-sockets</artifactId>
-			<version>SNAPSHOT</version>
-			<type>jar</type>
-			</dependency>-->
 		<dependency>
 			<groupId>weta-components</groupId>
 			<artifactId>communication-jxta</artifactId>
