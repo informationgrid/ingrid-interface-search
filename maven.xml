@@ -1,0 +1,23 @@
+<!DOCTYPE project [
+	<!ENTITY maven1 SYSTEM "maven.lib.xml">
+    <!ENTITY maven2 SYSTEM "maven.dist.xml">
+]>
+
+
+<project xmlns:j="jelly:core" xmlns:deploy="deploy">
+
+	&maven1;
+	&maven2;
+
+	<preGoal name="jar:jar">
+		<attainGoal name="java:compile" />
+		<echo message="deleting configuration file so they get not packaged with jar" />
+		<!-- <delete>
+			<fileset dir="target/classes">
+			<include name="*.properties"></include>
+			<include name="*.xml"></include>
+			</fileset>
+			</delete>-->
+	</preGoal>
+
+</project>
