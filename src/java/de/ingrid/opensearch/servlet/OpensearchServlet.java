@@ -163,7 +163,7 @@ public class OpensearchServlet extends HttpServlet {
             if (url == null) {
                 url = "";
             }
-            item.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
+            item.addElement("link").addText(url);
             item.addElement("description").addText(detail.getSummary());
             item.addElement("plugid", "ingridsearch").addText(plugId);
             item.addElement("docid", "ingridsearch").addText(docId);
