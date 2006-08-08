@@ -2,7 +2,6 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.wemove.com/ingrid/opensearchextension/0.1/" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:ingridsearch="http://www.wemove.com/ingrid/opensearchextension/0.1/">
   <xs:import schemaLocation="ingrid-opensearch.xsd"/>
   <xs:import namespace="http://a9.com/-/spec/opensearch/1.1/" schemaLocation="opensearch.xsd"/>
-  <xs:element name="datasource" type="xs:integer"/>
   <xs:element name="plugid" type="xs:string"/>
   <xs:element name="docid" type="xs:integer"/>
   <xs:element name="altdocid" type="xs:string"/>

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="file:/C:/data/wemove/ingrid/ingrid-project/ingrid-opensearch/trunk/src/dtd/ingrid-opensearch.xsd"
- xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
+<rss xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
  xmlns:ingridsearch="http://www.wemove.com/ingrid/opensearchextension/0.1/"
  version="2.0">
   <channel>
@@ -12,7 +10,6 @@
     <opensearch:startIndex>1</opensearch:startIndex>
     <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
     <opensearch:Query role="request" searchTerms="New York History" />
-    <ingridsearch:datasource>1</ingridsearch:datasource>
     <item>
       <title>Brandenburg Agrar@Umwelt - Rote Listen: Gefährdungskategorien - Brutvögel</title>
       <link>http://www.mluv.brandenburg.de/cms/detail.php/lbm1.c.272394.de</link>

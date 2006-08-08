@@ -12,7 +12,6 @@
     <opensearch:startIndex>1</opensearch:startIndex>
     <opensearch:itemsPerPage>1</opensearch:itemsPerPage>
     <opensearch:Query role="request" searchTerms="New York History" />
-    <ingridsearch:datasource>1</ingridsearch:datasource>
     <item>
       <title>Karte der wertvollen Bereiche für Brutvögel in Niedersachsen</title>
       <link>http://www.portalu.de/ingrid-portal/portal/search-detail.psml?docid=142&amp;plugid=/kug-group:kug-iplug-udk-db_ni</link>

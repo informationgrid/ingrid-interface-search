@@ -20,8 +20,6 @@
         <xs:element ref="opensearch:startIndex"/>
         <xs:element ref="opensearch:itemsPerPage"/>
         <xs:element ref="opensearch:Query"/>
-        <!-- The datasource of the query: 1=default datasource (enviromental information), 2=udk address search, 3=research projects -->
-        <xs:element ref="ingridsearch:datasource"/>
         <xs:element ref="item" maxOccurs="unbounded"/>
       </xs:sequence>
     </xs:complexType>
