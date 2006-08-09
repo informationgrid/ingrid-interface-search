@@ -5,6 +5,7 @@ package de.ingrid.opensearch.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLEncoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -33,7 +34,7 @@ public class OpensearchDetailServlet extends HttpServlet {
     /**
      * TODO: Comment for <code>serialVersionUID</code>
      */
-    private static final long serialVersionUID = 597250457306006899L;
+    private static final long serialVersionUID = 597250457306006799L;
 
     private BusClient client;
 
@@ -59,6 +60,9 @@ public class OpensearchDetailServlet extends HttpServlet {
         // response.setContentType("application/rss+xml");
         response.setContentType("text/xml");
 
+        
+        String url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+        
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
@@ -67,14 +71,21 @@ public class OpensearchDetailServlet extends HttpServlet {
 
         Element channel = root.addElement("channel");
         channel.addElement("title").addText("portalu.de OpenSearch: show detail");
-        channel.addElement("link").addText(
-                request.getRequestURL().toString().concat("?").concat(request.getQueryString()));
+        channel.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
         channel.addElement("description").addText("Search results");
         channel.addElement("totalResults", "opensearch").addText("1");
         channel.addElement("startIndex", "opensearch").addText("1");
         channel.addElement("itemsPerPage", "opensearch").addText("1");
         channel.addElement("Query", "opensearch").addAttribute("role", "request").addAttribute("searchTerms",
                 "show details");
+        Element item = channel.addElement("item");
+        item.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
+        item.addElement("description").addText("detail data of the search result.");
+        item.addElement("plugid", "ingridsearch").addText(r.getPlugId());
+        item.addElement("docid", "ingridsearch").addText(String.valueOf(r.getDocId()));
+        if (r.getAltDocId() != null && r.getAltDocId().length() > 0) {
+            item.addElement("altdocid", "ingridsearch").addText(r.getAltDocId());
+        }
 
         try {
             Record record = bus.getRecord(hit);
@@ -82,7 +93,7 @@ public class OpensearchDetailServlet extends HttpServlet {
             // search for column
             Column[] columns = record.getColumns();
 
-            Element details = channel.addElement("details", "ingridsearch");
+            Element details = item.addElement("details", "ingridsearch");
 
             for (int i = 0; i < columns.length; i++) {
 

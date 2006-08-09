@@ -103,7 +103,7 @@ public class OpensearchServlet extends HttpServlet {
         root.addAttribute("version", "2.0");
 
         Element channel = root.addElement("channel");
-        channel.addElement("title").addText("portalu.de OpenSearch: " + r.getQueryString());
+        channel.addElement("title").addText("ingrid OpenSearch: " + r.getQueryString());
         channel.addElement("link").addText(
                 request.getRequestURL().toString().concat("?").concat(request.getQueryString()));
         channel.addElement("description").addText("Search results");
@@ -163,7 +163,7 @@ public class OpensearchServlet extends HttpServlet {
             if (url == null) {
                 url = "";
             }
-            item.addElement("link").addText(url);
+            item.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
             item.addElement("description").addText(detail.getSummary());
             item.addElement("plugid", "ingridsearch").addText(plugId);
             item.addElement("docid", "ingridsearch").addText(docId);
