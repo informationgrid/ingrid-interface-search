@@ -50,7 +50,7 @@ public class RequestWrapper extends HashMap {
 
         // get number of hits for result page
         int maxRequestedHits = OpensearchConfig.getInstance().getInt(OpensearchConfig.MAX_REQUESTED_HITS, 10);
-        int requestedHits = maxRequestedHits;
+        int requestedHits = 10;
         try {
             requestedHits = Integer.parseInt(request.getParameter("h"));
         } catch (NumberFormatException e) {
@@ -95,9 +95,6 @@ public class RequestWrapper extends HashMap {
             throw new ServletException(t);
         }
         this.put(RequestWrapper.QUERY, query);
-        
-        
-
     }
 
     public int getHitsPerPage() {
