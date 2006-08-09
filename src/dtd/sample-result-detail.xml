@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="file:/C:/data/wemove/ingrid/ingrid-project/ingrid-opensearch/trunk/src/dtd/ingrid-opensearch.xsd"
- xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
+<rss xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
  xmlns:ingridsearch="http://www.wemove.com/ingrid/opensearchextension/0.1/"
  version="2.0">
   <channel>
-    <title>portalu.de Search: New York history</title>
-    <link>http://www.portalu.de/</link>
+    <title>portalu.de OpenSearch: show detail</title>
+    <link>http://www.portalu.de/opensearch/detail?plugid=/torwald-ibus:torwald-iplug-udk-db_ni&amp;docid=142</link>
     <description>Search result detail</description>
     <opensearch:totalResults>1</opensearch:totalResults>
     <opensearch:startIndex>1</opensearch:startIndex>
@@ -14,17 +12,11 @@
     <opensearch:Query role="request" searchTerms="New York History" />
     <item>
       <title>Karte der wertvollen Bereiche für Brutvögel in Niedersachsen</title>
-      <link>http://www.portalu.de/ingrid-portal/portal/search-detail.psml?docid=142&amp;plugid=/kug-group:kug-iplug-udk-db_ni</link>
+      <link>http://www.portalu.de/opensearch/detail?plugid=/torwald-ibus:torwald-iplug-udk-db_ni&amp;docid=142</link>
       <description>... Agrar@Umwelt - Rote Listen: Gefährdungskategorien - Brutvögel Hinweis: brandenburg.de hat seine ...</description>
       <ingridsearch:plugid>kug-group:kug-iplug-udk-db_ni</ingridsearch:plugid>
-      <ingridsearch:docid>12345</ingridsearch:docid>
+      <ingridsearch:docid>142</ingridsearch:docid>
       <ingridsearch:altdocid>AGHRSHFSGHGRSTZTRS</ingridsearch:altdocid>
-      <ingridsearch:provider>bu_uba</ingridsearch:provider>
-      <ingridsearch:partner>bund</ingridsearch:partner>
-      <ingridsearch:source>PortalU-Internet-Suchmaschine</ingridsearch:source>
-      <ingridsearch:udk-class>1</ingridsearch:udk-class>
-      <ingridsearch:udk-addr-class>1</ingridsearch:udk-addr-class>
-      <ingridsearch:wms-url>http://www.portalu.de/ingrid-portal/portal/main-maps.psml?wms_url=http%3A%2F%2Fwww.kartenserver.niedersachsen.de%2Fwmsconnector%2Fcom.esri.wms.Esrimap%2FAvifauna_Brut%3FREQUEST%3DGetCapabilities%26VERSION%3D1.1.1%26SERVICE%3DWMS</ingridsearch:wms-url>
       <ingridsearch:details>
           <ingridsearch:detail>
               <ingridsearch:detail-key></ingridsearch:detail-key>

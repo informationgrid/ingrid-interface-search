@@ -3,13 +3,13 @@
  xmlns:ingridsearch="http://www.wemove.com/ingrid/opensearchextension/0.1/"
  version="2.0">
   <channel>
-    <title>portalu.de Search: New York history</title>
-    <link>http://www.portalu.de/</link>
+    <title>ingrid OpenSearch: Avifauna</title>
+    <link>http://www.portalu.de/opensearch/query/q=Avifauna+ranking:score+datatype:default</link>
     <description>Search results</description>
     <opensearch:totalResults>56679</opensearch:totalResults>
     <opensearch:startIndex>1</opensearch:startIndex>
     <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
-    <opensearch:Query role="request" searchTerms="New York History" />
+    <opensearch:Query role="request" searchTerms="Avifauna" />
     <item>
       <title>Brandenburg Agrar@Umwelt - Rote Listen: Gefährdungskategorien - Brutvögel</title>
       <link>http://www.mluv.brandenburg.de/cms/detail.php/lbm1.c.272394.de</link>
@@ -23,7 +23,7 @@
     </item>
     <item>
       <title>Karte der wertvollen Bereiche für Brutvögel in Niedersachsen</title>
-      <link>http://www.portalu.de/ingrid-portal/portal/search-detail.psml?docid=142&amp;plugid=/kug-group:kug-iplug-udk-db_ni</link>
+      <link>http://www.portalu.de/opensearch/detail?plugid=/torwald-ibus:torwald-iplug-udk-db_ni&amp;docid=142</link>
       <description>... Agrar@Umwelt - Rote Listen: Gefährdungskategorien - Brutvögel Hinweis: brandenburg.de hat seine ...</description>
       <ingridsearch:plugid>kug-group:kug-iplug-udk-db_ni</ingridsearch:plugid>
       <ingridsearch:docid>12345</ingridsearch:docid>
@@ -33,7 +33,7 @@
       <ingridsearch:source>PortalU-Internet-Suchmaschine</ingridsearch:source>
       <ingridsearch:udk-class>1</ingridsearch:udk-class>
       <ingridsearch:udk-addr-class>1</ingridsearch:udk-addr-class>
-      <ingridsearch:wms-url>http://www.portalu.de/ingrid-portal/portal/main-maps.psml?wms_url=http%3A%2F%2Fwww.kartenserver.niedersachsen.de%2Fwmsconnector%2Fcom.esri.wms.Esrimap%2FAvifauna_Brut%3FREQUEST%3DGetCapabilities%26VERSION%3D1.1.1%26SERVICE%3DWMS</ingridsearch:wms-url>
+      <ingridsearch:wms-url>http%3A%2F%2Fwww.kartenserver.niedersachsen.de%2Fwmsconnector%2Fcom.esri.wms.Esrimap%2FAvifauna_Brut%3FREQUEST%3DGetCapabilities%26VERSION%3D1.1.1%26SERVICE%3DWMS</ingridsearch:wms-url>
     </item>
   </channel>
 </rss>

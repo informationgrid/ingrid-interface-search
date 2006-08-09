@@ -37,11 +37,11 @@
         <!-- The alternate docid of the result entry. This is needed for iplugs that use non nummerical doc ids -->
         <xs:element ref="ingridsearch:altdocid" minOccurs="0"/>
         <!-- The provider of the iplug. -->
-        <xs:element ref="ingridsearch:provider"/>
+        <xs:element ref="ingridsearch:provider" minOccurs="0"/>
         <!-- The partner of the iplug. -->
-        <xs:element ref="ingridsearch:partner"/>
+        <xs:element ref="ingridsearch:partner" minOccurs="0"/>
         <!-- The source description of the iplug. -->
-        <xs:element ref="ingridsearch:source"/>
+        <xs:element ref="ingridsearch:source" minOccurs="0"/>
         <!-- The udk class (val:0-5), see udk documentation -->
         <xs:element ref="ingridsearch:udk-class" minOccurs="0"/>
         <!-- The udk address class (val:0-2), see udk documentation -->
