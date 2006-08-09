@@ -18,6 +18,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.OpensearchConfig;
 import de.ingrid.opensearch.util.RequestWrapper;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
@@ -61,7 +62,13 @@ public class OpensearchDetailServlet extends HttpServlet {
         response.setContentType("text/xml");
 
         
-        String url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+        String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
+        String url = null;
+        if (proxyurl != null && proxyurl.trim().length() > 0) {
+            url = proxyurl.concat("/query").concat("?").concat(request.getQueryString());
+        } else {
+            url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+        }
         
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");

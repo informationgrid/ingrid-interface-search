@@ -19,6 +19,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.OpensearchConfig;
 import de.ingrid.opensearch.util.RequestWrapper;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
@@ -104,8 +105,17 @@ public class OpensearchServlet extends HttpServlet {
 
         Element channel = root.addElement("channel");
         channel.addElement("title").addText("ingrid OpenSearch: " + r.getQueryString());
-        channel.addElement("link").addText(
-                request.getRequestURL().toString().concat("?").concat(request.getQueryString()));
+        
+        
+        String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
+        String url = null;
+        if (proxyurl != null && proxyurl.trim().length() > 0) {
+            url = proxyurl.concat("/query").concat("?").concat(request.getQueryString());
+        } else {
+            url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+        }
+        
+        channel.addElement("link").addText(url);
         channel.addElement("description").addText("Search results");
         channel.addElement("totalResults", "opensearch").addText(String.valueOf(hits.length()));
         channel.addElement("startIndex", "opensearch").addText(String.valueOf(r.getRequestedPage()));
@@ -123,7 +133,7 @@ public class OpensearchServlet extends HttpServlet {
             String udkAddrClass = null;
             String wmsURL = null;
             Element item = channel.addElement("item");
-            String url = null;
+            String itemUrl = null;
             if (iplugClass != null
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
@@ -140,10 +150,15 @@ public class OpensearchServlet extends HttpServlet {
                     item.addElement("title").addText(detail.getTitle());
                 }
 
-                url = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat("/detail")
-                        .concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                if (proxyurl != null && proxyurl.length() > 0) {
+                    itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                } else {
+                    itemUrl = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat("/detail")
+                    .concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                }
+
                 if (altDocId != null && altDocId.length() > 0) {
-                    url.concat("&altdocid=").concat(altDocId);
+                    itemUrl.concat("&altdocid=").concat(altDocId);
                 }
                 
                 udkClass = getDetailValue(detail, "T01_object.obj_class");
@@ -158,12 +173,12 @@ public class OpensearchServlet extends HttpServlet {
             } else {
                 // handle the title (default)
                 item.addElement("title").addText(detail.getTitle());
-                url = (String) detail.get("url");
+                itemUrl = (String) detail.get("url");
             }
-            if (url == null) {
-                url = "";
+            if (itemUrl == null) {
+                itemUrl = "";
             }
-            item.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
+            item.addElement("link").addText(URLEncoder.encode(itemUrl, "UTF-8"));
             item.addElement("description").addText(detail.getSummary());
             item.addElement("plugid", "ingridsearch").addText(plugId);
             item.addElement("docid", "ingridsearch").addText(docId);

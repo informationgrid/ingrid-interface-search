@@ -22,6 +22,8 @@ public class OpensearchConfig extends PropertiesConfiguration {
     public static final String SERVER_PORT = "server.port";
 
     public static final String MAX_REQUESTED_HITS = "max.requested.hits";
+    
+    public static final String PROXY_URL = "proxy.url";
 
     public static synchronized OpensearchConfig getInstance() {
         if (instance == null) {
