@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -41,6 +43,8 @@ public class OpensearchDetailServlet extends HttpServlet {
 
     private IBus bus;
 
+    private final static Log log = LogFactory.getLog(OpensearchDetailServlet.class);
+    
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
@@ -49,6 +53,10 @@ public class OpensearchDetailServlet extends HttpServlet {
 
         RequestWrapper r = new RequestWrapper(request);
 
+        if (log.isDebugEnabled()) {
+            log.debug("incoming query for detail: plugid=" + r.getPlugId() + ", docid=" + r.getDocId() + ", alt_document_id=" + r.getAltDocId() + ".");
+        }
+        
         IngridHit hit = new IngridHit();
         hit.setDocumentId(r.getDocId());
         hit.setPlugId(r.getPlugId());

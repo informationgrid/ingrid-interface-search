@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -44,6 +46,8 @@ public class OpensearchServlet extends HttpServlet {
 
     private IBus bus;
 
+    private final static Log log = LogFactory.getLog(OpensearchServlet.class);
+    
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
@@ -53,7 +57,11 @@ public class OpensearchServlet extends HttpServlet {
         String[] requestedMetadata = null;
 
         RequestWrapper r = new RequestWrapper(request);
-
+        
+        if (log.isDebugEnabled()) {
+            log.debug("incoming query: " + r.getQueryString());
+        }
+        
         IngridQuery query = r.getQuery();
         int page = r.getRequestedPage();
         int hitsPerPage = r.getHitsPerPage();
@@ -114,6 +122,8 @@ public class OpensearchServlet extends HttpServlet {
         } else {
             url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
         }
+
+        String metadataDetailsUrl = OpensearchConfig.getInstance().getString(OpensearchConfig.METADATA_DETAILS_URL, null);
         
         channel.addElement("link").addText(url);
         channel.addElement("description").addText("Search results");
@@ -150,7 +160,9 @@ public class OpensearchServlet extends HttpServlet {
                     item.addElement("title").addText(detail.getTitle());
                 }
 
-                if (proxyurl != null && proxyurl.length() > 0) {
+                if (!r.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
+                    itemUrl = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                } else if (proxyurl != null && proxyurl.length() > 0) {
                     itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
                 } else {
                     itemUrl = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat("/detail")

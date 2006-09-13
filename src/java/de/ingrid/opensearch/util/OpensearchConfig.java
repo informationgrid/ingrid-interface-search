@@ -25,6 +25,8 @@ public class OpensearchConfig extends PropertiesConfiguration {
     
     public static final String PROXY_URL = "proxy.url";
 
+    public static final String METADATA_DETAILS_URL = "metadata.details.url";
+    
     public static synchronized OpensearchConfig getInstance() {
         if (instance == null) {
             try {

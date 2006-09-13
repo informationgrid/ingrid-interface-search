@@ -25,6 +25,8 @@ public class RequestWrapper extends HashMap {
 
     public static final String PAGE = "page";
 
+    public static final String METADATA_DETAIL_AS_XML = "xml";
+    
     public static final String HITS_PER_PAGE = "hitsPerPage";
 
     public static final String QUERY = "query";
@@ -70,6 +72,14 @@ public class RequestWrapper extends HashMap {
         }
         this.put(RequestWrapper.DOC_ID, new Integer(docId));
 
+        // parameter for detail data display
+        int metadataDetailAsXML = 0;
+        try {
+            metadataDetailAsXML = Integer.parseInt(request.getParameter(METADATA_DETAIL_AS_XML));
+        } catch (NumberFormatException e) {
+        }
+        this.put(RequestWrapper.METADATA_DETAIL_AS_XML, new Integer(metadataDetailAsXML));
+        
         // get alternative doc id
         String altDocId = null;
         altDocId = request.getParameter("altdocid");
@@ -116,7 +126,10 @@ public class RequestWrapper extends HashMap {
     public String getPlugId() {
         return (String) this.get(RequestWrapper.PLUG_ID);
     }
-    
+
+    public boolean getMetadataDetailAsXML() {
+        return (((Integer) this.get(RequestWrapper.METADATA_DETAIL_AS_XML)).intValue() == 1);
+    }
     
     public IngridQuery getQuery() {
         return (IngridQuery) this.get(RequestWrapper.QUERY);
