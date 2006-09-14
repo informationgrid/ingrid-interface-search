@@ -31,15 +31,12 @@ import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.query.IngridQuery;
 
 /**
- * TODO Describe your created type (class, etc.) here.
+ * Servlet handles OpenSearch queries.
  * 
  * @author joachim@wemove.com
  */
 public class OpensearchServlet extends HttpServlet {
 
-    /**
-     * TODO: Comment for <code>serialVersionUID</code>
-     */
     private static final long serialVersionUID = 597250457306006899L;
 
     private BusClient client;
@@ -47,7 +44,7 @@ public class OpensearchServlet extends HttpServlet {
     private IBus bus;
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
-    
+
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
@@ -57,11 +54,11 @@ public class OpensearchServlet extends HttpServlet {
         String[] requestedMetadata = null;
 
         RequestWrapper r = new RequestWrapper(request);
-        
+
         if (log.isDebugEnabled()) {
             log.debug("incoming query: " + r.getQueryString());
         }
-        
+
         IngridQuery query = r.getQuery();
         int page = r.getRequestedPage();
         int hitsPerPage = r.getHitsPerPage();
@@ -113,8 +110,7 @@ public class OpensearchServlet extends HttpServlet {
 
         Element channel = root.addElement("channel");
         channel.addElement("title").addText("ingrid OpenSearch: " + r.getQueryString());
-        
-        
+
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
         if (proxyurl != null && proxyurl.trim().length() > 0) {
@@ -123,8 +119,9 @@ public class OpensearchServlet extends HttpServlet {
             url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
         }
 
-        String metadataDetailsUrl = OpensearchConfig.getInstance().getString(OpensearchConfig.METADATA_DETAILS_URL, null);
-        
+        String metadataDetailsUrl = OpensearchConfig.getInstance().getString(OpensearchConfig.METADATA_DETAILS_URL,
+                null);
+
         channel.addElement("link").addText(url);
         channel.addElement("description").addText("Search results");
         channel.addElement("totalResults", "opensearch").addText(String.valueOf(hits.length()));
@@ -160,19 +157,22 @@ public class OpensearchServlet extends HttpServlet {
                     item.addElement("title").addText(detail.getTitle());
                 }
 
-                if (!r.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
+                if (detail.get("url") != null) {
+                    itemUrl = (String) detail.get("url");
+                } else if (!r.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
                     itemUrl = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
                 } else if (proxyurl != null && proxyurl.length() > 0) {
-                    itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                    itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(
+                            docId);
                 } else {
-                    itemUrl = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat("/detail")
-                    .concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                    itemUrl = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat(
+                            "/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
                 }
 
                 if (altDocId != null && altDocId.length() > 0) {
                     itemUrl.concat("&altdocid=").concat(altDocId);
                 }
-                
+
                 udkClass = getDetailValue(detail, "T01_object.obj_class");
                 udkAddrClass = getDetailValue(detail, "T02_address.typ");
                 Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
@@ -181,7 +181,7 @@ public class OpensearchServlet extends HttpServlet {
                 } else {
                     wmsURL = getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
                 }
-                
+
             } else {
                 // handle the title (default)
                 item.addElement("title").addText(detail.getTitle());
