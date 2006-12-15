@@ -3,6 +3,8 @@
  */
 package de.ingrid.opensearch;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
@@ -17,12 +19,16 @@ import de.ingrid.opensearch.util.OpensearchConfig;
  */
 public class Server {
 
+    private final static Log log = LogFactory.getLog(Server.class);
+
     /**
      * @param args
      * @throws Exception 
      */
     public static void main(String[] args) throws Exception {
 //      Create the server
+        log.info("starting opensearch server...");
+        
         HttpServer server=new HttpServer();
           
         // Create a port listener
@@ -47,5 +53,6 @@ public class Server {
 
         // Start the http server
         server.start();
+        log.info("... startet wainting for requests.");
     }
 }

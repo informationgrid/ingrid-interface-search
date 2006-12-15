@@ -227,8 +227,6 @@ public class OpensearchServlet extends HttpServlet {
         pout.close();
         request.getInputStream().close();
         doc.clearContent();
-
-        super.doGet(request, response);
     }
 
     /**
