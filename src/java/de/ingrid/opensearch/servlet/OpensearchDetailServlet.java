@@ -13,11 +13,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.weta.components.communication.server.TooManyRunningThreads;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.mortbay.http.HttpException;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.opensearch.util.OpensearchConfig;
@@ -123,8 +126,10 @@ public class OpensearchDetailServlet extends HttpServlet {
             }
 
             addSubRecords(record, details);
+        } catch (TooManyRunningThreads e) {
+            throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw (HttpException) new HttpException(500).initCause(t);
         }
 
         PrintWriter pout = response.getWriter();
