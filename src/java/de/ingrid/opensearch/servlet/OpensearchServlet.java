@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -53,7 +54,7 @@ public class OpensearchServlet extends HttpServlet {
      *      javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        HashMap plugIds = new HashMap(10);
         String[] requestedMetadata = null;
 
         RequestWrapper r = new RequestWrapper(request);
@@ -152,8 +153,19 @@ public class OpensearchServlet extends HttpServlet {
                             || iplugClass.equals("de.ingrid.iplug.udk.CSWPlug") || iplugClass
                             .equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
                 // handle the title
-                PlugDescription plugDescription = bus.getIPlug(plugId);
-                if (hasDataType(plugDescription, "dsc_ecs_address")) {
+
+                log.debug("getplugid started");
+                PlugDescription plugDescription = (PlugDescription) plugIds.get(plugId);
+                if (null == plugDescription) {
+                    try {
+                        plugDescription = bus.getIPlug(plugId);
+                    } catch (Exception e) {
+                        log.error("Doesn't get PlugDescription for " + plugId, e);
+                    }
+                    plugIds.put(plugId, plugDescription);
+                }
+
+                if ((plugDescription != null) && (hasDataType(plugDescription, "dsc_ecs_address"))) {
                     String title = getDetailValue(detail, "T02_address.title");
                     title = title.concat(" ").concat(getDetailValue(detail, "T02_address.firstname")).concat(" ");
                     title = title.concat(getDetailValue(detail, "T02_address.lastname"));
