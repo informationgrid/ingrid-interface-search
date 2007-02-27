@@ -53,6 +53,6 @@ public class Server {
 
         // Start the http server
         server.start();
-        log.info("... started wainting for requests.");
+        log.info("... started waiting for requests.");
     }
 }
