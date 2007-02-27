@@ -154,7 +154,6 @@ public class OpensearchServlet extends HttpServlet {
                             .equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
                 // handle the title
 
-                log.debug("getplugid started");
                 PlugDescription plugDescription = (PlugDescription) plugIds.get(plugId);
                 if (null == plugDescription) {
                     try {
