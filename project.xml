@@ -149,15 +149,6 @@
             </properties>
         </dependency>
         <dependency>
-            <groupId>ingrid</groupId>
-            <artifactId>ingrid-iplug-udk</artifactId>
-            <version>0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <properties>
-                <war.bundle>true</war.bundle>
-            </properties>
-        </dependency>
-        <dependency>
             <groupId>weta-components</groupId>
             <artifactId>communication</artifactId>
             <version>SNAPSHOT</version>
