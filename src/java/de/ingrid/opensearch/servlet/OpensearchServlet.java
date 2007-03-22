@@ -66,6 +66,9 @@ public class OpensearchServlet extends HttpServlet {
         IngridQuery query = r.getQuery();
         int page = r.getRequestedPage();
         int hitsPerPage = r.getHitsPerPage();
+        if (page <= 0)
+            page = 1;
+        int startHit = (page-1) *  hitsPerPage;
 
         if (!hasPositiveDataType(query, "address")) {
             requestedMetadata = new String[4];
@@ -92,7 +95,7 @@ public class OpensearchServlet extends HttpServlet {
         IngridHits hits = null;
         IngridHitDetail[] details = null;
         try {
-            hits = bus.search(query, hitsPerPage, page, hitsPerPage, 60000);
+            hits = bus.search(query, hitsPerPage, page, startHit, 60000);
             details = bus.getDetails(hits.getHits(), query, requestedMetadata);
             for (int i = 0; i < hits.getHits().length; i++) {
                 hits.getHits()[i].put("detail", details[i]);
