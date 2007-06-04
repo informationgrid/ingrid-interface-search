@@ -15,9 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.weta.components.communication.messaging.PayloadMessage;
 import net.weta.components.communication.server.TooManyRunningThreads;
-import net.weta.components.communication.util.MessageUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -181,14 +179,14 @@ public class OpensearchServlet extends HttpServlet {
                 if (null == plugDescription) {
                     try {
                         plugDescription = bus.getIPlug(plugId);
-                        if (log.isDebugEnabled()) {
+/*                        if (log.isDebugEnabled()) {
                             try {
                                 byte[] byteA = MessageUtil.serialize(new PayloadMessage(plugDescription, "type"));
                                 log.debug("Get plugdescription with size: " + byteA.length + " byte");
                             } catch (Exception e) {
                                 // nothing todo
                             }
-                        }
+                        }*/
                     } catch (Exception e) {
                         log.error("Doesn't get PlugDescription for " + plugId, e);
                     }
