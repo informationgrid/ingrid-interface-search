@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.weta.components.communication.messaging.PayloadMessage;
 import net.weta.components.communication.server.TooManyRunningThreads;
+import net.weta.components.communication.util.MessageUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +56,10 @@ public class OpensearchServlet extends HttpServlet {
      *      javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        long overallStartTime = 0;
+        if (log.isDebugEnabled()) {
+            overallStartTime = System.currentTimeMillis();
+        }
         HashMap plugIds = new HashMap(10);
         String[] requestedMetadata = null;
 
@@ -94,9 +100,20 @@ public class OpensearchServlet extends HttpServlet {
         bus = client.getBus();
         IngridHits hits = null;
         IngridHitDetail[] details = null;
+        long startTime = 0;
         try {
+            if (log.isDebugEnabled()) {
+                startTime = System.currentTimeMillis();
+            }
             hits = bus.search(query, hitsPerPage, page, startHit, 60000);
+            if (log.isDebugEnabled()) {
+                log.debug("Time for search: " + (System.currentTimeMillis() - startTime) + " ms");
+                startTime = System.currentTimeMillis();
+            }
             details = bus.getDetails(hits.getHits(), query, requestedMetadata);
+            if (log.isDebugEnabled()) {
+                log.debug("Time for details: " + (System.currentTimeMillis() - startTime) + " ms");
+            }
             for (int i = 0; i < hits.getHits().length; i++) {
                 hits.getHits()[i].put("detail", details[i]);
             }
@@ -138,6 +155,9 @@ public class OpensearchServlet extends HttpServlet {
         channel.addElement("itemsPerPage", "opensearch").addText(String.valueOf(r.getHitsPerPage()));
         channel.addElement("Query", "opensearch").addAttribute("role", "request").addAttribute("searchTerms",
                 r.getQueryString());
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         for (int i = 0; i < hits.getHits().length; i++) {
             IngridHit hit = hits.getHits()[i];
             IngridHitDetail detail = (IngridHitDetail) hit.get("detail");
@@ -161,6 +181,14 @@ public class OpensearchServlet extends HttpServlet {
                 if (null == plugDescription) {
                     try {
                         plugDescription = bus.getIPlug(plugId);
+                        if (log.isDebugEnabled()) {
+                            try {
+                                byte[] byteA = MessageUtil.serialize(new PayloadMessage(plugDescription, "type"));
+                                log.debug("Get plugdescription with size: " + byteA.length + " byte");
+                            } catch (Exception e) {
+                                // nothing todo
+                            }
+                        }
                     } catch (Exception e) {
                         log.error("Doesn't get PlugDescription for " + plugId, e);
                     }
@@ -239,6 +267,9 @@ public class OpensearchServlet extends HttpServlet {
                 item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
             }
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Time for plugids: " + (System.currentTimeMillis() - startTime) + " ms");
+        }
 
         PrintWriter pout = response.getWriter();
 
@@ -246,6 +277,10 @@ public class OpensearchServlet extends HttpServlet {
         pout.close();
         request.getInputStream().close();
         doc.clearContent();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
+        }
     }
 
     /**
