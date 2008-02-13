@@ -162,7 +162,7 @@ public class OpensearchServlet extends HttpServlet {
             String iplugClass = detail.getIplugClassName();
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
-            String altDocId = r.getAltDocId();
+            String altDocId = (String)hit.get("alt_document_id");
             String udkClass = null;
             String udkAddrClass = null;
             String wmsURL = null;
@@ -171,7 +171,7 @@ public class OpensearchServlet extends HttpServlet {
             if (iplugClass != null
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
-                            || iplugClass.equals("de.ingrid.iplug.udk.CSWPlug") || iplugClass
+                            || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug") || iplugClass
                             .equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
                 // handle the title
 
@@ -207,7 +207,7 @@ public class OpensearchServlet extends HttpServlet {
                 }
 
                 if (altDocId != null && altDocId.length() > 0) {
-                    itemUrl.concat("&altdocid=").concat(altDocId);
+                	itemUrl = itemUrl.concat("&altdocid=").concat(altDocId);
                 }
 
                 udkClass = getDetailValue(detail, "T01_object.obj_class");
@@ -228,9 +228,9 @@ public class OpensearchServlet extends HttpServlet {
                 itemUrl = "";
             }
             item.addElement("link").addText(URLEncoder.encode(itemUrl, "UTF-8"));
-            item.addElement("description").addText(detail.getSummary());
-            item.addElement("plugid", "ingridsearch").addText(plugId);
-            item.addElement("docid", "ingridsearch").addText(docId);
+            item.addElement("description").addText(deNullify(detail.getSummary()));
+            item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
+            item.addElement("docid", "ingridsearch").addText(deNullify(docId));
             if (altDocId != null && altDocId.length() > 0) {
                 item.addElement("altdocid", "ingridsearch").addText(altDocId);
             }
@@ -238,11 +238,11 @@ public class OpensearchServlet extends HttpServlet {
             if (provider == null) {
                 provider = detail.getOrganisation();
             }
-            item.addElement("provider", "ingridsearch").addText(provider);
+            item.addElement("provider", "ingridsearch").addText(deNullify(provider));
 
             String partner = getDetailValue(detail, "partner");
-            item.addElement("partner", "ingridsearch").addText(partner);
-            item.addElement("source", "ingridsearch").addText(detail.getDataSourceName());
+            item.addElement("partner", "ingridsearch").addText(deNullify(partner));
+            item.addElement("source", "ingridsearch").addText(deNullify(detail.getDataSourceName()));
 
             // handle udk class
             if (udkClass != null && udkClass.length() > 0) {
@@ -358,6 +358,14 @@ public class OpensearchServlet extends HttpServlet {
             }
         }
         return false;
+    }
+    
+    private String deNullify(String s) {
+    	if (s == null) {
+    		return "";
+    	} else {
+    		return s;
+    	}
     }
 
 }
