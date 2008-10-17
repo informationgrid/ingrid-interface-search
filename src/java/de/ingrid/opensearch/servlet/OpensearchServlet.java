@@ -235,7 +235,7 @@ public class OpensearchServlet extends HttpServlet {
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
             item.addElement("docid", "ingridsearch").addText(deNullify(docId));
-            item.addElement("docuuid", "ingridsearch").addText(deNullify(docId));
+            item.addElement("docuuid", "ingridsearch").addText(deNullify(udkUuid));
             if (altDocId != null && altDocId.length() > 0) {
                 item.addElement("altdocid", "ingridsearch").addText(altDocId);
             }
