@@ -75,11 +75,12 @@ public class OpensearchServlet extends HttpServlet {
         int startHit = (page-1) *  hitsPerPage;
 
         if (!hasPositiveDataType(query, "address")) {
-            requestedMetadata = new String[4];
+            requestedMetadata = new String[5];
             requestedMetadata[0] = "T011_obj_serv_op_connpoint.connect_point";
             requestedMetadata[1] = "T01_object.obj_class";
             requestedMetadata[2] = "partner";
             requestedMetadata[3] = "provider";
+            requestedMetadata[4] = "T01_object.obj_id";
         } else {
             requestedMetadata = new String[9];
             requestedMetadata[0] = "T011_obj_serv_op_connpoint.connect_point";
@@ -164,6 +165,7 @@ public class OpensearchServlet extends HttpServlet {
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = (String)hit.get("alt_document_id");
             String udkClass = null;
+            String udkUuid = null;
             String udkAddrClass = null;
             String wmsURL = null;
             Element item = channel.addElement("item");
@@ -194,16 +196,18 @@ public class OpensearchServlet extends HttpServlet {
                     item.addElement("title").addText(detail.getTitle());
                 }
 
+                udkUuid = getDetailValue(detail, "T01_object.obj_id");
+
                 if (detail.get("url") != null) {
                     itemUrl = (String) detail.get("url");
                 } else if (!r.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
-                    itemUrl = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                    itemUrl = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId).concat("&docuuid=").concat(udkUuid);
                 } else if (proxyurl != null && proxyurl.length() > 0) {
                     itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(
-                            docId);
+                            docId).concat("&docuuid=").concat(udkUuid);
                 } else {
                     itemUrl = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf("/")).concat(
-                            "/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                            "/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(docId).concat("&docuuid=").concat(udkUuid);
                 }
 
                 if (altDocId != null && altDocId.length() > 0) {
@@ -231,6 +235,7 @@ public class OpensearchServlet extends HttpServlet {
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
             item.addElement("docid", "ingridsearch").addText(deNullify(docId));
+            item.addElement("docuuid", "ingridsearch").addText(deNullify(docId));
             if (altDocId != null && altDocId.length() > 0) {
                 item.addElement("altdocid", "ingridsearch").addText(altDocId);
             }

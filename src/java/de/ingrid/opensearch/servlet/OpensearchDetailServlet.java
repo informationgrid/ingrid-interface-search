@@ -23,12 +23,19 @@ import org.dom4j.Element;
 import org.mortbay.http.HttpException;
 
 import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.IPlugHelper;
+import de.ingrid.opensearch.util.IPlugVersionInspector;
 import de.ingrid.opensearch.util.OpensearchConfig;
 import de.ingrid.opensearch.util.RequestWrapper;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.dsc.Column;
 import de.ingrid.utils.dsc.Record;
+import de.ingrid.utils.query.IngridQuery;
+import de.ingrid.utils.queryparser.ParseException;
+import de.ingrid.utils.queryparser.QueryStringParser;
 
 /**
  * TODO Describe your created type (class, etc.) here.
@@ -60,12 +67,53 @@ public class OpensearchDetailServlet extends HttpServlet {
             log.debug("incoming query for detail: plugid=" + r.getPlugId() + ", docid=" + r.getDocId() + ", alt_document_id=" + r.getAltDocId() + ".");
         }
         
-        IngridHit hit = new IngridHit();
-        hit.setDocumentId(r.getDocId());
-        hit.setPlugId(r.getPlugId());
+        IngridHit hit = null;
+        PlugDescription plugDescription = null;
+        plugDescription = bus.getIPlug(r.getPlugId().trim());
+        
+        String docUuid = r.getDocUuid();
+        if (docUuid != null && docUuid.length() > 0) {
+            String qStr = null;
+            String iPlugVersion = IPlugVersionInspector.getIPlugVersion(plugDescription);
+        	if (iPlugVersion.equals(IPlugVersionInspector.VERSION_IDC_1_0_3_DSC_OBJECT)) {
+        		qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_IDC_1_0_2_DSC_OBJECT)) {
+        		qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UDK_5_0_DSC_OBJECT)) {
+        		qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UDK_5_0_DSC_ADDRESS)) {
+        		qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_IDC_1_0_2_DSC_ADDRESS)) {
+        		qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            } else {
+        		qStr = docUuid.trim() + " iplugs:\"" + r.getPlugId().trim() + "\" ranking:score";
+            }
+        	IngridHits hits;
+			try {
+				IngridQuery q = QueryStringParser.parse(qStr);
+				hits = bus.search(q, 1, 1, 0, 3000);
+			} catch (ParseException e) {
+				log.error("Error parsing query.", e);
+				throw (HttpException) new HttpException(500).initCause(e);
+			} catch (Exception e) {
+				log.error("Error query the iBus.", e);
+				throw (HttpException) new HttpException(500).initCause(e);
+			}
+        	if (hits.length() < 1) {
+        		log.error("No record found for document uuid:" + docUuid + " using iplug: " + r.getPlugId().trim());
+        		throw (HttpException) new HttpException(404, "No record found for document uuid:" + docUuid + " using iplug: " + r.getPlugId().trim());
+        	} else {
+        		hit = hits.getHits()[0];
+        	}
+        } else {
+            hit = new IngridHit();
+            hit.setDocumentId(r.getDocId());
+            hit.setPlugId(r.getPlugId());
+        }
         if (r.getAltDocId() != null) {
             hit.put("alt_document_id", r.getAltDocId());
         }
+        
 
         // transform IngridHit to XML
         request.setCharacterEncoding("UTF-8");

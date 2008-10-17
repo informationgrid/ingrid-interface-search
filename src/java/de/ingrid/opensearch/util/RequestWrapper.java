@@ -34,6 +34,7 @@ public class RequestWrapper extends HashMap {
     
     public static final String PLUG_ID = "iplug_id";
     public static final String DOC_ID = "doc_id";
+    public static final String DOC_UUID = "doc_uuid";
     public static final String ALT_DOC_ID = "alt_doc_id";
     
 
@@ -72,6 +73,12 @@ public class RequestWrapper extends HashMap {
         }
         this.put(RequestWrapper.DOC_ID, new Integer(docId));
 
+        // get doc uuid
+        String docUuid = null;
+        docUuid = request.getParameter("docuuid");
+        this.put(RequestWrapper.DOC_UUID, docUuid);
+        
+        
         // parameter for detail data display
         int metadataDetailAsXML = 0;
         try {
@@ -117,6 +124,10 @@ public class RequestWrapper extends HashMap {
 
     public int getDocId() {
         return ((Integer) this.get(RequestWrapper.DOC_ID)).intValue();
+    }
+
+    public String getDocUuid() {
+        return (String) this.get(RequestWrapper.DOC_UUID);
     }
     
     public String getAltDocId() {
