@@ -119,7 +119,8 @@ public class OpensearchServlet extends HttpServlet {
         } catch (TooManyRunningThreads e) {
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
         } catch (Exception e) {
-            throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
+            log.error("Error serving request", e);
+        	throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
         }
 
         // transform IngridHit to XML
