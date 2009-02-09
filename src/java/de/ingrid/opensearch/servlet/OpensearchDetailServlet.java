@@ -22,7 +22,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.mortbay.http.HttpException;
 
-import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.IBusHelper;
 import de.ingrid.opensearch.util.IPlugHelper;
 import de.ingrid.opensearch.util.IPlugVersionInspector;
 import de.ingrid.opensearch.util.OpensearchConfig;
@@ -49,8 +49,6 @@ public class OpensearchDetailServlet extends HttpServlet {
      */
     private static final long serialVersionUID = 597250457306006799L;
 
-    private BusClient client;
-
     private IBus bus;
 
     private final static Log log = LogFactory.getLog(OpensearchDetailServlet.class);
@@ -61,8 +59,17 @@ public class OpensearchDetailServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	// FIXME AW: doGet is always called twice!
+    	// -> this happens only in firefox, cause seems to be the rss-element
+    	// -> renaming it helps
+    	
         RequestWrapper r = new RequestWrapper(request);
-
+        
+        long overallStartTime = 0;
+        if (log.isDebugEnabled()) {
+            overallStartTime = System.currentTimeMillis();
+        }
+        
         if (log.isDebugEnabled()) {
             log.debug("incoming query for detail: plugid=" + r.getPlugId() + ", docid=" + r.getDocId() + ", alt_document_id=" + r.getAltDocId() + ".");
         }
@@ -91,6 +98,7 @@ public class OpensearchDetailServlet extends HttpServlet {
         	IngridHits hits;
 			try {
 				IngridQuery q = QueryStringParser.parse(qStr);
+				IBusHelper.injectCache(q);
 				hits = bus.search(q, 1, 1, 0, 3000);
 			} catch (ParseException e) {
 				log.error("Error parsing query.", e);
@@ -120,11 +128,11 @@ public class OpensearchDetailServlet extends HttpServlet {
         // response.setContentType("application/rss+xml");
         response.setContentType("text/xml");
 
-        
+               
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
         if (proxyurl != null && proxyurl.trim().length() > 0) {
-            url = proxyurl.concat("/query").concat("?").concat(request.getQueryString());
+            url = proxyurl.concat("/detail").concat("?").concat(request.getQueryString());
         } else {
             url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
         }
@@ -185,6 +193,10 @@ public class OpensearchDetailServlet extends HttpServlet {
         pout.close();
         request.getInputStream().close();
         doc.clearContent();
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Time for complete detail: " + (System.currentTimeMillis() - overallStartTime) + " ms");
+        }
     }
 
     /**
@@ -201,9 +213,8 @@ public class OpensearchDetailServlet extends HttpServlet {
      */
     public void init(ServletConfig arg0) throws ServletException {
         try {
-            client = BusClient.instance();
-            bus = client.getBus();
-        } catch (IOException e) {
+           	bus = IBusHelper.getIBus();
+        } catch (Exception e) {
             throw new ServletException(e);
         }
         super.init(arg0);

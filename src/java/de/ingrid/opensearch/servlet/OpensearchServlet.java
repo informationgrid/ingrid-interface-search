@@ -24,7 +24,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.mortbay.http.HttpException;
 
-import de.ingrid.ibus.client.BusClient;
+import de.ingrid.opensearch.util.IBusHelper;
 import de.ingrid.opensearch.util.OpensearchConfig;
 import de.ingrid.opensearch.util.RequestWrapper;
 import de.ingrid.utils.IBus;
@@ -42,8 +42,6 @@ import de.ingrid.utils.query.IngridQuery;
 public class OpensearchServlet extends HttpServlet {
 
     private static final long serialVersionUID = 597250457306006899L;
-
-    private BusClient client;
 
     private IBus bus;
 
@@ -94,27 +92,30 @@ public class OpensearchServlet extends HttpServlet {
             requestedMetadata[8] = "provider";
         }
 
-        // search
-        client = BusClient.instance();
-        bus = client.getBus();
         IngridHits hits = null;
         IngridHitDetail[] details = null;
+        // mapping of the hits with the details
+        HashMap hitMap = new HashMap();
         long startTime = 0;
         try {
             if (log.isDebugEnabled()) {
                 startTime = System.currentTimeMillis();
             }
+            IBusHelper.injectCache(query);
+
             hits = bus.search(query, hitsPerPage, page, startHit, 60000);
             if (log.isDebugEnabled()) {
                 log.debug("Time for search: " + (System.currentTimeMillis() - startTime) + " ms");
                 startTime = System.currentTimeMillis();
             }
+            
             details = bus.getDetails(hits.getHits(), query, requestedMetadata);
+            
             if (log.isDebugEnabled()) {
                 log.debug("Time for details: " + (System.currentTimeMillis() - startTime) + " ms");
             }
             for (int i = 0; i < hits.getHits().length; i++) {
-                hits.getHits()[i].put("detail", details[i]);
+                hitMap.put(hits.getHits()[i].getId(), details[i]);
             }
         } catch (TooManyRunningThreads e) {
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
@@ -160,7 +161,7 @@ public class OpensearchServlet extends HttpServlet {
         }
         for (int i = 0; i < hits.getHits().length; i++) {
             IngridHit hit = hits.getHits()[i];
-            IngridHitDetail detail = (IngridHitDetail) hit.get("detail");
+            IngridHitDetail detail = (IngridHitDetail)hitMap.get(hit.getId());
             String iplugClass = detail.getIplugClassName();
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
@@ -292,10 +293,9 @@ public class OpensearchServlet extends HttpServlet {
      * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
      */
     public void init(ServletConfig arg0) throws ServletException {
-        try {
-            client = BusClient.instance();
-            bus = client.getBus();
-        } catch (IOException e) {
+    	try {
+            bus = IBusHelper.getIBus();
+        } catch (Exception e) {
             throw new ServletException(e);
         }
         super.init(arg0);
@@ -373,5 +373,4 @@ public class OpensearchServlet extends HttpServlet {
     		return s;
     	}
     }
-
 }
