@@ -15,9 +15,9 @@
         maxElementsInMemory="5000"
         eternal="false"
         timeToIdleSeconds="100"
-        timeToLiveSeconds="3000"
+        timeToLiveSeconds="300"
         overflowToDisk="true"
         diskPersistent="false"
-        diskExpiryThreadIntervalSeconds="3000"
+        diskExpiryThreadIntervalSeconds="300"
         />
 </ehcache>
