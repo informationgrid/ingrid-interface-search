@@ -73,23 +73,29 @@ public class OpensearchServlet extends HttpServlet {
         int startHit = (page-1) *  hitsPerPage;
 
         if (!hasPositiveDataType(query, "address")) {
-            requestedMetadata = new String[5];
-            requestedMetadata[0] = "T011_obj_serv_op_connpoint.connect_point";
-            requestedMetadata[1] = "T01_object.obj_class";
-            requestedMetadata[2] = "partner";
-            requestedMetadata[3] = "provider";
-            requestedMetadata[4] = "T01_object.obj_id";
+            requestedMetadata = new String[] {
+            		"T011_obj_serv_op_connpoint.connect_point", 
+            		"T01_object.obj_class", 
+            		"partner", 
+            		"provider", 
+            		"t01_object.obj_id", 
+            		"x1", 
+            		"x2", 
+            		"y1", 
+            		"y2"
+            		};
         } else {
-            requestedMetadata = new String[9];
-            requestedMetadata[0] = "T011_obj_serv_op_connpoint.connect_point";
-            requestedMetadata[1] = "T02_address.typ";
-            requestedMetadata[2] = "T02_address.firstname";
-            requestedMetadata[3] = "T02_address.lastname";
-            requestedMetadata[4] = "T02_address.title";
-            requestedMetadata[5] = "T02_address.address";
-            requestedMetadata[6] = "T02_address.adr_id";
-            requestedMetadata[7] = "partner";
-            requestedMetadata[8] = "provider";
+        	requestedMetadata = new String[] {
+            		"T011_obj_serv_op_connpoint.connect_point", 
+            		"T02_address.typ", 
+            		"partner", 
+            		"provider", 
+            		"T02_address.firstname", 
+            		"T02_address.lastname", 
+            		"T02_address.title", 
+            		"T02_address.address", 
+            		"T02_address.adr_id"
+            		};
         }
 
         IngridHits hits = null;
@@ -133,6 +139,7 @@ public class OpensearchServlet extends HttpServlet {
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
         root.addNamespace("ingridsearch", "http://www.wemove.com/ingrid/opensearchextension/0.1/");
+        root.addNamespace("georss", "http://www.georss.org/georss");
         root.addAttribute("version", "2.0");
 
         Element channel = root.addElement("channel");
@@ -262,6 +269,20 @@ public class OpensearchServlet extends HttpServlet {
             // handle wms url
             if (wmsURL != null && wmsURL.length() > 0) {
                 item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
+            }
+            // handle geoRSS data
+            if (detail.get("x1") != null && detail.get("x1") instanceof String[]) {
+            	String x1 = Float.valueOf(((String[])detail.get("x1"))[0]).toString();
+            	String x2 = Float.valueOf(((String[])detail.get("x2"))[0]).toString();
+            	String y1 = Float.valueOf(((String[])detail.get("y1"))[0]).toString();
+            	String y2 = Float.valueOf(((String[])detail.get("y2"))[0]).toString();
+            	item.addElement("georss:box").addText(
+            			  deNullify(x1) + " "
+            			+ deNullify(y1) + " "
+            			+ deNullify(x2) + " "
+            			+ deNullify(y2)
+            	);
+            	
             }
         }
         if (log.isDebugEnabled()) {
