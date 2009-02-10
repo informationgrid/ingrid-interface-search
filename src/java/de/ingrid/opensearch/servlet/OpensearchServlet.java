@@ -271,7 +271,10 @@ public class OpensearchServlet extends HttpServlet {
                 item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
             }
             // handle geoRSS data
-            if (detail.get("x1") != null && detail.get("x1") instanceof String[]) {
+            if (detail.get("x1") != null &&
+            		detail.get("x1") instanceof String[] &&
+            		(!((String[])detail.get("x1"))[0].equals(""))) 
+            {
             	String x1 = Float.valueOf(((String[])detail.get("x1"))[0]).toString();
             	String x2 = Float.valueOf(((String[])detail.get("x2"))[0]).toString();
             	String y1 = Float.valueOf(((String[])detail.get("y1"))[0]).toString();
