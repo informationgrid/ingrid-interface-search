@@ -5,9 +5,12 @@ package de.ingrid.opensearch.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.weta.components.communication.server.TooManyRunningThreads;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -32,6 +36,7 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 
 /**
@@ -41,8 +46,8 @@ import de.ingrid.utils.query.IngridQuery;
  */
 public class OpensearchServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 597250457306006899L;
-
+    private static final long serialVersionUID 	= 597250457306006899L;
+    
     private IBus bus;
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
@@ -71,19 +76,20 @@ public class OpensearchServlet extends HttpServlet {
         if (page <= 0)
             page = 1;
         int startHit = (page-1) *  hitsPerPage;
-
+        
         if (!hasPositiveDataType(query, "address")) {
             requestedMetadata = new String[] {
             		"T011_obj_serv_op_connpoint.connect_point", 
             		"T01_object.obj_class", 
             		"partner", 
             		"provider", 
-            		"t01_object.obj_id", 
-            		"x1", 
-            		"x2", 
-            		"y1", 
-            		"y2"
+            		"t01_object.obj_id"
             		};
+            // check if GeoRSS data shall be checked too
+            if (r.withGeoRSS()) {
+    	        String[] additional = new String[] {"x1","x2","y1","y2"}; 
+    	        requestedMetadata = (String[])ArrayUtils.addAll(requestedMetadata, additional);
+    	    }
         } else {
         	requestedMetadata = new String[] {
             		"T011_obj_serv_op_connpoint.connect_point", 
@@ -139,7 +145,9 @@ public class OpensearchServlet extends HttpServlet {
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
         root.addNamespace("ingridsearch", "http://www.wemove.com/ingrid/opensearchextension/0.1/");
-        root.addNamespace("georss", "http://www.georss.org/georss");
+        if (r.withGeoRSS()) {
+        	root.addNamespace("georss", "http://www.georss.org/georss");
+        }
         root.addAttribute("version", "2.0");
 
         Element channel = root.addElement("channel");
@@ -275,18 +283,31 @@ public class OpensearchServlet extends HttpServlet {
             		detail.get("x1") instanceof String[] &&
             		(!((String[])detail.get("x1"))[0].equals(""))) 
             {
-            	String x1 = Float.valueOf(((String[])detail.get("x1"))[0]).toString();
-            	String x2 = Float.valueOf(((String[])detail.get("x2"))[0]).toString();
-            	String y1 = Float.valueOf(((String[])detail.get("y1"))[0]).toString();
-            	String y2 = Float.valueOf(((String[])detail.get("y2"))[0]).toString();
-            	item.addElement("georss:box").addText(
-            			  deNullify(x1) + " "
-            			+ deNullify(y1) + " "
-            			+ deNullify(x2) + " "
-            			+ deNullify(y2)
-            	);
-            	
+
+				try {
+					int length = ((String[])detail.get("x1")).length;
+					for (int j=0; j<length; j++) {
+						Float x1 = Float.valueOf(((String[])detail.get("x1"))[j]);
+						Float x2 = Float.valueOf(((String[])detail.get("x2"))[j]);
+						Float y1 = Float.valueOf(((String[])detail.get("y1"))[j]);
+						Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
+						
+						if ((x1+x2+y1+y2) != 0.0) {
+			            	item.addElement("georss:box").addText(
+			            			  deNullify(x1.toString()) + " "
+			            			+ deNullify(y1.toString()) + " "
+			            			+ deNullify(x2.toString()) + " "
+			            			+ deNullify(y2.toString())
+			            	);
+		            	}
+					}
+				} catch (NumberFormatException e) {
+					// empty
+				} catch (Exception e) {
+					log.debug("Exception when getting geo data: " + e.getMessage());
+				}
             }
+
         }
         if (log.isDebugEnabled()) {
             log.debug("Time for plugids: " + (System.currentTimeMillis() - startTime) + " ms");
@@ -396,5 +417,15 @@ public class OpensearchServlet extends HttpServlet {
     	} else {
     		return s;
     	}
+    }
+    
+    private String getFieldValue(IngridQuery query, String field) {
+    	FieldQuery[] fieldQueries = query.getFields();
+    	for (FieldQuery fq : fieldQueries) {
+    		if (fq.getFieldName().equals(field)) {
+    			return fq.getFieldValue();
+    		}
+    	}
+    	return "";
     }
 }

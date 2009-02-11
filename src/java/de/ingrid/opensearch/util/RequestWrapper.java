@@ -37,6 +37,8 @@ public class RequestWrapper extends HashMap {
     public static final String DOC_UUID = "doc_uuid";
     public static final String ALT_DOC_ID = "alt_doc_id";
     
+    public static final String GEORSS = "georss";
+    
 
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
@@ -112,6 +114,19 @@ public class RequestWrapper extends HashMap {
             throw new ServletException(t);
         }
         this.put(RequestWrapper.QUERY, query);
+        
+        // get georss
+        int georss = 0;
+        try {
+        	georss = Integer.parseInt(request.getParameter("georss"));
+        } catch (NumberFormatException e) {
+        }
+        if (georss == 1) {
+        	this.put(RequestWrapper.GEORSS, new Boolean(true));
+        } else {
+        	this.put(RequestWrapper.GEORSS, new Boolean(false));
+        }
+        
     }
 
     public int getHitsPerPage() {
@@ -148,6 +163,11 @@ public class RequestWrapper extends HashMap {
 
     public String getQueryString() {
         return (String) this.get(RequestWrapper.QUERY_STR);
+    }
+    
+    public boolean withGeoRSS() {
+    	return (Boolean) this.get(GEORSS);
+
     }
 
 }
