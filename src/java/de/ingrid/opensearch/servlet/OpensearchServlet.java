@@ -105,30 +105,21 @@ public class OpensearchServlet extends HttpServlet {
         }
 
         IngridHits hits = null;
-        IngridHitDetail[] details = null;
         // mapping of the hits with the details
-        HashMap hitMap = new HashMap();
+        //HashMap hitMap = new HashMap();
         long startTime = 0;
         try {
             if (log.isDebugEnabled()) {
                 startTime = System.currentTimeMillis();
             }
             IBusHelper.injectCache(query);
+            
+            hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, 60000, requestedMetadata);
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Time for searchAndDetail: " + (System.currentTimeMillis() - startTime) + " ms");
+            }
 
-            hits = bus.search(query, hitsPerPage, page, startHit, 60000);
-            if (log.isDebugEnabled()) {
-                log.debug("Time for search: " + (System.currentTimeMillis() - startTime) + " ms");
-                startTime = System.currentTimeMillis();
-            }
-            
-            details = bus.getDetails(hits.getHits(), query, requestedMetadata);
-            
-            if (log.isDebugEnabled()) {
-                log.debug("Time for details: " + (System.currentTimeMillis() - startTime) + " ms");
-            }
-            for (int i = 0; i < hits.getHits().length; i++) {
-                hitMap.put(hits.getHits()[i].getId(), details[i]);
-            }
         } catch (TooManyRunningThreads e) {
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
         } catch (Exception e) {
@@ -176,7 +167,7 @@ public class OpensearchServlet extends HttpServlet {
         }
         for (int i = 0; i < hits.getHits().length; i++) {
             IngridHit hit = hits.getHits()[i];
-            IngridHitDetail detail = (IngridHitDetail)hitMap.get(hit.getId());
+            IngridHitDetail detail = (IngridHitDetail)hit.getHitDetail();
             String iplugClass = detail.getIplugClassName();
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
