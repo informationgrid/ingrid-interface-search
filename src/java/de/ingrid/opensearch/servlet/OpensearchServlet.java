@@ -271,26 +271,27 @@ public class OpensearchServlet extends HttpServlet {
             }
             // handle geoRSS data
             if (detail.get("x1") != null &&
-            		detail.get("x1") instanceof String[] &&
-            		(!((String[])detail.get("x1"))[0].equals(""))) 
+            		detail.get("x1") instanceof String[]) 
             {
 
 				try {
-					int length = ((String[])detail.get("x1")).length;
-					for (int j=0; j<length; j++) {
-						Float x1 = Float.valueOf(((String[])detail.get("x1"))[j]);
-						Float x2 = Float.valueOf(((String[])detail.get("x2"))[j]);
-						Float y1 = Float.valueOf(((String[])detail.get("y1"))[j]);
-						Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
-						
-						if ((x1+x2+y1+y2) != 0.0) {
-			            	item.addElement("georss:box").addText(
-			            			  deNullify(x1.toString()) + " "
-			            			+ deNullify(y1.toString()) + " "
-			            			+ deNullify(x2.toString()) + " "
-			            			+ deNullify(y2.toString())
-			            	);
-		            	}
+					if (!((String[])detail.get("x1"))[0].equals("")) {
+						int length = ((String[])detail.get("x1")).length;
+						for (int j=0; j<length; j++) {
+							Float x1 = Float.valueOf(((String[])detail.get("x1"))[j]);
+							Float x2 = Float.valueOf(((String[])detail.get("x2"))[j]);
+							Float y1 = Float.valueOf(((String[])detail.get("y1"))[j]);
+							Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
+							
+							if ((x1+x2+y1+y2) != 0.0) {
+				            	item.addElement("georss:box").addText(
+				            			  deNullify(x1.toString()) + " "
+				            			+ deNullify(y1.toString()) + " "
+				            			+ deNullify(x2.toString()) + " "
+				            			+ deNullify(y2.toString())
+				            	);
+			            	}
+						}
 					}
 				} catch (NumberFormatException e) {
 					// empty
