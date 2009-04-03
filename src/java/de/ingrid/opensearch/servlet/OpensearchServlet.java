@@ -146,10 +146,12 @@ public class OpensearchServlet extends HttpServlet {
 
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
+        String queryString = request.getQueryString();
+        if (queryString == null) queryString = "";
         if (proxyurl != null && proxyurl.trim().length() > 0) {
-            url = proxyurl.concat("/query").concat("?").concat(request.getQueryString());
+            url = proxyurl.concat("/query").concat("?").concat(queryString);
         } else {
-            url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+            url = request.getRequestURL().toString().concat("?").concat(queryString);
         }
 
         String metadataDetailsUrl = OpensearchConfig.getInstance().getString(OpensearchConfig.METADATA_DETAILS_URL,
