@@ -5,7 +5,6 @@ package de.ingrid.opensearch.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URLEncoder;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.weta.components.communication.server.TooManyRunningThreads;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -131,10 +131,13 @@ public class OpensearchDetailServlet extends HttpServlet {
                
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
+        String queryString = request.getQueryString();
+        if (queryString == null) queryString = "";
+        queryString.replace("+", "%2B");
         if (proxyurl != null && proxyurl.trim().length() > 0) {
-            url = proxyurl.concat("/detail").concat("?").concat(request.getQueryString());
+            url = proxyurl.concat("/detail").concat("?").concat(queryString);
         } else {
-            url = request.getRequestURL().toString().concat("?").concat(request.getQueryString());
+            url = request.getRequestURL().toString().concat("?").concat(queryString);
         }
         
         Document doc = DocumentHelper.createDocument();
@@ -145,7 +148,7 @@ public class OpensearchDetailServlet extends HttpServlet {
 
         Element channel = root.addElement("channel");
         channel.addElement("title").addText("portalu.de OpenSearch: show detail");
-        channel.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
+        channel.addElement("link").addText(StringEscapeUtils.escapeXml(url));
         channel.addElement("description").addText("Search results");
         channel.addElement("totalResults", "opensearch").addText("1");
         channel.addElement("startIndex", "opensearch").addText("1");
@@ -153,7 +156,7 @@ public class OpensearchDetailServlet extends HttpServlet {
         channel.addElement("Query", "opensearch").addAttribute("role", "request").addAttribute("searchTerms",
                 "show details");
         Element item = channel.addElement("item");
-        item.addElement("link").addText(URLEncoder.encode(url, "UTF-8"));
+        item.addElement("link").addText(StringEscapeUtils.escapeXml(url));
         item.addElement("description").addText("detail data of the search result.");
         item.addElement("plugid", "ingridsearch").addText(r.getPlugId());
         item.addElement("docid", "ingridsearch").addText(String.valueOf(r.getDocId()));

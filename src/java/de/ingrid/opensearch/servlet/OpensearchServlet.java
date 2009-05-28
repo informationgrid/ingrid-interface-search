@@ -5,12 +5,8 @@ package de.ingrid.opensearch.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -21,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.weta.components.communication.server.TooManyRunningThreads;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -148,6 +145,7 @@ public class OpensearchServlet extends HttpServlet {
         String url = null;
         String queryString = request.getQueryString();
         if (queryString == null) queryString = "";
+        queryString.replace("+", "%2B");
         if (proxyurl != null && proxyurl.trim().length() > 0) {
             url = proxyurl.concat("/query").concat("?").concat(queryString);
         } else {
@@ -241,7 +239,7 @@ public class OpensearchServlet extends HttpServlet {
             if (itemUrl == null) {
                 itemUrl = "";
             }
-            item.addElement("link").addText(URLEncoder.encode(itemUrl, "UTF-8"));
+            item.addElement("link").addText(StringEscapeUtils.escapeXml(itemUrl));
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
             item.addElement("docid", "ingridsearch").addText(deNullify(docId));
@@ -269,7 +267,7 @@ public class OpensearchServlet extends HttpServlet {
             }
             // handle wms url
             if (wmsURL != null && wmsURL.length() > 0) {
-                item.addElement("wms-url", "ingridsearch").addText(URLEncoder.encode(wmsURL, "UTF-8"));
+                item.addElement("wms-url", "ingridsearch").addText(StringEscapeUtils.escapeXml(wmsURL));
             }
             // handle geoRSS data
             if (detail.get("x1") != null &&
