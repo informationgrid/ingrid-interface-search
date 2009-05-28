@@ -206,7 +206,7 @@ public class OpensearchServlet extends HttpServlet {
                     item.addElement("title").addText(detail.getTitle());
                 }
 
-                udkUuid = getDetailValue(detail, "T01_object.obj_id");
+                udkUuid = getDetailValue(detail, "t01_object.obj_id");
 
                 if (detail.get("url") != null) {
                     itemUrl = (String) detail.get("url");
