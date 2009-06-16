@@ -239,7 +239,7 @@ public class OpensearchServlet extends HttpServlet {
             if (itemUrl == null) {
                 itemUrl = "";
             }
-            item.addElement("link").addText(StringEscapeUtils.escapeXml(itemUrl));
+            item.addElement("link").addText(itemUrl);
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
             item.addElement("docid", "ingridsearch").addText(deNullify(docId));
