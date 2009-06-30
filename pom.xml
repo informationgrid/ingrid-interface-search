@@ -31,10 +31,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>xpp3</groupId>
-      <artifactId>xpp3</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
     </dependency>
@@ -49,12 +45,6 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>maven</groupId>
-          <artifactId>maven-javacc-plugin</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -77,11 +67,11 @@
       <artifactId>ingrid-iplug-se</artifactId>
     </dependency>
     <dependency>
-      <groupId>ingrid</groupId>
+      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-sns</artifactId>
     </dependency>
     <dependency>
-      <groupId>ingrid</groupId>
+      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-g2k</artifactId>
     </dependency>
     <dependency>
@@ -139,6 +129,16 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-4</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
+          </descriptors>
         </configuration>
       </plugin>
     </plugins>
