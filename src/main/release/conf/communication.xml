@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="communication.xsd">
-        <client name="/torwald-group:default-opensearch-ibus-client">
+        <client name="/kug-group:ingrid-opensearch">
                 <connections>
-                        <server name="/torwald-group:torwald-ibus">
-                                <socket port="9900" timeout="10" ip="213.144.28.245" />
+                        <server name="/kug-group:kug-ibus">
+                                <socket port="80" timeout="10" ip="192.168.64.117" />
                                 <messages maximumSize="1048576" threadCount="100" />
                         </server>
                 </connections>
