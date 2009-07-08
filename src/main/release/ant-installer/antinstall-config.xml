@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN" "http://antinstaller.sf.net/dtd/antinstall-config-0.8.dtd">
+<installer
+			ui			="swing,text"
+			verbose		="true"
+			debug		="true"
+			lookAndFeel	="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
+			name		="InGrid OpenSearch Interface Installation"
+			windowIcon	="/resources/icons/logoIcon.gif"
+			defaultImageResource="/resources/makewavesdawn.png"
+			minJavaVersion		="1.6"
+			>
+			
+	<!--  The target "extract" must be called first, so it is defined on the first page -->
+	<page
+			type		="input"
+			name		="intro"
+			displayText	="Willkommen zur InGrid OpenSearch Interface Installation"
+			target		="extract">
+			<comment displayText="" bold="true" explanatoryText="Dieser Assistent hilft Ihnen bei der Installation sowie Konfiguration der Komponente."/>
+	</page>
+
+	<page
+			type		="input"
+			name		="communicationClientOptions"
+			displayText	="Einstellungen fuer den iBus"
+			>
+			
+			<text property="clientName" displayText="Client ID:" defaultValue="/ingrid-group:opensearch-interface-'Ihr-Name'"/>
+			
+			<comment displayText="" explanatoryText="Die Client-ID muss eindeutig sein, da es sonst zu Kommunikationsproblemen zum iBus fuehren kann."/>
+	</page>
+	
+	<page
+			type		="input"
+			name		="iBusOptions"
+			displayText	="Einstellungen fuer den iBus"
+			target		="ibus">
+			
+			<text property="serverName" displayText="Server ID:" defaultValue="/ingrid-group:ibus-'Ihr-Name'"/>
+			<text property="serverIp"   displayText="Server IP:"   defaultValue="127.0.0.1"/>
+			<text property="serverPort" displayText="Server Port:" defaultValue="8081"/>
+			
+			<comment displayText="" explanatoryText="Die Server-IP ist die Adresse des Rechners, auf dem der iBus ueber dem Server-Port angesprochen werden kann."/>
+	</page>
+
+	<page
+			type		="input"
+			name		="componentOptions"
+			displayText	="Einstellungen fuer die OpenSearch Schnittstelle"
+			>
+			
+			<text property="localServerPort" displayText="Lokaler Port für die Schnittstelle:" defaultValue="8083"/>
+			<comment displayText="" explanatoryText="Lokaler Port, unter dem der OpenSearch Server laufen soll. Lokal kann der OpenSearch Server dann per http://localhost:PORT/query?q=... aufgerufen werden."/>
+			<text property="maxRequestedHits" displayText="max. Ergebnisse pro Anfrage:" defaultValue="100"/>
+			<comment displayText="" explanatoryText="Anzahl der Ergebnisse, die pro OpenSearch Anfrage zurückgegeben werden. Diese Eigenschaft begrenzt die Belastung des Systems."/>
+	</page>
+
+	<page
+			type		="input"
+			name		="componentOptions2"
+			displayText	="Einstellungen fuer die OpenSearch Schnittstelle (2)"
+			>
+			
+			<text property="metadataDetailsUrl"   displayText="URL für IGC Detaildaten:"   defaultValue="http://portalu.de/ingrid-portal/portal/search-detail.psml"/>
+			<comment displayText="" explanatoryText="Um Detaildaten von IGC-Metadaten anzuzeigen, kann hier eine Basis-Url hinterlegt werden. Links für IGC Metadaten Details werden dann über diese URL realisiert."/>
+			<checkbox property="enableCaching"   displayText="Caching:"   defaultValue="true"/>
+			<comment displayText="" explanatoryText="Ergebniss von Anfragen werden für 5min im Cache gehalten."/>
+	</page>
+
+	<page
+			type		="input"
+			name		="componentOptions3"
+			displayText	="Proxy-Einstellungen fuer die OpenSearch Schnittstelle"
+			target		="csw"
+			>
+			
+			<text property="externalInterfaceHost"   displayText="Externer Servername:"   defaultValue="127.0.0.1"/>
+			<text property="externalInterfacePort"   displayText="Externer Port:"   defaultValue="80"/>
+			<text property="externalInterfacePath"   displayText="Externer Pfad:"   defaultValue="opensearch"/>
+			<comment displayText="" explanatoryText="Die externen Einstellungen werden in den Ergebnissen der Schnittstelle verwendet, um den externen Zugriff auf die Schnittstelle zu beschreiben. Die Werte können geändert werden, wenn z.B. eine Proxy-Weiterleitung zum OpenSearch Server eingerichtet wurde."/>
+			
+	</page>
+	
+	<!--  type="input" shows a list of editable options for the installer -->
+	<page
+			type		="input"
+			name		="properties"
+			displayText	="Benoetigte Installationsoptionen">
+		<directory
+				property		="installDir"
+				defaultValue	="/usr/local/${project.artifactId}-${project.version}"
+				defaultValueWin	="${env.ProgramFiles}\${project.artifactId}-${project.version}"
+				displayText		="Installationsverzeichnis"
+				create			="true"/>
+	</page>
+
+	<page
+			type		="progress"
+			name		="progress"
+			displayText	="Installationsfortschritt"
+			showTargets	="true"
+			target		="startComponent">
+	</page>
+</installer>
+
+

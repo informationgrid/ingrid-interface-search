@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>History Ingrid CSW Interface</title>
+    <author email="joachim@wemove.com">Joachim Müller</author>
+  </properties>
+  <body>
+    <release version="1.2.0" date="xxxx-xx-xx" description="Release">
+      <action type="add">
+        Optional kann ein GeoRSS element mit ausgegeben werden, was die BoundingBox des Datensatzes enthält (WGS84)
+      </action>
+      <action type="add">
+		Implementierung eines Caches für die Suchergebnisse (Suchergebnisse werden per default 5min gecached)
+      </action>
+      <action type="add">
+		Verbesserte Performance beim Abfragen des iBus (Methode searchAndDetail)
+      </action>
+      <action type="add">
+		neue Kommunikation, kompatibel mit InGrid 2.0 (Konfigurationsfile f. die communication hat sich geändert: communication.xml statt communication.proerties)
+      </action>
+      <action type="add">
+		Aktualisierung auf JAVA6 (ACHTUNG: JAVA6 ist jetzt erforderlich)
+      </action>
+      <action type="add">
+		Build Prozess auf Maven2 Basis
+      </action>
+    </release>
+
+    <release version="1.1.4" date="2008-11-05" description="Release">
+      <action type="add">
+        Links zu Detaildarstellungen werden mit UUID statt der DOCID erstellt
+      </action>
+      <action type="add">
+        Kompatibilität mit neuen IGC Datenbanken 1.0.2, 1.0.3 (INSPIRE)
+      </action>
+    </release>
+
+    <release version="1.1.3" date="2007-10-12" description="BugFix-Release">
+      <action dev="" type="fix">
+        Beachte Proxies, die kein EOF senden
+      </action>
+      <action dev="" type="fix" issue="INGRID-1609">
+        Behebe erneute Anmeldung nach Herunterfahren
+      </action>
+    </release>
+    
+    <release version="1.1.2" date="2007-08-31" description="Release">
+      <action dev="" type="update">
+        Verbesserung der Kommunikationskomponente. 
+      </action>
+      <action dev="" type="add">
+        ProxyUser und ProxyPassword werden jetzt Ueber Konfigurationsdatei gesetzt.
+      </action>
+      <action dev="" type="add">
+        Eine Http-Proxy Verbindung kann auch ohne Username und Password aufgebaut werden.
+      </action>
+    </release>
+    
+    <release version="1.1.1" date="2007-08-21" description="Fix-Release">
+      <action dev="" type="fix">
+        Minor Bugfix: Default Konfigurationswerte nicht korrekt
+      </action>
+    </release>
+    
+    <release version="1.1.0" date="2007-08-01" description="Initial-Release">
+      <action dev="" type="update">
+        Austausch JXTA-Kommunikation gegen TCP/IP-Kommunikation
+      </action>
+    </release>
+  </body>
+</document>

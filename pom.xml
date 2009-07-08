@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>de.ingrid</groupId>
-    <artifactId>ingrid-base-pom</artifactId>
+    <artifactId>ingrid-releases-pom</artifactId>
     <version>1.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
-  <artifactId>ingrid-opensearch</artifactId>
+  <artifactId>ingrid-interface-opensearch</artifactId>
   <version>1.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>ingrid-opensearch</name>
+  <name>ingrid-interface-opensearch</name>
   <scm>
-    <connection>${scmConnectionBase}/ingrid-opensearch/trunk</connection>
+    <connection>${scmConnectionBase}/ingrid-interface-opensearch/trunk</connection>
   </scm>
   <repositories>
     <repository>
@@ -71,13 +71,203 @@
   <!-- ==================== DEPENDENCIES ==================== -->
   <dependencies>
     <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jetty</groupId>
+      <artifactId>org.mortbay.jetty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jetty</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>jaxen</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>saxpath</groupId>
+          <artifactId>saxpath</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>msv</groupId>
+          <artifactId>msv</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>relaxngDatatype</groupId>
+          <artifactId>relaxngDatatype</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>isorelax</groupId>
+          <artifactId>isorelax</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-dsc</artifactId>
+      <artifactId>ingrid-utils</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-ibus-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>de.ingrid.communication</groupId>
+          <artifactId>ingrid-communication-authentication</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>  
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-iplug</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-betwixt</groupId>
+          <artifactId>commons-betwixt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-ibus</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.ingrid.communication</groupId>
+          <artifactId>ingrid-communication-authentication</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>quartz</groupId>
+          <artifactId>quartz</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+        <exclusion>
+	      <groupId>net.sf.ehcache</groupId>
+	      <artifactId>ehcache</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-ibus</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-el</groupId>
+          <artifactId>commons-el</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>uba</groupId>
+          <artifactId>xtmStubs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-discovery</groupId>
+          <artifactId>commons-discovery</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>axis</groupId>
+          <artifactId>axis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.axis</groupId>
+          <artifactId>axis-jaxrpc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.axis</groupId>
+          <artifactId>axis-saaj</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>nekohtml</groupId>
+          <artifactId>nekohtml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>nekohtml</groupId>
+          <artifactId>nekohtml</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-fpn</artifactId>
       <exclusions>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>tomcat</groupId>
           <artifactId>jasper-compiler</artifactId>
@@ -97,10 +287,6 @@
         <exclusion>
           <groupId>ant</groupId>
           <artifactId>ant</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>backport-util-concurrent</groupId>
-          <artifactId>backport-util-concurrent</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-beanutils</groupId>
@@ -123,8 +309,8 @@
           <artifactId>commons-httpclient</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>de.ingrid</groupId>
-          <artifactId>ingrid-ibus</artifactId>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
         </exclusion>
         <exclusion>
           <groupId>de.ingrid</groupId>
@@ -135,12 +321,12 @@
           <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>htmlparser</groupId>
-          <artifactId>htmlparser</artifactId>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-utils</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>net.sf.jsr107cache</groupId>
-          <artifactId>jsr107cache</artifactId>
+          <groupId>htmlparser</groupId>
+          <artifactId>htmlparser</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -151,12 +337,12 @@
           <artifactId>spring-core</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>xerces</groupId>
           <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -166,11 +352,125 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-iplug-dsc</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>hsqldb</groupId>
+          <artifactId>hsqldb</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>lucene</groupId>
+          <artifactId>lucene</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-sns</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>axis</groupId>
+          <artifactId>axis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>uba</groupId>
+          <artifactId>xtmStubs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-el</groupId>
+          <artifactId>commons-el</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-g2k</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-compiler</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-el</groupId>
+          <artifactId>commons-el</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -250,6 +550,10 @@
           <groupId>xerces</groupId>
           <artifactId>xercesImpl</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -269,16 +573,6 @@
           <includes>
             <include>**/*Test.java</include>
           </includes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-4</version>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
-          </descriptors>
         </configuration>
       </plugin>
     </plugins>
