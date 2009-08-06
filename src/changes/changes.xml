@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <document>
   <properties>
-    <title>History Ingrid CSW Interface</title>
+    <title>History Ingrid OpenSearch Interface</title>
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
