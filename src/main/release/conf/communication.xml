@@ -4,7 +4,7 @@
         <client name="/kug-group:ingrid-opensearch">
                 <connections>
                         <server name="/kug-group:kug-ibus">
-                                <socket port="80" timeout="10" ip="192.168.64.117" />
+                                <socket port="serverPort" timeout="10" ip="serverIp" />
                                 <messages maximumSize="1048576" threadCount="100" />
                         </server>
                 </connections>

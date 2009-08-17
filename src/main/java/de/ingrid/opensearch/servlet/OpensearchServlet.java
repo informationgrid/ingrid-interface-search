@@ -58,7 +58,7 @@ public class OpensearchServlet extends HttpServlet {
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
         }
-        HashMap plugIds = new HashMap(10);
+        HashMap<String, PlugDescription> plugIds = new HashMap<String, PlugDescription>(10);
         String[] requestedMetadata = null;
 
         RequestWrapper r = new RequestWrapper(request);
@@ -80,7 +80,9 @@ public class OpensearchServlet extends HttpServlet {
             		"T01_object.obj_class", 
             		"partner", 
             		"provider", 
-            		"t01_object.obj_id"
+            		"t01_object.obj_id",
+            		"t1", // "T01_OBJECT.time_from",
+            		"t2", // "T01_OBJECT.time_to"
             		};
             // check if GeoRSS data shall be checked too
             if (r.withGeoRSS()) {
@@ -97,7 +99,9 @@ public class OpensearchServlet extends HttpServlet {
             		"T02_address.lastname", 
             		"T02_address.title", 
             		"T02_address.address", 
-            		"T02_address.adr_id"
+            		"T02_address.adr_id",
+            		"t1", // "T01_OBJECT.time_from",
+            		"t2", // "T01_OBJECT.time_to"
             		};
         }
 
@@ -132,7 +136,8 @@ public class OpensearchServlet extends HttpServlet {
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
-        root.addNamespace("ingridsearch", "http://www.wemove.com/ingrid/opensearchextension/0.1/");
+        root.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
+        root.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
         if (r.withGeoRSS()) {
         	root.addNamespace("georss", "http://www.georss.org/georss");
         }
@@ -157,11 +162,13 @@ public class OpensearchServlet extends HttpServlet {
 
         channel.addElement("link").addText(url);
         channel.addElement("description").addText("Search results");
-        channel.addElement("totalResults", "opensearch").addText(String.valueOf(hits.length()));
-        channel.addElement("startIndex", "opensearch").addText(String.valueOf(r.getRequestedPage()));
-        channel.addElement("itemsPerPage", "opensearch").addText(String.valueOf(r.getHitsPerPage()));
-        channel.addElement("Query", "opensearch").addAttribute("role", "request").addAttribute("searchTerms",
+        channel.addElement("opensearch:totalResults").addText(String.valueOf(hits.length()));
+        channel.addElement("opensearch:startIndex").addText(String.valueOf(r.getRequestedPage()));
+        channel.addElement("opensearch:itemsPerPage").addText(String.valueOf(r.getHitsPerPage()));
+        channel.addElement("opensearch:Query").addAttribute("role", "request").addAttribute("searchTerms",
                 r.getQueryString());
+        channel.addElement("ingrid:keyword").addText(r.getQueryString());
+        
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
@@ -181,8 +188,8 @@ public class OpensearchServlet extends HttpServlet {
             if (iplugClass != null
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
-                            || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug") || iplugClass
-                            .equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
+                            || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug") 
+                            || iplugClass.equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
                 // handle the title
 
                 PlugDescription plugDescription = (PlugDescription) plugIds.get(plugId);
@@ -241,33 +248,35 @@ public class OpensearchServlet extends HttpServlet {
             }
             item.addElement("link").addText(itemUrl);
             item.addElement("description").addText(deNullify(detail.getSummary()));
-            item.addElement("plugid", "ingridsearch").addText(deNullify(plugId));
-            item.addElement("docid", "ingridsearch").addText(deNullify(docId));
-            item.addElement("docuuid", "ingridsearch").addText(deNullify(udkUuid));
+            item.addElement("relevance:score").addText(String.valueOf(detail.getScore()));
+            item.addElement("ingrid:plugid").addText(deNullify(plugId));
+            item.addElement("ingrid:docid").addText(deNullify(docId));
+            item.addElement("ingrid:docuuid").addText(deNullify(udkUuid));
             if (altDocId != null && altDocId.length() > 0) {
-                item.addElement("altdocid", "ingridsearch").addText(altDocId);
+                item.addElement("ingrid:altdocid").addText(altDocId);
             }
             String provider = getDetailValue(detail, "provider");
+            detail.get("searchTerms");
             if (provider == null) {
                 provider = detail.getOrganisation();
             }
-            item.addElement("provider", "ingridsearch").addText(deNullify(provider));
+            item.addElement("ingrid:provider").addText(deNullify(provider));
 
             String partner = getDetailValue(detail, "partner");
-            item.addElement("partner", "ingridsearch").addText(deNullify(partner));
-            item.addElement("source", "ingridsearch").addText(deNullify(detail.getDataSourceName()));
+            item.addElement("ingrid:partner").addText(deNullify(partner));
+            item.addElement("ingrid:source").addText(deNullify(detail.getDataSourceName()));
 
             // handle udk class
             if (udkClass != null && udkClass.length() > 0) {
-                item.addElement("udk-class", "ingridsearch").addText(udkClass);
+                item.addElement("ingrid:udk-class").addText(udkClass);
             }
             // handle udk addr class
             if (udkAddrClass != null && udkAddrClass.length() > 0) {
-                item.addElement("udk-addr-class", "ingridsearch").addText(udkAddrClass);
+                item.addElement("ingrid:udk-addr-class").addText(udkAddrClass);
             }
             // handle wms url
             if (wmsURL != null && wmsURL.length() > 0) {
-                item.addElement("wms-url", "ingridsearch").addText(StringEscapeUtils.escapeXml(wmsURL));
+                item.addElement("ingrid:wms-url").addText(StringEscapeUtils.escapeXml(wmsURL));
             }
             // handle geoRSS data
             if (detail.get("x1") != null &&
@@ -284,12 +293,15 @@ public class OpensearchServlet extends HttpServlet {
 							Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
 							
 							if ((x1+x2+y1+y2) != 0.0) {
-				            	item.addElement("georss:box").addText(
+								item.addElement("georss:box").addText(
 				            			  deNullify(x1.toString()) + " "
 				            			+ deNullify(y1.toString()) + " "
 				            			+ deNullify(x2.toString()) + " "
 				            			+ deNullify(y2.toString())
 				            	);
+								if (detail.containsKey("location")) {
+									item.addElement("georss:featurename", (String)detail.get("location"));
+								}
 			            	}
 						}
 					}
@@ -298,6 +310,12 @@ public class OpensearchServlet extends HttpServlet {
 				} catch (Exception e) {
 					log.debug("Exception when getting geo data: " + e.getMessage());
 				}
+            }
+            // handle time reference
+            if (detail.containsKey("time")) {
+	            Element timeRef = item.addElement("ingrid:timeReference");
+	            timeRef.addElement("ingrid:start").addText("start");
+	            timeRef.addElement("ingrid:stop").addText("stop");
             }
 
         }

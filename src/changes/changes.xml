@@ -5,68 +5,86 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="1.2.1" date="2009-xx-xx" description="Release">
+      <action type="add" dev="wemove" issue="INGRID21-7">
+        Unterstützung von georss:featurename, was den Namen eines Ortes/einer Region enthält.
+      </action>
+      <action type="add" dev="wemove" issue="INGRID21-7">
+        Einführung von ingrid:timeReference, welches das Start- und Enddatum enthält.
+      </action>
+      <action type="add" dev="wemove" issue="INGRID21-9">
+        Erstellen eines Descriptors für die OpenSearch-Schnittstelle.
+      </action>
+      <action type="add" dev="wemove">
+        Neues Servlet, dass den Deskriptor zurückliefert, der die Anfrage an das Interface beschreibt.
+      </action>
+      <action type="update" dev="wemove" issue="INGRID21-1">
+        Entfernen von relativen URI Referenzen.
+      </action>
+    </release>
+    
     <release version="1.2.0" date="2009-07-17" description="Release">
-      <action type="add">
+      <action type="add" dev="wemove">
         Optional kann ein GeoRSS element mit ausgegeben werden, was die BoundingBox des Datensatzes enthält (WGS84)
       </action>
-      <action type="add">
-		Implementierung eines Caches für die Suchergebnisse (Suchergebnisse werden per default 5min gecached)
+      <action type="add" dev="wemove">
+        Implementierung eines Caches für die Suchergebnisse (Suchergebnisse werden per default 5min gecached)
       </action>
-      <action type="add">
-		Verbesserte Performance beim Abfragen des iBus (Methode searchAndDetail)
+      <action type="add" dev="wemove">
+        Verbesserte Performance beim Abfragen des iBus (Methode searchAndDetail)
       </action>
-      <action type="add">
-		neue Kommunikation, kompatibel mit InGrid 2.0 (Konfigurationsfile f. die communication hat sich geändert: communication.xml statt communication.proerties)
+      <action type="add" dev="wemove">
+        neue Kommunikation, kompatibel mit InGrid 2.0 (Konfigurationsfile f. die communication hat sich geändert: communication.xml statt communication.proerties)
       </action>
-      <action type="add">
-		Aktualisierung auf JAVA6 (ACHTUNG: JAVA6 ist jetzt erforderlich)
+      <action type="add" dev="wemove">
+        Aktualisierung auf JAVA6 (ACHTUNG: JAVA6 ist jetzt erforderlich)
       </action>
-      <action type="add">
-		Build Prozess auf Maven2 Basis
+      <action type="add" dev="wemove">
+        Build Prozess auf Maven2 Basis
       </action>
-      <action type="add">
-		Installer
+      <action type="add" dev="wemove">
+        Installer
       </action>
     </release>
 
     <release version="1.1.4" date="2008-11-05" description="Release">
-      <action type="add">
+      <action type="add" dev="wemove">
         Links zu Detaildarstellungen werden mit UUID statt der DOCID erstellt
       </action>
-      <action type="add">
+      <action type="add" dev="wemove">
         Kompatibilität mit neuen IGC Datenbanken 1.0.2, 1.0.3 (INSPIRE)
       </action>
     </release>
 
     <release version="1.1.3" date="2007-10-12" description="BugFix-Release">
-      <action dev="" type="fix">
+      <action type="fix" dev="wemove">
         Beachte Proxies, die kein EOF senden
       </action>
-      <action dev="" type="fix" issue="INGRID-1609">
+      <action type="fix" dev="wemove" issue="INGRID-1609">
         Behebe erneute Anmeldung nach Herunterfahren
       </action>
     </release>
     
     <release version="1.1.2" date="2007-08-31" description="Release">
-      <action dev="" type="update">
+      <action type="update" dev="wemove">
         Verbesserung der Kommunikationskomponente. 
       </action>
-      <action dev="" type="add">
+      <action type="add" dev="wemove">
         ProxyUser und ProxyPassword werden jetzt Ueber Konfigurationsdatei gesetzt.
       </action>
-      <action dev="" type="add">
+      <action type="add" dev="wemove">
         Eine Http-Proxy Verbindung kann auch ohne Username und Password aufgebaut werden.
       </action>
     </release>
     
     <release version="1.1.1" date="2007-08-21" description="Fix-Release">
-      <action dev="" type="fix">
+      <action type="fix" dev="wemove">
         Minor Bugfix: Default Konfigurationswerte nicht korrekt
       </action>
     </release>
     
     <release version="1.1.0" date="2007-08-01" description="Initial-Release">
-      <action dev="" type="update">
+      <action type="update" dev="wemove">
         Austausch JXTA-Kommunikation gegen TCP/IP-Kommunikation
       </action>
     </release>

@@ -49,10 +49,12 @@ public class Server {
         servlets.setAutoInitializeServlets(true);
         servlets.addServlet("OpenSearch","/query","de.ingrid.opensearch.servlet.OpensearchServlet");
         servlets.addServlet("OpenSearchDetail","/detail","de.ingrid.opensearch.servlet.OpensearchDetailServlet");
+        servlets.addServlet("ProvideDescription","/descriptor","de.ingrid.opensearch.servlet.ProvideDescriptorServlet");
         servlets.initialize(context);
 
         // Start the http server
         server.start();
+        log.info(server.getClass().getPackage().getImplementationVersion()); 
         log.info("... started waiting for requests.");
     }
 }
