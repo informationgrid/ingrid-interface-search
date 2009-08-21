@@ -16,28 +16,30 @@ import de.ingrid.utils.queryparser.QueryStringParser;
  * 
  * @author joachim@wemove.com
  */
-public class RequestWrapper extends HashMap {
+public class RequestWrapper extends HashMap<String, Object> {
 
     /**
      * TODO: Comment for <code>serialVersionUID</code>
      */
-    private static final long serialVersionUID = 2153326583527416149L;
+    private static final long serialVersionUID 			= 2153326583527416149L;
 
-    public static final String PAGE = "page";
+    public static final String PAGE 					= "page";
 
-    public static final String METADATA_DETAIL_AS_XML = "xml";
+    public static final String METADATA_DETAIL_AS_XML 	= "xml";
     
-    public static final String HITS_PER_PAGE = "hitsPerPage";
+    public static final String HITS_PER_PAGE 			= "hitsPerPage";
 
-    public static final String QUERY = "query";
-    public static final String QUERY_STR = "query_str";
+    public static final String QUERY 					= "query";
+    public static final String QUERY_STR 				= "query_str";
     
-    public static final String PLUG_ID = "iplug_id";
-    public static final String DOC_ID = "doc_id";
-    public static final String DOC_UUID = "doc_uuid";
-    public static final String ALT_DOC_ID = "alt_doc_id";
+    public static final String PLUG_ID 					= "iplug_id";
+    public static final String DOC_ID 					= "doc_id";
+    public static final String DOC_UUID 				= "doc_uuid";
+    public static final String ALT_DOC_ID 				= "alt_doc_id";
     
-    public static final String GEORSS = "georss";
+    public static final String GEORSS 					= "georss";
+    
+    public static final String INGRID_DATA 				= "ingrid";
     
 
     public RequestWrapper(HttpServletRequest request) throws ServletException {
@@ -81,14 +83,6 @@ public class RequestWrapper extends HashMap {
         this.put(RequestWrapper.DOC_UUID, docUuid);
         
         
-        // parameter for detail data display
-        int metadataDetailAsXML = 0;
-        try {
-            metadataDetailAsXML = Integer.parseInt(request.getParameter(METADATA_DETAIL_AS_XML));
-        } catch (NumberFormatException e) {
-        }
-        this.put(RequestWrapper.METADATA_DETAIL_AS_XML, new Integer(metadataDetailAsXML));
-        
         // get alternative doc id
         String altDocId = null;
         altDocId = request.getParameter("altdocid");
@@ -114,22 +108,35 @@ public class RequestWrapper extends HashMap {
             throw new ServletException(t);
         }
         this.put(RequestWrapper.QUERY, query);
-        
-        // get georss
-        int georss = 0;
-        try {
-        	georss = Integer.parseInt(request.getParameter("georss"));
-        } catch (NumberFormatException e) {
-        }
-        if (georss == 1) {
-        	this.put(RequestWrapper.GEORSS, new Boolean(true));
-        } else {
-        	this.put(RequestWrapper.GEORSS, new Boolean(false));
-        }
+
+        mapIntParamToBoolean(request, "xml",    RequestWrapper.METADATA_DETAIL_AS_XML);
+        mapIntParamToBoolean(request, "georss", RequestWrapper.GEORSS);
+        mapIntParamToBoolean(request, "ingrid", RequestWrapper.INGRID_DATA);
         
     }
 
-    public int getHitsPerPage() {
+    /**
+     * Map 'param' from the request, which is expected to be an integer, to a boolean
+     * value under the parameter name 'mappedParam'. If the param doesn't exist, no entry
+     * will be made in the HashMap.
+     * 
+     * @param request, is the HTTPRequest which contains the parameter
+     * @param param, is the parameter to look for
+     * @param mappedParam, is the mapped name of the converted parameter, containing a boolean value
+     */
+    private void mapIntParamToBoolean(HttpServletRequest request, String param, String mappedParam) {
+    	int paramValue = 0;
+        try {
+        	paramValue = Integer.parseInt(request.getParameter(param));
+        } catch (NumberFormatException e) {}
+        if (paramValue == 1) {
+        	this.put(mappedParam, new Boolean(true));
+        } else {
+        	this.put(mappedParam, new Boolean(false));
+        }
+	}
+
+	public int getHitsPerPage() {
         return ((Integer) this.get(RequestWrapper.HITS_PER_PAGE)).intValue();
     }
 
@@ -167,7 +174,10 @@ public class RequestWrapper extends HashMap {
     
     public boolean withGeoRSS() {
     	return (Boolean) this.get(GEORSS);
-
+    }
+    
+    public boolean withIngridData() {
+    	return (Boolean) this.get(INGRID_DATA);
     }
 
 }

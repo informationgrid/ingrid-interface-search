@@ -76,38 +76,32 @@ public class OpensearchServlet extends HttpServlet {
         
         if (!hasPositiveDataType(query, "address")) {
             requestedMetadata = new String[] {
-            		"T011_obj_serv_op_connpoint.connect_point", 
-            		"T01_object.obj_class", 
-            		"partner", 
-            		"provider", 
-            		"t01_object.obj_id",
-            		"t1", // "T01_OBJECT.time_from",
-            		"t2", // "T01_OBJECT.time_to"
+            		"t01_object.obj_id"
             		};
             // check if GeoRSS data shall be checked too
             if (r.withGeoRSS()) {
     	        String[] additional = new String[] {"x1","x2","y1","y2"}; 
     	        requestedMetadata = (String[])ArrayUtils.addAll(requestedMetadata, additional);
     	    }
+            if (r.withIngridData()) {
+            	String[] additional = new String[] {"T01_object.obj_class","T011_obj_serv_op_connpoint.connect_point","partner","provider","t1","t2"}; 
+    	        requestedMetadata = (String[])ArrayUtils.addAll(requestedMetadata, additional);
+            }
         } else {
         	requestedMetadata = new String[] {
-            		"T011_obj_serv_op_connpoint.connect_point", 
-            		"T02_address.typ", 
-            		"partner", 
-            		"provider", 
             		"T02_address.firstname", 
             		"T02_address.lastname", 
             		"T02_address.title", 
             		"T02_address.address", 
-            		"T02_address.adr_id",
-            		"t1", // "T01_OBJECT.time_from",
-            		"t2", // "T01_OBJECT.time_to"
+            		"T02_address.adr_id"
             		};
+        	if (r.withIngridData()) {
+            	String[] additional = new String[] {"T02_address.typ","T011_obj_serv_op_connpoint.connect_point","partner","provider","t1","t2"}; 
+    	        requestedMetadata = (String[])ArrayUtils.addAll(requestedMetadata, additional);
+            }
         }
 
         IngridHits hits = null;
-        // mapping of the hits with the details
-        //HashMap hitMap = new HashMap();
         long startTime = 0;
         try {
             if (log.isDebugEnabled()) {
@@ -136,8 +130,10 @@ public class OpensearchServlet extends HttpServlet {
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
-        root.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
         root.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
+        if (r.withIngridData()) {
+        	root.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
+        }
         if (r.withGeoRSS()) {
         	root.addNamespace("georss", "http://www.georss.org/georss");
         }
@@ -167,7 +163,9 @@ public class OpensearchServlet extends HttpServlet {
         channel.addElement("opensearch:itemsPerPage").addText(String.valueOf(r.getHitsPerPage()));
         channel.addElement("opensearch:Query").addAttribute("role", "request").addAttribute("searchTerms",
                 r.getQueryString());
-        channel.addElement("ingrid:keyword").addText(r.getQueryString());
+        if (r.withIngridData()) {
+        	// TODO: channel.addElement("ingrid:keyword").addText(r.getQueryString());
+        }
         
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
@@ -188,7 +186,8 @@ public class OpensearchServlet extends HttpServlet {
             if (iplugClass != null
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
-                            || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug") 
+                            || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug")
+                            // TODO: || iplugClass.equals("de.ingrid.iplug.Opensearch") // ??? 
                             || iplugClass.equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
                 // handle the title
 
@@ -232,7 +231,7 @@ public class OpensearchServlet extends HttpServlet {
                 udkClass = getDetailValue(detail, "T01_object.obj_class");
                 udkAddrClass = getDetailValue(detail, "T02_address.typ");
                 Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
-                if (obj instanceof String[]) {
+                if (obj != null  && obj instanceof String[]) {
                     wmsURL = ((String[]) obj)[0];
                 } else {
                     wmsURL = getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
@@ -249,75 +248,81 @@ public class OpensearchServlet extends HttpServlet {
             item.addElement("link").addText(itemUrl);
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("relevance:score").addText(String.valueOf(detail.getScore()));
-            item.addElement("ingrid:plugid").addText(deNullify(plugId));
-            item.addElement("ingrid:docid").addText(deNullify(docId));
-            item.addElement("ingrid:docuuid").addText(deNullify(udkUuid));
-            if (altDocId != null && altDocId.length() > 0) {
-                item.addElement("ingrid:altdocid").addText(altDocId);
+            
+            if (r.withIngridData()) {
+	            item.addElement("ingrid:plugid").addText(deNullify(plugId));
+	            item.addElement("ingrid:docid").addText(deNullify(docId));
+	            item.addElement("ingrid:docuuid").addText(deNullify(udkUuid));
+	            if (altDocId != null && altDocId.length() > 0) {
+	                item.addElement("ingrid:altdocid").addText(altDocId);
+	            }
+	            String provider = getDetailValue(detail, "provider");
+	            detail.get("searchTerms");
+	            if (provider == null) {
+	                provider = detail.getOrganisation();
+	            }
+	            item.addElement("ingrid:provider").addText(deNullify(provider));
+	
+	            String partner = getDetailValue(detail, "partner");
+	            item.addElement("ingrid:partner").addText(deNullify(partner));
+	            item.addElement("ingrid:source").addText(deNullify(detail.getDataSourceName()));
+	
+	            // handle udk class
+	            if (udkClass != null && udkClass.length() > 0) {
+	                item.addElement("ingrid:udk-class").addText(udkClass);
+	            }
+	            // handle udk addr class
+	            if (udkAddrClass != null && udkAddrClass.length() > 0) {
+	                item.addElement("ingrid:udk-addr-class").addText(udkAddrClass);
+	            }
+	            // handle wms url
+	            if (wmsURL != null && wmsURL.length() > 0) {
+	                item.addElement("ingrid:wms-url").addText(StringEscapeUtils.escapeXml(wmsURL));
+	            }
+	            
+	            // handle time reference
+	            if (detail.containsKey("time")) {
+		            Element timeRef = item.addElement("ingrid:timeReference");
+		            timeRef.addElement("ingrid:start").addText("start");
+		            timeRef.addElement("ingrid:stop").addText("stop");
+	            }
             }
-            String provider = getDetailValue(detail, "provider");
-            detail.get("searchTerms");
-            if (provider == null) {
-                provider = detail.getOrganisation();
-            }
-            item.addElement("ingrid:provider").addText(deNullify(provider));
-
-            String partner = getDetailValue(detail, "partner");
-            item.addElement("ingrid:partner").addText(deNullify(partner));
-            item.addElement("ingrid:source").addText(deNullify(detail.getDataSourceName()));
-
-            // handle udk class
-            if (udkClass != null && udkClass.length() > 0) {
-                item.addElement("ingrid:udk-class").addText(udkClass);
-            }
-            // handle udk addr class
-            if (udkAddrClass != null && udkAddrClass.length() > 0) {
-                item.addElement("ingrid:udk-addr-class").addText(udkAddrClass);
-            }
-            // handle wms url
-            if (wmsURL != null && wmsURL.length() > 0) {
-                item.addElement("ingrid:wms-url").addText(StringEscapeUtils.escapeXml(wmsURL));
-            }
+            
             // handle geoRSS data
-            if (detail.get("x1") != null &&
-            		detail.get("x1") instanceof String[]) 
-            {
-
-				try {
-					if (!((String[])detail.get("x1"))[0].equals("")) {
-						int length = ((String[])detail.get("x1")).length;
-						for (int j=0; j<length; j++) {
-							Float x1 = Float.valueOf(((String[])detail.get("x1"))[j]);
-							Float x2 = Float.valueOf(((String[])detail.get("x2"))[j]);
-							Float y1 = Float.valueOf(((String[])detail.get("y1"))[j]);
-							Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
-							
-							if ((x1+x2+y1+y2) != 0.0) {
-								item.addElement("georss:box").addText(
-				            			  deNullify(x1.toString()) + " "
-				            			+ deNullify(y1.toString()) + " "
-				            			+ deNullify(x2.toString()) + " "
-				            			+ deNullify(y2.toString())
-				            	);
-								if (detail.containsKey("location")) {
-									item.addElement("georss:featurename", (String)detail.get("location"));
-								}
-			            	}
+            if (r.withGeoRSS()) {
+	            if (detail.get("x1") != null &&
+	            		detail.get("x1") instanceof String[]) 
+	            {
+	
+					try {
+						if (!((String[])detail.get("x1"))[0].equals("")) {
+							int length = ((String[])detail.get("x1")).length;
+							for (int j=0; j<length; j++) {
+								Float x1 = Float.valueOf(((String[])detail.get("x1"))[j]);
+								Float x2 = Float.valueOf(((String[])detail.get("x2"))[j]);
+								Float y1 = Float.valueOf(((String[])detail.get("y1"))[j]);
+								Float y2 = Float.valueOf(((String[])detail.get("y2"))[j]);
+								
+								if ((x1+x2+y1+y2) != 0.0) {
+									item.addElement("georss:box").addText(
+					            			  deNullify(x1.toString()) + " "
+					            			+ deNullify(y1.toString()) + " "
+					            			+ deNullify(x2.toString()) + " "
+					            			+ deNullify(y2.toString())
+					            	);
+									if (detail.containsKey("location")) {
+										item.addElement("georss:featurename", (String)detail.get("location"));
+									}
+				            	}
+							}
 						}
+					} catch (NumberFormatException e) {
+						// empty
+					} catch (Exception e) {
+						log.debug("Exception when getting geo data: " + e.getMessage());
 					}
-				} catch (NumberFormatException e) {
-					// empty
-				} catch (Exception e) {
-					log.debug("Exception when getting geo data: " + e.getMessage());
-				}
+	            }
             }
-            // handle time reference
-            if (detail.containsKey("time")) {
-	            Element timeRef = item.addElement("ingrid:timeReference");
-	            timeRef.addElement("ingrid:start").addText("start");
-	            timeRef.addElement("ingrid:stop").addText("stop");
-            }
-
         }
         if (log.isDebugEnabled()) {
             log.debug("Time for plugids: " + (System.currentTimeMillis() - startTime) + " ms");
