@@ -161,7 +161,7 @@ public class RequestWrapper extends HashMap<String, Object> {
     }
 
     public boolean getMetadataDetailAsXML() {
-        return (((Integer) this.get(RequestWrapper.METADATA_DETAIL_AS_XML)).intValue() == 1);
+        return (Boolean) this.get(RequestWrapper.METADATA_DETAIL_AS_XML);
     }
     
     public IngridQuery getQuery() {

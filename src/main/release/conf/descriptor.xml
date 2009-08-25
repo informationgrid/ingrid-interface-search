@@ -5,5 +5,5 @@
   <Description>Here you can search inside the InGrid-Portal.</Description>
   <Tags>ingrid opensearch web</Tags>
   <Contact>contact@wemove.com</Contact>
-  <Url type="application/rss+xml" template="http://www.portalu.de/opensearch/query?q={searchTerms}&amp;bbox={geo:box?}&amp;p={startPage?}&amp;h={count?}&amp;xml={ingridsearch:xml?}&amp;georss={ingridsearch:georss?}&amp;format=rss" />
+  <Url type="application/rss+xml" template="http://harrison.its-technidata.de/opensearch/query?q={searchTerms}+datatype:default+ranking:score&amp;bbox={geo:box?}&amp;p={startPage?}&amp;h={count?}&amp;xml={ingridsearch:xml?}&amp;georss={ingridsearch:georss?}&amp;format=rss" />
 </OpenSearchDescription>
