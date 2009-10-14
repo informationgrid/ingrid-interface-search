@@ -5,6 +5,7 @@ package de.ingrid.opensearch.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -58,7 +59,7 @@ public class OpensearchServlet extends HttpServlet {
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
         }
-        HashMap<String, PlugDescription> plugIds = new HashMap<String, PlugDescription>(10);
+        
         String[] requestedMetadata = null;
 
         RequestWrapper r = new RequestWrapper(request);
@@ -122,25 +123,47 @@ public class OpensearchServlet extends HttpServlet {
         	throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
         }
 
-        // transform IngridHit to XML
+		// transform IngridHit to XML
         request.setCharacterEncoding("UTF-8");
         // response.setContentType("application/rss+xml");
         response.setContentType("text/xml");
+        
+        Document doc = createXMLDocumentFromIngrid(request, r, hits);
+
+        PrintWriter pout = response.getWriter();
+
+        pout.write(doc.asXML());
+        pout.close();
+        request.getInputStream().close();
+        doc.clearContent();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
+        }
+    }
+
+	public Document createXMLDocumentFromIngrid(HttpServletRequest request,
+			RequestWrapper reqWrapper,
+			IngridHits hits)
+			throws UnsupportedEncodingException {
+
+		long startTime = -1;
+		HashMap<String, PlugDescription> plugIds = new HashMap<String, PlugDescription>(10);
 
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
         root.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
-        if (r.withIngridData()) {
+        if (reqWrapper.withIngridData()) {
         	root.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
         }
-        if (r.withGeoRSS()) {
+        if (reqWrapper.withGeoRSS()) {
         	root.addNamespace("georss", "http://www.georss.org/georss");
         }
         root.addAttribute("version", "2.0");
 
         Element channel = root.addElement("channel");
-        channel.addElement("title").addText("ingrid OpenSearch: " + r.getQueryString());
+        channel.addElement("title").addText("ingrid OpenSearch: " + reqWrapper.getQueryString());
 
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
@@ -159,11 +182,11 @@ public class OpensearchServlet extends HttpServlet {
         channel.addElement("link").addText(url);
         channel.addElement("description").addText("Search results");
         channel.addElement("opensearch:totalResults").addText(String.valueOf(hits.length()));
-        channel.addElement("opensearch:startIndex").addText(String.valueOf(r.getRequestedPage()));
-        channel.addElement("opensearch:itemsPerPage").addText(String.valueOf(r.getHitsPerPage()));
+        channel.addElement("opensearch:startIndex").addText(String.valueOf(reqWrapper.getRequestedPage()));
+        channel.addElement("opensearch:itemsPerPage").addText(String.valueOf(reqWrapper.getHitsPerPage()));
         channel.addElement("opensearch:Query").addAttribute("role", "request").addAttribute("searchTerms",
-                r.getQueryString());
-        if (r.withIngridData()) {
+                reqWrapper.getQueryString());
+        if (reqWrapper.withIngridData()) {
         	// TODO: channel.addElement("ingrid:keyword").addText(r.getQueryString());
         }
         
@@ -214,7 +237,7 @@ public class OpensearchServlet extends HttpServlet {
 
                 if (detail.get("url") != null) {
                     itemUrl = (String) detail.get("url");
-                } else if (!r.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
+                } else if (!reqWrapper.getMetadataDetailAsXML() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
                     itemUrl = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId).concat("&docuuid=").concat(udkUuid);
                 } else if (proxyurl != null && proxyurl.length() > 0) {
                     itemUrl = proxyurl.concat("/detail").concat("?plugid=").concat(plugId).concat("&docid=").concat(
@@ -249,7 +272,7 @@ public class OpensearchServlet extends HttpServlet {
             item.addElement("description").addText(deNullify(detail.getSummary()));
             item.addElement("relevance:score").addText(String.valueOf(detail.getScore()));
             
-            if (r.withIngridData()) {
+            if (reqWrapper.withIngridData()) {
 	            item.addElement("ingrid:plugid").addText(deNullify(plugId));
 	            item.addElement("ingrid:docid").addText(deNullify(docId));
 	            item.addElement("ingrid:docuuid").addText(deNullify(udkUuid));
@@ -289,7 +312,7 @@ public class OpensearchServlet extends HttpServlet {
             }
             
             // handle geoRSS data
-            if (r.withGeoRSS()) {
+            if (reqWrapper.withGeoRSS()) {
 	            if (detail.get("x1") != null &&
 	            		detail.get("x1") instanceof String[]) 
 	            {
@@ -327,18 +350,8 @@ public class OpensearchServlet extends HttpServlet {
         if (log.isDebugEnabled()) {
             log.debug("Time for plugids: " + (System.currentTimeMillis() - startTime) + " ms");
         }
-
-        PrintWriter pout = response.getWriter();
-
-        pout.write(doc.asXML());
-        pout.close();
-        request.getInputStream().close();
-        doc.clearContent();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
-        }
-    }
+		return doc;
+	}
 
     /**
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
