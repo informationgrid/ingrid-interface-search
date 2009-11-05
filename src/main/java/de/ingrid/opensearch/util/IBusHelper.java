@@ -15,7 +15,7 @@ public class IBusHelper {
 		BusClient client;
 		
 		if (bus == null) {
-			client = BusClientFactory.createBusClient();
+			client = BusClientFactory.createBusClient(IBusHelper.class.getResourceAsStream("/communication.xml"));
 		
 	        OpensearchConfig config = OpensearchConfig.getInstance();
 	        
@@ -29,7 +29,7 @@ public class IBusHelper {
         return bus;
 	}
 	
-    public static void injectCache(HashMap map) {
+    public static void injectCache(HashMap<String,String> map) {
     	if (!map.containsKey("cache")) {
 	    	if (cache) {
 	    		map.put("cache", "on");

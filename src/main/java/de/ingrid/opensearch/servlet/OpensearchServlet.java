@@ -142,6 +142,7 @@ public class OpensearchServlet extends HttpServlet {
         }
     }
 
+    // TODO: add proxy URL as a parameter, which can come from a plugDescription (server-opensearch)!
 	public Document createXMLDocumentFromIngrid(HttpServletRequest request,
 			RequestWrapper reqWrapper,
 			IngridHits hits)

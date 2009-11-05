@@ -1,11 +1,12 @@
 <project name="PortalU Installation">
     <description>
-        CSW Interface Installation Script
+        Opensearch Interface Installation Script
     </description>
 	<!-- set global properties for this build -->
 	<property name="componentName" 			value="${project.artifactId}-${project.version}"/>
 	<property name="xml-communication" 	value="${installDir}/conf/communication.xml"/>
 	<property name="opensearch-properties" 	value="${installDir}/conf/ingrid-opensearch.properties"/>
+  <property name="xml-descriptor" 	      value="${installDir}/conf/descriptor.xml"/>
 	
 	<target name="extract" description="Extract all files to the installation directory.">
 		<unzip src="${antinstaller.jar}" dest="${installDir}">
@@ -28,14 +29,16 @@
 		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
 	</target>
 
-	<target name="csw" description="Set OpenSearch properties.">
+	<target name="config" description="Set OpenSearch properties.">
 		<echo>Schreibe OpenSearch Konfiguration in ingrid-opensearch.properties</echo>
-		<replace file="${opensearch-properties}" token="@LOCAL_SERVER_PORT@" value="${localServerPort}"/>
-		<replace file="${opensearch-properties}" token="@MAX_REQUESTED_HITS@" value="${maxRequestedHits}"/>
-		<replace file="${opensearch-properties}" token="@PROXY_URL@" value="http://${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
+		<replace file="${opensearch-properties}" token="@LOCAL_SERVER_PORT@"    value="${localServerPort}"/>
+		<replace file="${opensearch-properties}" token="@MAX_REQUESTED_HITS@"   value="${maxRequestedHits}"/>
+		<replace file="${opensearch-properties}" token="@PROXY_URL@"            value="http://${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
 		<replace file="${opensearch-properties}" token="@METADATA_DETAILS_URL@" value="${metadataDetailsUrl}"/>
-		<replace file="${opensearch-properties}" token="@ENABLE_CACHING@" value="${enableCaching}"/>
-		
+		<replace file="${opensearch-properties}" token="@ENABLE_CACHING@"       value="${enableCaching}"/>
+    
+    <echo>Schreibe Deskriptor-Server</echo>
+		<replace file="${xml-descriptor}" token="@PROXY_URL@" value="${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
 	</target>
 	
 	<target name="startComponent">

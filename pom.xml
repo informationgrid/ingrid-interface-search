@@ -3,7 +3,7 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -352,6 +352,10 @@
           <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-admin-step1-sns</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>axis</groupId>
           <artifactId>axis</artifactId>
         </exclusion>
@@ -462,6 +466,14 @@
         <exclusion>
           <groupId>uba</groupId>
           <artifactId>xtmStubs</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-admin-step1</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-admin-step2-tamino</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

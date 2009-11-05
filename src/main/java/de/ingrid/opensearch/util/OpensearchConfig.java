@@ -27,6 +27,8 @@ public class OpensearchConfig extends PropertiesConfiguration {
 
     public static final String METADATA_DETAILS_URL = "metadata.details.url";
     
+    public static final String DESCRIPTOR_FILE = "descriptor.file";
+    
     public static synchronized OpensearchConfig getInstance() {
         if (instance == null) {
             try {

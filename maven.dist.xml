@@ -1,8 +1,0 @@
-<project xmlns:deploy="deploy">
-    
-    <goal name="binary">
-	      <echo message="-----------------------------------------------------------------------"/>
-	      <echo message="Please use the start project to build a deployable version."/>
-	      <echo message="-----------------------------------------------------------------------"/>
-    </goal>
-</project>
