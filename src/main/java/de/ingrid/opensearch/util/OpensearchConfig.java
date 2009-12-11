@@ -4,6 +4,7 @@
 package de.ingrid.opensearch.util;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,10 +30,13 @@ public class OpensearchConfig extends PropertiesConfiguration {
     
     public static final String DESCRIPTOR_FILE = "descriptor.file";
     
-    public static synchronized OpensearchConfig getInstance() {
-        if (instance == null) {
+    public static synchronized OpensearchConfig getInstance(String filePath) {
+        if (instance == null || filePath != null) {
             try {
-                instance = new OpensearchConfig();
+                if (filePath != null)
+                    instance = new OpensearchConfig(filePath);
+                else 
+                    instance = new OpensearchConfig("ingrid-opensearch.properties");
             } catch (Exception e) {
                 if (log.isFatalEnabled()) {
                     log.fatal(
@@ -41,10 +45,17 @@ public class OpensearchConfig extends PropertiesConfiguration {
                 }
             }
         }
+        // reload File when changed
+        instance.setReloadingStrategy(new FileChangedReloadingStrategy());
+
         return instance;
     }
+    
+    public static synchronized OpensearchConfig getInstance() {
+        return getInstance(null);
+    }
 
-    private OpensearchConfig() throws Exception {
-        super("ingrid-opensearch.properties");
+    private OpensearchConfig(String path) throws Exception {
+        super(path);
     }
 }

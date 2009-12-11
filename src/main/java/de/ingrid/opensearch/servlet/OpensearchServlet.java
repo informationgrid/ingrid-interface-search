@@ -128,7 +128,7 @@ public class OpensearchServlet extends HttpServlet {
         // response.setContentType("application/rss+xml");
         response.setContentType("text/xml");
         
-        Document doc = createXMLDocumentFromIngrid(request, r, hits);
+        Document doc = createXMLDocumentFromIngrid(request, r, hits, false);
 
         PrintWriter pout = response.getWriter();
 
@@ -145,7 +145,8 @@ public class OpensearchServlet extends HttpServlet {
     // TODO: add proxy URL as a parameter, which can come from a plugDescription (server-opensearch)!
 	public Document createXMLDocumentFromIngrid(HttpServletRequest request,
 			RequestWrapper reqWrapper,
-			IngridHits hits)
+			IngridHits hits,
+			boolean noIBusUsed)
 			throws UnsupportedEncodingException {
 
 		long startTime = -1;
@@ -207,16 +208,17 @@ public class OpensearchServlet extends HttpServlet {
             String wmsURL = null;
             Element item = channel.addElement("item");
             String itemUrl = null;
-            if (iplugClass != null
+            
+            if (noIBusUsed || (iplugClass != null
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
                             || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug")
                             // TODO: || iplugClass.equals("de.ingrid.iplug.Opensearch") // ??? 
-                            || iplugClass.equals("de.ingrid.iplug.tamino.TaminoSearcher"))) {
+                            || iplugClass.equals("de.ingrid.iplug.tamino.TaminoSearcher")))) {
                 // handle the title
 
                 PlugDescription plugDescription = (PlugDescription) plugIds.get(plugId);
-                if (null == plugDescription) {
+                if (!noIBusUsed && null == plugDescription) {
                     try {
                         plugDescription = bus.getIPlug(plugId);
                     } catch (Exception e) {
