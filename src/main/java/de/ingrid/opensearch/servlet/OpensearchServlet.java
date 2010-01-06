@@ -307,10 +307,10 @@ public class OpensearchServlet extends HttpServlet {
 	            }
 	            
 	            // handle time reference
-	            if (detail.containsKey("time")) {
+	            if (detail.containsKey("t1") || detail.containsKey("t2")) {
 		            Element timeRef = item.addElement("ingrid:timeReference");
-		            timeRef.addElement("ingrid:start").addText("start");
-		            timeRef.addElement("ingrid:stop").addText("stop");
+		            if (detail.containsKey("t1") && !getDetailValue(detail, "t1").equals("99999999")) timeRef.addElement("ingrid:start").addText(getDetailValue(detail, "t1"));
+		            if (detail.containsKey("t2") && !getDetailValue(detail, "t2").equals("99999999")) timeRef.addElement("ingrid:stop").addText(getDetailValue(detail, "t2"));
 	            }
             }
             
