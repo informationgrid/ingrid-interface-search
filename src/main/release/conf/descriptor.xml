@@ -4,6 +4,8 @@
   <ShortName>InGrid Opensearch</ShortName>
   <Description>Here you can search inside the InGrid-Portal.</Description>
   <Tags>ingrid opensearch web</Tags>
-  <Contact>contact@wemove.com</Contact>
+  <Contact>portalu@portalu.de</Contact>
   <Url type="application/rss+xml" template="http://@PROXY_URL@/query?q={searchTerms}+datatype:default+ranking:score&amp;bbox={geo:box?}&amp;p={startPage?}&amp;h={count?}&amp;xml={ingridsearch:xml?}&amp;georss={ingridsearch:georss?}&amp;ingrid={ingridsearch:ingrid?}&amp;format=rss" />
+  <Query role="example" searchTerms="boden"/>
+  <Query role="example" searchTerms="wasser" ingridsearch:georss="1" ingridsearch:ingrid="1"/>
 </OpenSearchDescription>
