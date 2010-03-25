@@ -273,7 +273,7 @@ public class OpensearchServlet extends HttpServlet {
             }
             item.addElement("link").addText(itemUrl);
             item.addElement("description").addText(deNullify(detail.getSummary()));
-            item.addElement("relevance:score").addText(String.valueOf(detail.getScore()));
+            item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
             
             if (reqWrapper.withIngridData()) {
 	            item.addElement("ingrid:plugid").addText(deNullify(plugId));
