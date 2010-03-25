@@ -6,6 +6,9 @@
   </properties>
   <body>
     <release version="1.2.1" date="2009-xx-xx" description="Release">
+      <action type="change" dev="wemove">
+        Use the normalized score from the ibus instead of the original score from the iPlug. 
+      </action>
       <action type="add" dev="wemove" issue="INGRID21-7">
         Unterstützung von georss:featurename, was den Namen eines Ortes/einer Region enthält.
       </action>
