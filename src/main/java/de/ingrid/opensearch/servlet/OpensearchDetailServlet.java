@@ -51,6 +51,8 @@ public class OpensearchDetailServlet extends HttpServlet {
 
     private IBus bus;
 
+    private OpensearchConfig config = null;
+    
     private final static Log log = LogFactory.getLog(OpensearchDetailServlet.class);
     
     /**
@@ -99,7 +101,7 @@ public class OpensearchDetailServlet extends HttpServlet {
 			try {
 				IngridQuery q = QueryStringParser.parse(qStr);
 				IBusHelper.injectCache(q);
-				hits = bus.search(q, 1, 1, 0, 3000);
+				hits = bus.search(q, 1, 1, 0, config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000));
 			} catch (ParseException e) {
 				log.error("Error parsing query.", e);
 				throw (HttpException) new HttpException(500).initCause(e);
@@ -220,6 +222,8 @@ public class OpensearchDetailServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+        config = OpensearchConfig.getInstance();
+        
         super.init(arg0);
     }
 

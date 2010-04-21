@@ -1,10 +1,9 @@
 package de.ingrid.opensearch.util;
 
-import java.util.HashMap;
-
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
+import de.ingrid.utils.query.IngridQuery;
 
 public class IBusHelper {
 	private static IBus bus = null;
@@ -19,7 +18,7 @@ public class IBusHelper {
 		
 	        OpensearchConfig config = OpensearchConfig.getInstance();
 	        
-	        if (config.getBoolean("portal.enable.caching", true) == true) {
+	        if (config.getBoolean(OpensearchConfig.ENABLE_CACHING, true) == true) {
 	        	bus = client.getCacheableIBus();
 	        	cache = true;
 	        } else {
@@ -29,12 +28,12 @@ public class IBusHelper {
         return bus;
 	}
 	
-    public static void injectCache(HashMap<String,String> map) {
-    	if (!map.containsKey("cache")) {
+    public static void injectCache(IngridQuery q) {
+    	if (!q.containsKey("cache")) {
 	    	if (cache) {
-	    		map.put("cache", "on");
+	    		q.put("cache", "on");
 	        } else {
-	        	map.put("cache", "off");
+	        	q.put("cache", "off");
 	        }
     	}
     }

@@ -30,6 +30,11 @@ public class OpensearchConfig extends PropertiesConfiguration {
     
     public static final String DESCRIPTOR_FILE = "descriptor.file";
     
+    public static final String IBUS_TIMEOUT = "ibus.timeout";
+    
+    public static final String ENABLE_CACHING = "enable.caching";
+    
+    
     public static synchronized OpensearchConfig getInstance(String filePath) {
         if (instance == null || filePath != null) {
             try {

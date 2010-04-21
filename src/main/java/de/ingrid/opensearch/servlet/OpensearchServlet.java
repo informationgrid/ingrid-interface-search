@@ -34,7 +34,6 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 
 /**
@@ -47,6 +46,9 @@ public class OpensearchServlet extends HttpServlet {
     private static final long serialVersionUID 	= 597250457306006899L;
     
     private IBus bus;
+    
+    private OpensearchConfig config = null;
+
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
 
@@ -110,10 +112,10 @@ public class OpensearchServlet extends HttpServlet {
             }
             IBusHelper.injectCache(query);
             
-            hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, 60000, requestedMetadata);
+            hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000), requestedMetadata);
             
             if (log.isDebugEnabled()) {
-                log.debug("Time for searchAndDetail: " + (System.currentTimeMillis() - startTime) + " ms");
+                log.debug("Time for searchAndDetail: " + (System.currentTimeMillis() - startTime) + " ms using ibus timeout: " + config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000));
             }
 
         } catch (TooManyRunningThreads e) {
@@ -374,6 +376,8 @@ public class OpensearchServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+        config = OpensearchConfig.getInstance();
+
         super.init(arg0);
     }
 
@@ -384,7 +388,8 @@ public class OpensearchServlet extends HttpServlet {
      * @param key
      * @return
      */
-    private String getDetailValue(IngridHit detail, String key) {
+    @SuppressWarnings("unchecked")
+	private String getDetailValue(IngridHit detail, String key) {
         Object obj = detail.get(key);
         if (obj == null) {
             return "";
@@ -448,15 +453,5 @@ public class OpensearchServlet extends HttpServlet {
     	} else {
     		return s;
     	}
-    }
-    
-    private String getFieldValue(IngridQuery query, String field) {
-    	FieldQuery[] fieldQueries = query.getFields();
-    	for (FieldQuery fq : fieldQueries) {
-    		if (fq.getFieldName().equals(field)) {
-    			return fq.getFieldValue();
-    		}
-    	}
-    	return "";
     }
 }

@@ -7,6 +7,12 @@
   <body>
     <release version="1.2.1" date="2009-xx-xx" description="Release">
       <action type="change" dev="wemove">
+        Add timeout property for iBus queries. 
+      </action>
+      <action type="change" dev="wemove">
+        Change 'portal.enable.caching' property to 'enable.caching'. 
+      </action>
+      <action type="change" dev="wemove">
         Use the normalized score from the ibus instead of the original score from the iPlug. 
       </action>
       <action type="add" dev="wemove" issue="INGRID21-7">
