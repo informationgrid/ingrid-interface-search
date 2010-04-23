@@ -30,7 +30,7 @@ public class OpensearchConfig extends PropertiesConfiguration {
     
     public static final String DESCRIPTOR_FILE = "descriptor.file";
     
-    public static final String IBUS_TIMEOUT = "ibus.timeout";
+    public static final String IBUS_SEARCH_MAX_TIMEOUT = "ibus.search.max.timeout";
     
     public static final String ENABLE_CACHING = "enable.caching";
     

@@ -7,7 +7,7 @@
   <body>
     <release version="1.2.1" date="2009-xx-xx" description="Release">
       <action type="change" dev="wemove">
-        Add timeout property for iBus queries. 
+        Add maximum search timeout property for iBus search queries. This only affects the search in the connected iPlugs and is only a part of the whole communication process. 
       </action>
       <action type="change" dev="wemove">
         Change 'portal.enable.caching' property to 'enable.caching'. 

@@ -67,6 +67,12 @@ public class OpensearchDetailServlet extends HttpServlet {
     	
         RequestWrapper r = new RequestWrapper(request);
         
+        int maxSearchTimeout = config.getInt(OpensearchConfig.IBUS_SEARCH_MAX_TIMEOUT, 60000);
+        int searchTimeout = r.getSearchTimeout();
+        if (searchTimeout == 0 || searchTimeout > maxSearchTimeout) {
+        	searchTimeout = maxSearchTimeout;
+        }
+        
         long overallStartTime = 0;
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
@@ -101,7 +107,7 @@ public class OpensearchDetailServlet extends HttpServlet {
 			try {
 				IngridQuery q = QueryStringParser.parse(qStr);
 				IBusHelper.injectCache(q);
-				hits = bus.search(q, 1, 1, 0, config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000));
+				hits = bus.search(q, 1, 1, 0, searchTimeout);
 			} catch (ParseException e) {
 				log.error("Error parsing query.", e);
 				throw (HttpException) new HttpException(500).initCause(e);

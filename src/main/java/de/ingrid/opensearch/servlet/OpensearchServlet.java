@@ -69,6 +69,12 @@ public class OpensearchServlet extends HttpServlet {
         if (log.isDebugEnabled()) {
             log.debug("incoming query: " + r.getQueryString());
         }
+        
+        int maxSearchTimeout = config.getInt(OpensearchConfig.IBUS_SEARCH_MAX_TIMEOUT, 60000);
+        int searchTimeout = r.getSearchTimeout();
+        if (searchTimeout == 0 || searchTimeout > maxSearchTimeout) {
+        	searchTimeout = maxSearchTimeout;
+        }
 
         IngridQuery query = r.getQuery();
         int page = r.getRequestedPage();
@@ -112,10 +118,10 @@ public class OpensearchServlet extends HttpServlet {
             }
             IBusHelper.injectCache(query);
             
-            hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000), requestedMetadata);
+            hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, searchTimeout, requestedMetadata);
             
             if (log.isDebugEnabled()) {
-                log.debug("Time for searchAndDetail: " + (System.currentTimeMillis() - startTime) + " ms using ibus timeout: " + config.getInt(OpensearchConfig.IBUS_TIMEOUT, 3000));
+                log.debug("Time for searchAndDetail: " + (System.currentTimeMillis() - startTime) + " ms using ibus timeout: " + searchTimeout);
             }
 
         } catch (TooManyRunningThreads e) {

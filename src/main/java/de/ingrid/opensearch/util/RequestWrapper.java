@@ -41,6 +41,7 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public static final String INGRID_DATA 				= "ingrid";
     
+    public static final String SEARCH_TIMEOUT 			= "timeout";
 
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
@@ -113,6 +114,18 @@ public class RequestWrapper extends HashMap<String, Object> {
         mapIntParamToBoolean(request, "georss", RequestWrapper.GEORSS);
         mapIntParamToBoolean(request, "ingrid", RequestWrapper.INGRID_DATA);
         
+        // get search timeout
+        int searchTimeout = 0;
+        try {
+        	searchTimeout = Integer.parseInt(request.getParameter("t"));
+        } catch (NumberFormatException e) {
+        }
+        if (searchTimeout <= 0) {
+        	searchTimeout = 0;
+        }
+        this.put(RequestWrapper.SEARCH_TIMEOUT, new Integer(searchTimeout));
+        
+        
     }
 
     /**
@@ -179,5 +192,10 @@ public class RequestWrapper extends HashMap<String, Object> {
     public boolean withIngridData() {
     	return (Boolean) this.get(INGRID_DATA);
     }
+    
+    public int getSearchTimeout() {
+        return ((Integer) this.get(RequestWrapper.SEARCH_TIMEOUT)).intValue();
+    }
+    
 
 }
