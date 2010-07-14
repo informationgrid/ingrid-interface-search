@@ -221,6 +221,8 @@ public class OpensearchServlet extends HttpServlet {
                     && (iplugClass.equals("de.ingrid.iplug.dsc.index.DSCSearcher")
                             || iplugClass.equals("de.ingrid.iplug.udk.UDKPlug")
                             || iplugClass.equals("de.ingrid.iplug.csw.CSWPlug")
+                            || iplugClass.equals("de.ingrid.iplug.xml.XmlPlug")
+                            || iplugClass.equals("de.ingrid.iplug.excel.ExcelPlug")
                             // TODO: || iplugClass.equals("de.ingrid.iplug.Opensearch") // ??? 
                             || iplugClass.equals("de.ingrid.iplug.tamino.TaminoSearcher")))) {
                 // handle the title
