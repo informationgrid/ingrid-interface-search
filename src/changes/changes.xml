@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="2.3.1" date="2011-01-24" description="Update dependencies Release">
+      <action type="update">
+		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !
+      </action>
+    </release>
+
     <release version="1.2.0" date="2010-07-14" description="Release">
       <action type="add" dev="wemove">
         Integration XML- und Excel-iPlugs.
