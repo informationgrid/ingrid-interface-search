@@ -5,6 +5,15 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.0.0-SNAPSHOT" date="2011-xx-xx" description="Release">
+      <action type="add">
+        NEW IDF integration.  
+      </action>
+      <action type="add">
+        NEW parameter 'detail'! Details can now be included in original Opensearch Response. No separate detail servlet anymore. New definition of parameter 'xml'! SEE DOCUMENTATION!  
+      </action>
+    </release>
+
     <release version="2.3.1" date="2011-01-24" description="Update dependencies Release">
       <action type="update">
 		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !

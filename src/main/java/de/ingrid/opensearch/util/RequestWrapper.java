@@ -25,7 +25,9 @@ public class RequestWrapper extends HashMap<String, Object> {
 
     public static final String PAGE 					= "page";
 
-    public static final String METADATA_DETAIL_AS_XML 	= "xml";
+    public static final String METADATA_DETAIL_AS_XML_DOC 	= "xml";
+
+    public static final String METADATA_DETAIL 	= "detail";
     
     public static final String HITS_PER_PAGE 			= "hitsPerPage";
 
@@ -43,8 +45,12 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public static final String SEARCH_TIMEOUT 			= "timeout";
 
+    public static final String REQUEST                  = "request";
+    
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
+        this.put(REQUEST, request);
+        
         // get result page to display
         int page = 1;
         try {
@@ -110,7 +116,8 @@ public class RequestWrapper extends HashMap<String, Object> {
         }
         this.put(RequestWrapper.QUERY, query);
 
-        mapIntParamToBoolean(request, "xml",    RequestWrapper.METADATA_DETAIL_AS_XML);
+        mapIntParamToBoolean(request, "xml",    RequestWrapper.METADATA_DETAIL_AS_XML_DOC);
+        mapIntParamToBoolean(request, "detail",    RequestWrapper.METADATA_DETAIL);
         mapIntParamToBoolean(request, "georss", RequestWrapper.GEORSS);
         mapIntParamToBoolean(request, "ingrid", RequestWrapper.INGRID_DATA);
         
@@ -173,8 +180,12 @@ public class RequestWrapper extends HashMap<String, Object> {
         return (String) this.get(RequestWrapper.PLUG_ID);
     }
 
-    public boolean getMetadataDetailAsXML() {
-        return (Boolean) this.get(RequestWrapper.METADATA_DETAIL_AS_XML);
+    public boolean getMetadataDetailAsXMLDoc() {
+        return (Boolean) this.get(RequestWrapper.METADATA_DETAIL_AS_XML_DOC);
+    }
+
+    public boolean getMetadataDetail() {
+        return (Boolean) this.get(RequestWrapper.METADATA_DETAIL);
     }
     
     public IngridQuery getQuery() {
@@ -195,6 +206,10 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public int getSearchTimeout() {
         return ((Integer) this.get(RequestWrapper.SEARCH_TIMEOUT)).intValue();
+    }
+    
+    public HttpServletRequest getRequest() {
+        return (HttpServletRequest)this.get(REQUEST);
     }
     
 
