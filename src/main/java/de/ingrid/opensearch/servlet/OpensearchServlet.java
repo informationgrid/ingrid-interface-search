@@ -59,6 +59,7 @@ public class OpensearchServlet extends HttpServlet {
      *      javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/xml");
         long overallStartTime = 0;
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
