@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.0.0-SNAPSHOT" date="2011-xx-xx" description="Release">
+    <release version="3.0.0" date="2011-05-06" description="Release InGrid3.0.0">
       <action type="add">
         NEW IDF integration.  
       </action>
