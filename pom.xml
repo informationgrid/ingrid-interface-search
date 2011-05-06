@@ -119,6 +119,10 @@
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus</artifactId>
       <exclusions>
+			  <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-dsc</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>tomcat</groupId>
           <artifactId>jasper-compiler</artifactId>
@@ -403,6 +407,10 @@
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-tamino</artifactId>
       <exclusions>
+			  <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-iplug-dsc</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>TaminoAPI4J</groupId>
           <artifactId>TaminoAPI4J</artifactId>
