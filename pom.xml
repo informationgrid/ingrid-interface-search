@@ -273,7 +273,7 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-dsc</artifactId>
+      <artifactId>ingrid-iplug-dsc-scripted</artifactId>
       <exclusions>
         <exclusion>
           <groupId>hsqldb</groupId>
