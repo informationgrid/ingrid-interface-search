@@ -2,16 +2,26 @@ package de.ingrid.opensearch.util;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.query.IngridQuery;
 
 public class OpensearchUtil {
-    
+
+    private static final String[][] XML_ESCAPE = { { "\"", "&", "<", ">" }, // "
+                                                                            // -
+                                                                            // strings
+                                                                            // to
+                                                                            // replace
+            { "&quot;", "&amp;", "&lt;", "&gt;" } // & - replace with
+    };
+
     public static boolean hasValue(String s) {
         return (s != null && s.length() > 0);
     }
-    
+
     public static boolean hasPositiveDataType(IngridQuery q, String datatype) {
         String[] dtypes = q.getPositiveDataTypes();
         for (int i = 0; i < dtypes.length; i++) {
@@ -21,7 +31,7 @@ public class OpensearchUtil {
         }
         return false;
     }
-    
+
     public static String deNullify(String s) {
         if (s == null) {
             return "";
@@ -29,7 +39,7 @@ public class OpensearchUtil {
             return s;
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public static String getDetailValue(IngridHit detail, String key) {
         Object obj = detail.get(key);
@@ -59,7 +69,7 @@ public class OpensearchUtil {
         }
         return values.toString();
     }
-    
+
     /**
      * Return true if the given iPlug has a specific data type.
      * 
@@ -78,6 +88,19 @@ public class OpensearchUtil {
         }
         return false;
     }
-    
+
+    /**
+     * Escapes XML special characters into the corresponding escape sequence.
+     * The following characters will be replaced.
+     * 
+     * "\"", "&", "<", ">"
+     * 
+     * @param in
+     *            The String to escape.
+     * @return The escaped String.
+     */
+    public static String xmlEscape(String in) {
+        return StringUtils.replaceEach(in, XML_ESCAPE[0], XML_ESCAPE[1]);
+    }
 
 }

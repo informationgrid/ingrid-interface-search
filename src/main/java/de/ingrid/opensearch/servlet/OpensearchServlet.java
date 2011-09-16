@@ -236,7 +236,7 @@ public class OpensearchServlet extends HttpServlet {
             
             addItemTitle(item, hit, requestWrapper);
             addItemLink(item, hit, requestWrapper);
-            item.addElement("description").addText(StringEscapeUtils.escapeXml(OpensearchUtil.deNullify(detail.getSummary())));
+            item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
             item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
             addIngridData(item, hit, requestWrapper);
             addGeoRssData(item, hit, requestWrapper);
@@ -323,7 +323,7 @@ public class OpensearchServlet extends HttpServlet {
             }
             // handle wms url
             if (wmsUrl != null && wmsUrl.length() > 0) {
-                item.addElement("ingrid:wms-url").addText(StringEscapeUtils.escapeXml(wmsUrl));
+                item.addElement("ingrid:wms-url").addText(OpensearchUtil.xmlEscape(wmsUrl));
             }
 
             // handle time reference
@@ -371,7 +371,7 @@ public class OpensearchServlet extends HttpServlet {
                                     String columnName = columns[i].getTargetName();
                                     detailElement.addElement("ingrid:detail-key").addText(columnName);
                                     detailElement.addElement("ingrid:detail-value").addText(
-                                            StringEscapeUtils.escapeXml(record.getValueAsString(columns[i]).trim()).replaceAll("\n", "<br />"));
+                                            OpensearchUtil.xmlEscape(record.getValueAsString(columns[i]).trim()).replaceAll("\n", "<br />"));
                                 }
                             }
                             addSubRecords(record, details);
@@ -397,7 +397,7 @@ public class OpensearchServlet extends HttpServlet {
                     String columnName = columns[j].getTargetName();
                     detail.addElement("ingrid:detail-key").addText(columnName);
                     detail.addElement("ingrid:detail-value").addText(
-                            StringEscapeUtils.escapeXml(subRecords[i].getValueAsString(columns[j]).trim()).replaceAll("\n", "<br />"));
+                            OpensearchUtil.xmlEscape(subRecords[i].getValueAsString(columns[j]).trim()).replaceAll("\n", "<br />"));
                 }
             }
 
@@ -485,9 +485,9 @@ public class OpensearchServlet extends HttpServlet {
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "T02_address.firstname"))
                     .concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "T02_address.lastname"));
-            item.addElement("title").addText(StringEscapeUtils.escapeXml(title.trim()));
+            item.addElement("title").addText(OpensearchUtil.xmlEscape(title.trim()));
         } else {
-            item.addElement("title").addText(StringEscapeUtils.escapeXml(detail.getTitle()));
+            item.addElement("title").addText(OpensearchUtil.xmlEscape(detail.getTitle()));
         }
         
     }
