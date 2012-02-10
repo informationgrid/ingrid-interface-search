@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import net.weta.components.communication.server.TooManyRunningThreads;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -412,7 +411,17 @@ public class OpensearchServlet extends HttpServlet {
         String itemLink = null;
         
         // check for property "url"
-        if (detail.get("url") == null || ((String)detail.get("url")).length() == 0) {
+        String url = null;
+        if (detail.get("url") != null) {
+            if (detail.get("url") instanceof String && ((String)detail.get("url")).length() > 0) {
+                url = (String)detail.get("url");
+            } else if (detail.get("url") instanceof String[] && ((String[])detail.get("url")).length > 0) {
+                url = ((String[])detail.get("url"))[0];
+            }
+        }
+        
+        
+        if (url == null) {
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = (String) hit.get("alt_document_id");
@@ -449,7 +458,7 @@ public class OpensearchServlet extends HttpServlet {
             }
 
         } else {
-            itemLink = (String) detail.get("url");
+            itemLink = url;
         }
         if (itemLink == null) {
             itemLink = "";
