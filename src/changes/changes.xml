@@ -6,6 +6,9 @@
   </properties>
   <body>
     <release version="3.2.0-SNAPSHOT" date="2011-??-??" description="Feature Release">
+      <action type="add" dev="wemove" issue="INGRID-2109">
+        Added new parameter 'title' which will set the channel title of the resulting xml document.
+      </action>
       <action type="update" dev="wemove">
         Add compatibility code to make url extraction more robust.
       </action>

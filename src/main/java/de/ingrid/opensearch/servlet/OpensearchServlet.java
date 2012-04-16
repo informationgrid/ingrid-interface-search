@@ -91,11 +91,7 @@ public class OpensearchServlet extends HttpServlet {
         try {
             IngridHits hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, searchTimeout, requestedMetadata);
             
-            Document doc = createOpensearchResponseDocument(hits, requestWrapper);
-            
-            Element channel = createOpensearchChannel(doc.getRootElement(), hits, requestWrapper);
-            
-            addOpensearchItems(channel, hits, requestWrapper);
+            Document doc = createXMLDocumentFromIngrid(request, requestWrapper, hits, false);
 
             PrintWriter pout = response.getWriter();
 
@@ -116,6 +112,31 @@ public class OpensearchServlet extends HttpServlet {
             throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
         }
 
+    }
+    
+    /**
+     * This function transforms IngridHits as an XML document. 
+     * ATTENTION: This function is also used in OpenSearchServer!!! 
+     * 
+     * @param request
+     * @param requestWrapper
+     * @param hits
+     * @param noIBusUsed
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public Document createXMLDocumentFromIngrid(HttpServletRequest request,
+            RequestWrapper requestWrapper,
+            IngridHits hits,
+            boolean noIBusUsed) throws UnsupportedEncodingException {
+     
+        Document doc = createOpensearchResponseDocument(hits, requestWrapper);
+        
+        Element channel = createOpensearchChannel(doc.getRootElement(), hits, requestWrapper);
+        
+        addOpensearchItems(channel, hits, requestWrapper);
+        
+        return doc;
     }
 
     /**
@@ -202,7 +223,7 @@ public class OpensearchServlet extends HttpServlet {
 
     private Element createOpensearchChannel(Element doc, IngridHits hits, RequestWrapper requestWrapper) {
         Element channel = doc.addElement("channel");
-        channel.addElement("title").addText("ingrid OpenSearch: " + requestWrapper.getQueryString());
+        channel.addElement("title").addText(getChannelTitle(requestWrapper));
 
         String proxyurl = OpensearchConfig.getInstance().getString(OpensearchConfig.PROXY_URL, null);
         String url = null;
@@ -225,6 +246,21 @@ public class OpensearchServlet extends HttpServlet {
                 requestWrapper.getQueryString());
         
         return channel;
+    }
+
+    /**
+     * Get the title for the channel from the request url or, if not defined, 
+     * set a default title containing the search terms (query)
+     * @param requestWrapper
+     * @return
+     */
+    private String getChannelTitle(RequestWrapper requestWrapper) {
+        String title = (String) requestWrapper.get(RequestWrapper.CHANNEL_TITLE);
+        if (title.isEmpty()) {
+            title = "ingrid OpenSearch: " + requestWrapper.getQueryString();
+        }
+        
+        return title;
     }
 
     private void addOpensearchItems(Element channel, IngridHits hits, RequestWrapper requestWrapper) {

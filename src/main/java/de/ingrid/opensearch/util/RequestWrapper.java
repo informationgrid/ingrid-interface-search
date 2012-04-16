@@ -27,7 +27,7 @@ public class RequestWrapper extends HashMap<String, Object> {
 
     public static final String METADATA_DETAIL_AS_XML_DOC 	= "xml";
 
-    public static final String METADATA_DETAIL 	= "detail";
+    public static final String METADATA_DETAIL 	        = "detail";
     
     public static final String HITS_PER_PAGE 			= "hitsPerPage";
 
@@ -46,6 +46,8 @@ public class RequestWrapper extends HashMap<String, Object> {
     public static final String SEARCH_TIMEOUT 			= "timeout";
 
     public static final String REQUEST                  = "request";
+    
+    public static final String CHANNEL_TITLE            = "title";
     
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
@@ -132,7 +134,11 @@ public class RequestWrapper extends HashMap<String, Object> {
         }
         this.put(RequestWrapper.SEARCH_TIMEOUT, new Integer(searchTimeout));
         
-        
+        String title = request.getParameter("title");
+        if (title == null) {
+            title = "";
+        }
+        this.put(RequestWrapper.CHANNEL_TITLE, title);
     }
 
     /**
