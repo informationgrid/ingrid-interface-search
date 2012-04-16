@@ -91,7 +91,7 @@ public class OpensearchServlet extends HttpServlet {
         try {
             IngridHits hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, searchTimeout, requestedMetadata);
             
-            Document doc = createXMLDocumentFromIngrid(request, requestWrapper, hits, false);
+            Document doc = createXMLDocumentFromIngrid(requestWrapper, hits, false);
 
             PrintWriter pout = response.getWriter();
 
@@ -125,8 +125,7 @@ public class OpensearchServlet extends HttpServlet {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public Document createXMLDocumentFromIngrid(HttpServletRequest request,
-            RequestWrapper requestWrapper,
+    public Document createXMLDocumentFromIngrid(RequestWrapper requestWrapper,
             IngridHits hits,
             boolean noIBusUsed) throws UnsupportedEncodingException {
      
