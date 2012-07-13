@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.2.0-SNAPSHOT" date="2011-??-??" description="Feature Release">
+    <release version="3.2.0" date="2012-07-13" description="Release InGrid 3.2">
       <action type="add" dev="wemove" issue="INGRID-2109">
         Added new parameter 'title' which will set the channel title of the resulting xml document.
       </action>
