@@ -5,6 +5,11 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.3.0-SNAPSHOT" date="2012-08-xx" description="Release InGrid 3.3">
+      <action type="add" dev="wemove" issue="INGRID33-4">
+        Added local working directory, so that temp-dir is not deleted accidentally when cleaning up global temp dir.
+      </action>
+    </release>
     <release version="3.2.0" date="2012-07-13" description="Release InGrid 3.2">
       <action type="add" dev="wemove" issue="INGRID-2109">
         Added new parameter 'title' which will set the channel title of the resulting xml document.
