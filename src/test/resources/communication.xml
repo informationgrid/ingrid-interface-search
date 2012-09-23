@@ -1,5 +1,6 @@
 <!-- LIVE - extern -->
 <!--
+-->
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="communication.xsd">
         <client name="/ingrid-group:ingrid-interface-opensearch-test">
@@ -12,7 +13,6 @@
         </client>
         <messages queueSize="2000" handleTimeout="120"/>
 </communication>
--->
 
 <!-- Harrison - extern -->
 <!--
@@ -32,7 +32,6 @@
 
 <!-- joachim dev -->
 <!--
--->
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="communication.xsd">
     <client name="//ingrid-group:ingrid-interface-opensearch-test">
@@ -45,3 +44,4 @@
     </client>
     <messages queueSize="2000" handleTimeout="10"/>
 </communication>
+-->

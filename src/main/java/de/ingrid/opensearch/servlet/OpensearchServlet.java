@@ -50,7 +50,7 @@ public class OpensearchServlet extends HttpServlet {
     private static final long serialVersionUID = 597250457306006899L;
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
-    
+
     private IBus bus;
 
     /**
@@ -63,17 +63,16 @@ public class OpensearchServlet extends HttpServlet {
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
         }
-        
+
         RequestWrapper requestWrapper = new RequestWrapper(request);
 
         if (log.isDebugEnabled()) {
             log.debug("incoming query: " + requestWrapper.getQueryString());
         }
 
-        
         IngridQuery query = createIngridQueryFromRequest(requestWrapper);
         String[] requestedMetadata = getRequestedMetadata(requestWrapper, query);
-        
+
         // set paging parameter for query
         int page = requestWrapper.getRequestedPage();
         int hitsPerPage = requestWrapper.getHitsPerPage();
@@ -87,10 +86,10 @@ public class OpensearchServlet extends HttpServlet {
         if (searchTimeout == 0 || searchTimeout > maxSearchTimeout) {
             searchTimeout = maxSearchTimeout;
         }
-        
+
         try {
             IngridHits hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, searchTimeout, requestedMetadata);
-            
+
             Document doc = createXMLDocumentFromIngrid(requestWrapper, hits, false);
 
             PrintWriter pout = response.getWriter();
@@ -103,7 +102,7 @@ public class OpensearchServlet extends HttpServlet {
             if (log.isDebugEnabled()) {
                 log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
             }
-            
+
         } catch (TooManyRunningThreads e) {
             log.error("Too many threads!", e);
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
@@ -113,10 +112,10 @@ public class OpensearchServlet extends HttpServlet {
         }
 
     }
-    
+
     /**
-     * This function transforms IngridHits as an XML document. 
-     * ATTENTION: This function is also used in OpenSearchServer!!! 
+     * This function transforms IngridHits as an XML document. ATTENTION: This
+     * function is also used in OpenSearchServer!!!
      * 
      * @param request
      * @param requestWrapper
@@ -125,16 +124,15 @@ public class OpensearchServlet extends HttpServlet {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public Document createXMLDocumentFromIngrid(RequestWrapper requestWrapper,
-            IngridHits hits,
-            boolean noIBusUsed) throws UnsupportedEncodingException {
-     
+    public Document createXMLDocumentFromIngrid(RequestWrapper requestWrapper, IngridHits hits, boolean noIBusUsed)
+            throws UnsupportedEncodingException {
+
         Document doc = createOpensearchResponseDocument(hits, requestWrapper);
-        
+
         Element channel = createOpensearchChannel(doc.getRootElement(), hits, requestWrapper);
-        
+
         addOpensearchItems(channel, hits, requestWrapper, !noIBusUsed);
-        
+
         return doc;
     }
 
@@ -158,26 +156,27 @@ public class OpensearchServlet extends HttpServlet {
         }
         super.init(arg0);
     }
-    
-    
+
     private IngridQuery createIngridQueryFromRequest(RequestWrapper requestWrapper) {
         IngridQuery query = requestWrapper.getQuery();
 
         IBusHelper.injectCache(query);
-        
-        // if detail data are requested, set direct data property to get the date during search
-        // this improves performance, because we do not need getRecord requests to retrieve the data
+
+        // if detail data are requested, set direct data property to get the
+        // date during search
+        // this improves performance, because we do not need getRecord requests
+        // to retrieve the data
         if (requestWrapper.getMetadataDetail()) {
             query.put("cswDirectResponse", "full");
         }
-        
+
         return query;
     }
-    
+
     private String[] getRequestedMetadata(RequestWrapper requestWrapper, IngridQuery query) {
 
         String[] requestedMetadata = null;
-        
+
         if (!OpensearchUtil.hasPositiveDataType(query, "address")) {
             requestedMetadata = new String[] { "t01_object.obj_id" };
             // check if GeoRSS data shall be checked too
@@ -199,12 +198,12 @@ public class OpensearchServlet extends HttpServlet {
                 requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
             }
         }
-        
+
         return requestedMetadata;
     }
-    
+
     private Document createOpensearchResponseDocument(IngridHits hits, RequestWrapper requestWrapper) {
-        
+
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("rss");
         root.addNamespace("opensearch", "http://a9.com/-/spec/opensearch/1.1/");
@@ -243,13 +242,14 @@ public class OpensearchServlet extends HttpServlet {
         channel.addElement("opensearch:itemsPerPage").addText(String.valueOf(requestWrapper.getHitsPerPage()));
         channel.addElement("opensearch:Query").addAttribute("role", "request").addAttribute("searchTerms",
                 requestWrapper.getQueryString());
-        
+
         return channel;
     }
 
     /**
-     * Get the title for the channel from the request url or, if not defined, 
+     * Get the title for the channel from the request url or, if not defined,
      * set a default title containing the search terms (query)
+     * 
      * @param requestWrapper
      * @return
      */
@@ -258,24 +258,26 @@ public class OpensearchServlet extends HttpServlet {
         if (title.isEmpty()) {
             title = "ingrid OpenSearch: " + requestWrapper.getQueryString();
         }
-        
+
         return title;
     }
 
-    private void addOpensearchItems(Element channel, IngridHits hits, RequestWrapper requestWrapper, boolean ibusConnected) {
+    private void addOpensearchItems(Element channel, IngridHits hits, RequestWrapper requestWrapper,
+            boolean ibusConnected) {
         for (int i = 0; i < hits.getHits().length; i++) {
             IngridHit hit = hits.getHits()[i];
             IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
             Element item = channel.addElement("item");
-            
+
             addItemTitle(item, hit, requestWrapper, ibusConnected);
             addItemLink(item, hit, requestWrapper, ibusConnected);
-            item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
+            item.addElement("description").addText(
+                    OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
             item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
             addIngridData(item, hit, requestWrapper, ibusConnected);
             addGeoRssData(item, hit, requestWrapper);
         }
-        
+
     }
 
     private void addGeoRssData(Element item, IngridHit hit, RequestWrapper requestWrapper) {
@@ -323,8 +325,14 @@ public class OpensearchServlet extends HttpServlet {
             String udkAddrClass = OpensearchUtil.getDetailValue(detail, "T02_address.typ");
             String wmsUrl = null;
             Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
-            if (obj != null && obj instanceof String[] && ((String[])obj).length > 0) {
-                wmsUrl = ((String[]) obj)[0];
+            if (obj != null && obj instanceof String[] && ((String[]) obj).length > 0) {
+                // get first entry from the array, ignore empty entries
+                for (String value : ((String[]) obj)) {
+                    if (value != null && value.length() > 0) {
+                        wmsUrl = value;
+                        break;
+                    }
+                }
             } else {
                 wmsUrl = OpensearchUtil.getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
             }
@@ -368,7 +376,7 @@ public class OpensearchServlet extends HttpServlet {
                 if (detail.containsKey("t2") && !OpensearchUtil.getDetailValue(detail, "t2").equals("99999999"))
                     timeRef.addElement("ingrid:stop").addText(OpensearchUtil.getDetailValue(detail, "t2"));
             }
-            
+
             if (ibusConnected && requestWrapper.getMetadataDetail() && !requestWrapper.getMetadataDetailAsXMLDoc()) {
                 Element idfDataNode = null;
                 try {
@@ -387,25 +395,26 @@ public class OpensearchServlet extends HttpServlet {
                             Element details = item.addElement("ingrid:details");
                             details.add(idfDataNode);
                         }
-                    } else  {
+                    } else {
                         // generic record data
                         Record record = bus.getRecord(hit);
                         if (record != null && !record.isEmpty()) {
-                        
+
                             // search for column
                             Column[] columns = record.getColumns();
-    
+
                             Element details = item.addElement("ingrid:details");
-    
+
                             for (int i = 0; i < columns.length; i++) {
-    
+
                                 if (columns[i].toIndex()) {
                                     Element detailElement = details.addElement("ingrid:detail");
-    
+
                                     String columnName = columns[i].getTargetName();
                                     detailElement.addElement("ingrid:detail-key").addText(columnName);
                                     detailElement.addElement("ingrid:detail-value").addText(
-                                            OpensearchUtil.xmlEscape(record.getValueAsString(columns[i]).trim()).replaceAll("\n", "<br />"));
+                                            OpensearchUtil.xmlEscape(record.getValueAsString(columns[i]).trim())
+                                                    .replaceAll("\n", "<br />"));
                                 }
                             }
                             addSubRecords(record, details);
@@ -415,7 +424,7 @@ public class OpensearchServlet extends HttpServlet {
                     log.error("Error retrieving detail data from hit.", e);
                 }
             }
-        }        
+        }
     }
 
     private void addSubRecords(Record record, Element e) {
@@ -431,36 +440,35 @@ public class OpensearchServlet extends HttpServlet {
                     String columnName = columns[j].getTargetName();
                     detail.addElement("ingrid:detail-key").addText(columnName);
                     detail.addElement("ingrid:detail-value").addText(
-                            OpensearchUtil.xmlEscape(subRecords[i].getValueAsString(columns[j]).trim()).replaceAll("\n", "<br />"));
+                            OpensearchUtil.xmlEscape(subRecords[i].getValueAsString(columns[j]).trim()).replaceAll(
+                                    "\n", "<br />"));
                 }
             }
 
             addSubRecords(subRecords[i], subElement);
         }
     }
-    
-    
+
     private void addItemLink(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
-        
+
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
         String itemLink = null;
-        
+
         // check for property "url"
         String url = null;
         if (detail.get("url") != null) {
-            if (detail.get("url") instanceof String && ((String)detail.get("url")).length() > 0) {
-                url = (String)detail.get("url");
-            } else if (detail.get("url") instanceof String[] && ((String[])detail.get("url")).length > 0) {
-                url = ((String[])detail.get("url"))[0];
+            if (detail.get("url") instanceof String && ((String) detail.get("url")).length() > 0) {
+                url = (String) detail.get("url");
+            } else if (detail.get("url") instanceof String[] && ((String[]) detail.get("url")).length > 0) {
+                url = ((String[]) detail.get("url"))[0];
             }
         }
-        
-        
+
         if (url == null) {
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = (String) hit.get("alt_document_id");
-            
+
             String metadataDetailsUrl = OpensearchConfig.getInstance().getString(OpensearchConfig.METADATA_DETAILS_URL,
                     null);
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
@@ -469,23 +477,23 @@ public class OpensearchServlet extends HttpServlet {
             String qStr;
             try {
                 qStr = URLEncoder.encode(getDetailQueryString(plugId, docUuid, ibusConnected), "UTF-8");
-            } catch (UnsupportedEncodingException e) { 
+            } catch (UnsupportedEncodingException e) {
                 log.error("Error encoding query.", e);
                 throw new RuntimeException(e);
             }
-            
+
             if (!requestWrapper.getMetadataDetailAsXMLDoc() && metadataDetailsUrl != null
                     && metadataDetailsUrl.length() > 0) {
-                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId)
-                        .concat("&docuuid=").concat(docUuid);
+                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId).concat(
+                        "&docuuid=").concat(docUuid);
             } else if (proxyurl != null && proxyurl.length() > 0) {
                 itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId).concat(
-                "&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                        "&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
             } else {
                 itemLink = requestWrapper.getRequest().getRequestURL().substring(0,
-                        requestWrapper.getRequest().getRequestURL().lastIndexOf("/")).concat("/query")
-                        .concat("?q=").concat(qStr).concat("&docid=").concat(docId).concat(
-                                "&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                        requestWrapper.getRequest().getRequestURL().lastIndexOf("/")).concat("/query").concat("?q=")
+                        .concat(qStr).concat("&docid=").concat(docId).concat("&docuuid=").concat(docUuid).concat(
+                                "&detail=1&ingrid=1");
             }
 
             if (altDocId != null && altDocId.length() > 0) {
@@ -500,26 +508,29 @@ public class OpensearchServlet extends HttpServlet {
         }
         item.addElement("link").addText(itemLink);
     }
-    
+
     private String getDetailQueryString(String plugId, String docUuid, boolean ibusConnected) {
-        
+
         String qStr = null;
         PlugDescription plugDescription = ibusConnected ? bus.getIPlug(plugId) : null;
         String iPlugVersion = ibusConnected ? IPlugVersionInspector.getIPlugVersion(plugDescription) : "";
         if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UDK_5_0_DSC_ADDRESS)) {
-            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId
+                    + "\" ranking:score datatype:any";
         } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_IDC_1_0_2_DSC_ADDRESS)) {
-            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId
+                    + "\" ranking:score datatype:any";
         } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UNKNOWN)) {
             qStr = docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
         } else {
-            qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + plugId
+                    + "\" ranking:score datatype:any";
         }
-        
+
         return qStr;
-        
+
     }
-    
+
     private void addItemTitle(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
         String plugId = hit.getPlugId();
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
@@ -533,6 +544,6 @@ public class OpensearchServlet extends HttpServlet {
         } else {
             item.addElement("title").addText(OpensearchUtil.xmlEscape(detail.getTitle()));
         }
-        
+
     }
 }
