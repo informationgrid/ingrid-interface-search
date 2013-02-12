@@ -10,12 +10,12 @@ import de.ingrid.utils.query.IngridQuery;
 
 public class OpensearchUtil {
 
-    private static final String[][] XML_ESCAPE = { { "\"", "&", "<", ">" }, // "
+    private static final String[][] XML_ESCAPE = { { "\"", "&", "<", ">", String.valueOf((char)1) }, // "
                                                                             // -
                                                                             // strings
                                                                             // to
                                                                             // replace
-            { "&quot;", "&amp;", "&lt;", "&gt;" } // & - replace with
+            { "&quot;", "&amp;", "&lt;", "&gt;", "" } // & - replace with
     };
 
     public static boolean hasValue(String s) {
