@@ -1,6 +1,8 @@
 package de.ingrid.opensearch.util;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -10,13 +12,17 @@ import de.ingrid.utils.query.IngridQuery;
 
 public class OpensearchUtil {
 
-    private static final String[][] XML_ESCAPE = { { "\"", "&", "<", ">", String.valueOf((char)1) }, // "
+    private static final String[][] XML_ESCAPE = { { "\"", "&", "<", ">" }, // "
                                                                             // -
                                                                             // strings
                                                                             // to
                                                                             // replace
-            { "&quot;", "&amp;", "&lt;", "&gt;", "" } // & - replace with
+            { "&quot;", "&amp;", "&lt;", "&gt;" } // & - replace with
     };
+    
+    private static Pattern specialCharsPattern = Pattern.compile(
+    		"[\u0000-\u0008|\u000B|\u000C|\u000E-\u001F|\u007F|\u0080-\u009F]"
+    	);
 
     public static boolean hasValue(String s) {
         return (s != null && s.length() > 0);
@@ -100,7 +106,9 @@ public class OpensearchUtil {
      * @return The escaped String.
      */
     public static String xmlEscape(String in) {
-        return StringUtils.replaceEach(in, XML_ESCAPE[0], XML_ESCAPE[1]);
+        String replacedIn = StringUtils.replaceEach(in, XML_ESCAPE[0], XML_ESCAPE[1]);
+        Matcher matcher = specialCharsPattern.matcher(replacedIn);
+        return matcher.replaceAll("");
     }
 
 }
