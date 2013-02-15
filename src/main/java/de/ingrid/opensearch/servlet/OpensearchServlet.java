@@ -533,17 +533,19 @@ public class OpensearchServlet extends HttpServlet {
 
     private void addItemTitle(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
         String plugId = hit.getPlugId();
+        String title = "";
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
         PlugDescription plugDescription = ibusConnected ? bus.getIPlug(plugId) : null;
         if ((plugDescription != null) && (OpensearchUtil.hasDataType(plugDescription, "dsc_ecs_address"))) {
-            String title = OpensearchUtil.getDetailValue(detail, "T02_address.title");
+            title = OpensearchUtil.getDetailValue(detail, "T02_address.title");
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "T02_address.firstname"))
                     .concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "T02_address.lastname"));
-            item.addElement("title").addText(OpensearchUtil.xmlEscape(title.trim()));
+            title = OpensearchUtil.xmlEscape(title.trim());
         } else {
-            item.addElement("title").addText(OpensearchUtil.xmlEscape(detail.getTitle()));
+        	title = OpensearchUtil.xmlEscape(detail.getTitle());
         }
+        item.addElement("title").addText(title.isEmpty() ? "Kein Titel" : title);
 
     }
 }
