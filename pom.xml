@@ -3,12 +3,12 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>3.2.0</version>
+    <version>3.3.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
   <artifactId>ingrid-interface-opensearch</artifactId>
-  <version>3.3.0-SNAPSHOT</version>
+  <version>3.3.0-RELEASE-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>ingrid-interface-opensearch</name>
   <scm>
@@ -25,57 +25,17 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
 <!-- Use old iPlug SE, just needed for instanceof. New iPlug SE does not have a jar file! -->
       <dependency>
         <groupId>de.ingrid</groupId>
         <artifactId>ingrid-iplug-se</artifactId>
         <version>3.0.0</version>
       </dependency>
-			<!-- Move to Base-POM in next release -->
-			<dependency>
-        <groupId>de.ingrid</groupId>
-        <artifactId>ingrid-iplug-dsc</artifactId>
-        <version>2.3.1</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jaxen</groupId>
-          <artifactId>jaxen</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>saxpath</groupId>
-          <artifactId>saxpath</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>msv</groupId>
-          <artifactId>msv</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>relaxngDatatype</groupId>
-          <artifactId>relaxngDatatype</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>isorelax</groupId>
-          <artifactId>isorelax</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+  <!-- ALL iPlugs needed for identifying plugs via classes !? -->
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
@@ -471,6 +431,36 @@
         <exclusion>
           <groupId>xerces</groupId>
           <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jaxen</groupId>
+          <artifactId>jaxen</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>saxpath</groupId>
+          <artifactId>saxpath</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>msv</groupId>
+          <artifactId>msv</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>relaxngDatatype</groupId>
+          <artifactId>relaxngDatatype</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>isorelax</groupId>
+          <artifactId>isorelax</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
