@@ -49,6 +49,8 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public static final String CHANNEL_TITLE            = "title";
     
+    public static final String BOUNDING_BOX				= "bbox";
+    
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
         this.put(REQUEST, request);
@@ -139,6 +141,12 @@ public class RequestWrapper extends HashMap<String, Object> {
             title = "";
         }
         this.put(RequestWrapper.CHANNEL_TITLE, title);
+        
+        // add bounding-box
+        String bbox = request.getParameter("bbox");
+        if (bbox != null) {
+        	this.put(RequestWrapper.BOUNDING_BOX, bbox);
+        }
     }
 
     /**
@@ -218,5 +226,12 @@ public class RequestWrapper extends HashMap<String, Object> {
         return (HttpServletRequest)this.get(REQUEST);
     }
     
+    public boolean hasBoundingBox() {
+    	return this.get(BOUNDING_BOX) != null;
+    }
+    
+    public String getBoundingBox() {
+    	return (String)this.get(BOUNDING_BOX);
+    }
 
 }

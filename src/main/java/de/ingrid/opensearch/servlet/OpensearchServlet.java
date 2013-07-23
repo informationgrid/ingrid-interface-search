@@ -38,6 +38,8 @@ import de.ingrid.utils.dsc.Column;
 import de.ingrid.utils.dsc.Record;
 import de.ingrid.utils.idf.IdfTool;
 import de.ingrid.utils.iplug.IPlugVersionInspector;
+import de.ingrid.utils.query.ClauseQuery;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 
 /**
@@ -168,6 +170,19 @@ public class OpensearchServlet extends HttpServlet {
         // to retrieve the data
         if (requestWrapper.getMetadataDetail()) {
             query.put("cswDirectResponse", "full");
+        }
+        
+        if (requestWrapper.hasBoundingBox()) {
+        	String[] bb = requestWrapper.getBoundingBox().split(" ");
+        	if (bb.length == 4) {
+        		ClauseQuery cq = new ClauseQuery(true, false);
+        		FieldQuery fq = new FieldQuery(true, false, "x1", bb[0]); cq.addField(fq);
+        		fq = new FieldQuery(true, false, "y1", bb[1]); cq.addField(fq);
+        		fq = new FieldQuery(true, false, "x2", bb[2]); cq.addField(fq);
+        		fq = new FieldQuery(true, false, "y2", bb[3]); cq.addField(fq);
+        		fq = new FieldQuery(true, false, "coord", "inside"); cq.addField(fq);
+        		query.addClause(cq);
+        	}
         }
 
         return query;
