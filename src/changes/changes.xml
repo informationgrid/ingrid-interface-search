@@ -6,6 +6,9 @@
   </properties>
   <body>
   	<release version="3.4.0-SNAPSHOT" date="?" description="?">
+        <action type="add" dev="wemove">
+            Added patch-update strategy to installation routine.
+        </action>
         <action type="fix" dev="wemove" issue="INGRID-2289">
             Fixed bbox parameter.
         </action>
