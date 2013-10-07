@@ -1,5 +1,0 @@
-<project name="IGE-iPlug Patches">
-    <target name="patchFiles" depends="">
-        <!-- patch order determined through depends-order -->
-    </target>
-</project>
