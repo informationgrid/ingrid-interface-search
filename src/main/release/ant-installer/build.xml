@@ -1,0 +1,102 @@
+<project name="PortalU Installation" basedir=".">
+    <description>
+        Opensearch Interface Installation Script
+    </description>
+	<!-- set global properties for this build -->
+	<property name="componentName" 			value="${project.artifactId}-${project.version}"/>
+	<property name="xml-communication" 	value="${installDir}/conf/communication.xml"/>
+	<property name="opensearch-properties" 	value="${installDir}/conf/ingrid-opensearch.properties"/>
+	<property name="xml-descriptor" 	      value="${installDir}/conf/descriptor.xml"/>
+
+	<!-- THIS PORPERTIES ARE NECESSARY FOR UPDATES -->
+    <property name="libraryDir"         value="lib" />
+    <property name="libraryIdent"       value="ingrid-interface-opensearch-" />
+    <!-- <property name="libraryIdent"       value="MANIFEST.MF" /> -->
+    <property name="versionsWithConfigurations"  value="" />
+    <property name="minSupportedVersion" value="3.3.0" />
+
+    <import file="build-installer-utils.xml"  as="utils" />
+    <import file="build-patch.xml"            as="patch" />
+
+    <target name="setUpdateProperty" depends="checkPreconditionsForUpdate, extractUpdate">
+        <property name="installType" value="update" />
+        <property name="updateProcedure" value="true" />
+    </target>
+    
+    <target name="setInstallProperty" depends="extract">
+        <property name="installProcedure" value="true" />
+    </target>
+	
+	<target name="extract" description="Extract all files to the installation directory.">
+		<unzip src="${antinstaller.jar}" dest="${installDir}">
+			<patternset>
+				<include name="${componentName}/**/*.*"/>
+			</patternset>
+		</unzip>
+		
+		<move toDir="${installDir}">
+			<fileset dir="${installDir}/${componentName}"/>
+		</move>
+        
+        <mkdir dir="${installDir}/webapp/WEB-INF/work"/>
+	</target>
+
+	<target name="extractUpdate">
+        <unzip src="${antinstaller.jar}" dest=".">
+            <patternset>
+                <include name="**/*.*"/>
+                <exclude name="${componentName}/conf/communication.xml" />
+                <exclude name="${componentName}/conf/ingrid-opensearch.properties" />
+                <exclude name="${componentName}/conf/descriptor.xml" />
+            </patternset>
+        </unzip>
+        
+        <delete>
+            <fileset dir="${installDir}/lib" includes="**/*"/>
+        </delete>
+        
+        <move toDir="${installDir}">
+            <fileset dir="./${componentName}"/>
+        </move>
+    </target>
+	
+	<target name="ibus" description="Set configuration correctly for the iBus.">
+		<echo>Schreibe iBus Konfiguration in communication.xml</echo>
+		<xmlproperty file="${xml-communication}" prefix="plugXML"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}" 			value="${serverName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}" 		value="${serverIp}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
+	</target>
+
+	<target name="config" description="Set OpenSearch properties.">
+		<echo>Schreibe OpenSearch Konfiguration in ingrid-opensearch.properties</echo>
+		<replace file="${opensearch-properties}" token="@LOCAL_SERVER_PORT@"    value="${localServerPort}"/>
+		<replace file="${opensearch-properties}" token="@MAX_REQUESTED_HITS@"   value="${maxRequestedHits}"/>
+		<replace file="${opensearch-properties}" token="@PROXY_URL@"            value="http://${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
+		<replace file="${opensearch-properties}" token="@METADATA_DETAILS_URL@" value="${metadataDetailsUrl}"/>
+		<replace file="${opensearch-properties}" token="@ENABLE_CACHING@"       value="${enableCaching}"/>
+    
+    <echo>Schreibe Deskriptor-Server</echo>
+		<replace file="${xml-descriptor}" token="@PROXY_URL@" value="${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
+	</target>
+	
+	<target name="startComponent">
+		<echo>
+=================
+Weiteres Vorgehen
+=================
+
+		</echo>
+		<echo>
+Gehen Sie ins Verzeichnis: ${installDir} und
+rufen sie von der Kommandozeile folgendes auf
+"sh start.sh start", um die Schnittstelle zu starten.
+
+Weitere Informationen entnehmen Sie bitte dem
+Online-Handbuch unter 
+http://www.kst.portalu.de/wiki/index.php/OpenSearch-Schnittstelle
+		</echo>
+	</target>
+	
+</project>
