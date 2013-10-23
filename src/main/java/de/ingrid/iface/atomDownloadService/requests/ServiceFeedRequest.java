@@ -8,7 +8,7 @@ public class ServiceFeedRequest {
 
     private String query;
 
-    public ServiceFeedRequest(HttpServletRequest req, String pathPrefix) {
+    public ServiceFeedRequest(HttpServletRequest req) {
 
         uuid = req.getPathInfo().substring(1);
         query = req.getParameter("q");

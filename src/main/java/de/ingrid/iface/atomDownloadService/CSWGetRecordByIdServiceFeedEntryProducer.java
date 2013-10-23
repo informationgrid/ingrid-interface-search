@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -33,6 +35,8 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
     private String atomDownloadDatasetFeedUrlPattern = null;
 
+    private final static Log log = LogFactory.getLog(CSWGetRecordByIdServiceFeedEntryProducer.class);
+    
     @PostConstruct
     public void init() {
 
@@ -42,15 +46,25 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
     public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed) throws Exception {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());
+        }
+
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
 
         NodeList linkages = XPATH.getNodeList(idfDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
         for (int i = 0; i < linkages.getLength(); i++) {
             String linkage = XPATH.getString(linkages.item(i), ".");
             if (linkage.toLowerCase().contains("request=getrecordbyid")) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Found external coupled resource: " + linkage);
+                }
                 Document isoDoc = StringUtils.urlToDocument(linkage);
                 // check for data sets without data download links
                 if (!XPATH.nodeExists(isoDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No Download Data Links found in coupled resource: " + linkage);
+                    }
                     continue;
                 }
 

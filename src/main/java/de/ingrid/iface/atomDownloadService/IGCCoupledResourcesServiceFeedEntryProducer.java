@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -36,8 +38,10 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
     private IngridQueryProducer ingridQueryProducer;
     
     @Autowired
-    SearchInterfaceConfig config;
+    private SearchInterfaceConfig config;
 
+    private final static Log log = LogFactory.getLog(IGCCoupledResourcesServiceFeedEntryProducer.class);
+    
     private String atomDownloadDatasetFeedUrlPattern = null;
     
     @PostConstruct 
@@ -49,18 +53,26 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
 
     public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed) throws Exception {
 
-        IBus iBus = IBusHelper.getIBus();
+        if (log.isDebugEnabled()) {
+            log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());
+        }
         
-
+        IBus iBus = IBusHelper.getIBus();
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
         String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
         IBusQueryResultIterator serviceEntryIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedEntryInGridQuery(coupledUuids), REQUESTED_FIELDS, iBus);
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
+            if (log.isDebugEnabled()) {
+                log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
+            }
             idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
             // check for data sets without data download links
             if (!XPATH.nodeExists(idfDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No Download Data Links found in coupled resource: " + hit.getHitDetail().getTitle());
+                }
                 continue;
             }
             

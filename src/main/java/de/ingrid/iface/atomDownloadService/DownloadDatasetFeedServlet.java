@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,13 @@ public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInt
     @Autowired
     private DatasetFeedProducer datasetFeedProducer;
 
+    private final static Log log = LogFactory.getLog(DownloadDatasetFeedServlet.class);
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (log.isDebugEnabled()) {
+            log.debug("Incoming request: " + req.getPathInfo());
+        }
         try {
             // extract method from path
             DatasetFeedRequest datasetFeedRequest = new DatasetFeedRequest(req);
@@ -39,8 +46,7 @@ public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInt
             ((Request) req).setHandled(true);
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Error executing get dataset feed.", e);
         }
     }
 

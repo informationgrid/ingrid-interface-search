@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -44,6 +46,9 @@ public class DatasetFeedProducer {
     private String atomDownloadDatasetFeedUrlPattern = null;
 
     private String atomDownloadServiceFeedUrlPattern = null;
+    
+    private final static Log log = LogFactory.getLog(DatasetFeedProducer.class);
+
 
     @PostConstruct
     public void init() {
@@ -57,24 +62,35 @@ public class DatasetFeedProducer {
 
     public DatasetFeed produce(DatasetFeedRequest datasetFeedRequest) throws ParseException, Exception {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Build dataset feed for service: " + datasetFeedRequest.getServiceFeedUuid() + " and dataset: " + datasetFeedRequest.getUuid());
+        }
+
         DatasetFeed datasetFeed = new DatasetFeed();
 
         Document doc = null;
 
         if (datasetFeedRequest.getUuid().toLowerCase().contains("request=getrecordbyid")) {
+            if (log.isDebugEnabled()) {
+                log.debug("Found external dataset: " + datasetFeedRequest.getUuid());
+            }
             // ISO Metadaten
             doc = StringUtils.urlToDocument(datasetFeedRequest.getUuid());
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Found IGC based dataset: " + datasetFeedRequest.getUuid());
+            }
             // igc Metadaten
             IBus iBus = IBusHelper.getIBus();
 
             // create response header
-            IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createDatasetFeedInGridQuery(datasetFeedRequest.getUuid()), REQUESTED_FIELDS, iBus);
+            IBusQueryResultIterator datasetIterator = new IBusQueryResultIterator(ingridQueryProducer.createDatasetFeedInGridQuery(datasetFeedRequest.getUuid()), REQUESTED_FIELDS, iBus);
             IngridHit hit = null;
-            if (serviceIterator.hasNext()) {
-                hit = serviceIterator.next();
+            if (datasetIterator.hasNext()) {
+                hit = datasetIterator.next();
                 doc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
             } else {
+                log.error("No dataset with uuid '" + datasetFeedRequest.getUuid() + "' found in IGC catalogs.");
                 throw new Exception("No dataset with uuid '" + datasetFeedRequest.getUuid() + "' found in IGC catalogs.");
             }
         }

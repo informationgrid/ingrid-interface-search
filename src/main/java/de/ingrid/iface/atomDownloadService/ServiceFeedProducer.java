@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -44,6 +46,9 @@ public class ServiceFeedProducer {
 
     private String atomDownloadopenSearchDefinitionUrlPattern = null;
 
+    private final static Log log = LogFactory.getLog(ServiceFeedProducer.class);
+    
+    
     @PostConstruct
     public void init() {
 
@@ -56,14 +61,21 @@ public class ServiceFeedProducer {
 
     public ServiceFeed produce(ServiceFeedRequest serviceFeedRequest) throws ParseException, Exception {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Build service feed from IGC resource for service: " + serviceFeedRequest.getUuid());
+        }
+        
         ServiceFeed serviceFeed = new ServiceFeed();
         IBus iBus = IBusHelper.getIBus();
 
         // create response header
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest.getUuid()), REQUESTED_FIELDS, iBus);
-        IngridHit hit = null;
         if (serviceIterator.hasNext()) {
-            hit = serviceIterator.next();
+            IngridHit hit = serviceIterator.next();
+            if (log.isDebugEnabled()) {
+                log.debug("Found valid service: " + hit.getHitDetail().getTitle());
+            }
+            
             Document idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
             serviceFeed.setUuid(XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString"));
             serviceFeed.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
