@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>History Ingrid Search Interface</title>
+    <author email="joachim@wemove.com">Joachim Müller</author>
+  </properties>
+  <body>
+    <release version="3.3.x-SNAPSHOT" date="2013-xx-xx" description="Initial-Release InGrid 3.3.x">
+      <action type="add" dev="wemove">
+        Initial release.
+      </action>
+    </release>
+  </body>
+</document>
