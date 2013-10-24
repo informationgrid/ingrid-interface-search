@@ -23,6 +23,7 @@ import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
+import de.ingrid.iface.util.StringUtils;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.xml.IDFNamespaceContext;
@@ -36,17 +37,17 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
 
     @Autowired
     private IngridQueryProducer ingridQueryProducer;
-    
+
     @Autowired
     private SearchInterfaceConfig config;
 
     private final static Log log = LogFactory.getLog(IGCCoupledResourcesServiceFeedEntryProducer.class);
-    
+
     private String atomDownloadDatasetFeedUrlPattern = null;
-    
-    @PostConstruct 
+
+    @PostConstruct
     public void init() {
-        
+
         atomDownloadDatasetFeedUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadDatasetFeedUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_DATASET_FEED_EXTENSION);
     }
@@ -56,7 +57,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         if (log.isDebugEnabled()) {
             log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());
         }
-        
+
         IBus iBus = IBusHelper.getIBus();
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
@@ -75,7 +76,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                 }
                 continue;
             }
-            
+
             ServiceFeedEntry entry = new ServiceFeedEntry();
             entry.setType(EntryType.IGC);
             entry.setUuid(XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString"));
@@ -89,7 +90,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setDatasetMetadataRecord(link);
 
             link = new Link();
-            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", entry.getUuid()).replace("{servicefeed-uuid}", serviceFeed.getUuid()));
+            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(entry.getUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/atom+xml");
             entry.setDatasetFeed(link);

@@ -1,6 +1,5 @@
 package de.ingrid.iface.atomDownloadService;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
     private String atomDownloadDatasetFeedUrlPattern = null;
 
     private final static Log log = LogFactory.getLog(CSWGetRecordByIdServiceFeedEntryProducer.class);
-    
+
     @PostConstruct
     public void init() {
 
@@ -81,7 +80,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 entry.setDatasetMetadataRecord(link);
 
                 link = new Link();
-                link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", URLEncoder.encode(linkage, "UTF-8")).replace("{servicefeed-uuid}", serviceFeed.getUuid()));
+                link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(linkage)).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
                 link.setHrefLang("en");
                 link.setType("application/atom+xml");
                 entry.setDatasetFeed(link);

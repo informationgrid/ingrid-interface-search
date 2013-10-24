@@ -46,9 +46,8 @@ public class DatasetFeedProducer {
     private String atomDownloadDatasetFeedUrlPattern = null;
 
     private String atomDownloadServiceFeedUrlPattern = null;
-    
-    private final static Log log = LogFactory.getLog(DatasetFeedProducer.class);
 
+    private final static Log log = LogFactory.getLog(DatasetFeedProducer.class);
 
     @PostConstruct
     public void init() {
@@ -100,7 +99,7 @@ public class DatasetFeedProducer {
         datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
         Link link = new Link();
-        link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", datasetFeed.getUuid()));
+        link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(datasetFeed.getUuid())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");
         link.setRel("self");
@@ -108,7 +107,7 @@ public class DatasetFeedProducer {
         datasetFeed.setIdentifier(link.getHref());
 
         link = new Link();
-        link.setHref(atomDownloadServiceFeedUrlPattern.replace("{uuid}", datasetFeedRequest.getServiceFeedUuid()));
+        link.setHref(atomDownloadServiceFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");
         link.setRel("up");

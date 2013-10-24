@@ -21,6 +21,7 @@ import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
+import de.ingrid.iface.util.StringUtils;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.queryparser.ParseException;
@@ -90,7 +91,7 @@ public class ServiceFeedProducer {
             serviceFeed.setMetadataAccessUrl(link);
 
             link = new Link();
-            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{uuid}", serviceFeed.getUuid()));
+            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/atom+xml");
             link.setRel("this document");
@@ -99,7 +100,7 @@ public class ServiceFeedProducer {
             serviceFeed.setIdentifier(link.getHref());
 
             link = new Link();
-            link.setHref(atomDownloadopenSearchDefinitionUrlPattern.replace("{uuid}", serviceFeed.getUuid()));
+            link.setHref(atomDownloadopenSearchDefinitionUrlPattern.replace("{uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/opensearchdescription+xml");
             link.setTitle("Open Search Description");

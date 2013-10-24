@@ -6,7 +6,10 @@ package de.ingrid.iface.util;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -73,7 +76,7 @@ public class StringUtils {
         Document doc = StringUtils.inputSourceToDocument(new InputSource(stream));
         return doc;
     }
-    
+
     public static Document inputSourceToDocument(InputSource source) throws Exception {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
         domFactory.setNamespaceAware(true);
@@ -81,7 +84,7 @@ public class StringUtils {
         Document doc = builder.parse(source);
         return doc;
     }
-    
+
     public static String generateUuid() {
         UUID uuid = UUID.randomUUID();
         StringBuffer idcUuid = new StringBuffer(uuid.toString().toUpperCase());
@@ -89,5 +92,27 @@ public class StringUtils {
             idcUuid.append("0");
         }
         return idcUuid.toString();
+    }
+
+    /**
+     * Prepare a string to be a valid path segment.
+     * 
+     * @param path
+     * @return
+     */
+    public static String encodeForPath(String path) {
+        String result = null;
+        try {
+            result = new URI("http", "domain.com", "/" + path, null).toURL().getPath();
+            // remove trailing slash
+            result = result.substring(1);
+        } catch (Exception e) {
+            try {
+                result = URLEncoder.encode(path, "UTF-8");
+            } catch (UnsupportedEncodingException e1) {
+            }
+            result.replaceAll("%2F", "/");
+        }
+        return result;
     }
 }
