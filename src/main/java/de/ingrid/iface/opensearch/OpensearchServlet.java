@@ -17,17 +17,19 @@ import javax.servlet.http.HttpServletResponse;
 import net.weta.components.communication.server.TooManyRunningThreads;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.mortbay.jetty.HttpException;
+import org.eclipse.jetty.http.HttpException;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.opensearch.util.OpensearchUtil;
 import de.ingrid.iface.opensearch.util.RequestWrapper;
 import de.ingrid.iface.util.IBusHelper;
+import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IPlugHelper;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.SearchInterfaceServlet;
@@ -56,12 +58,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private IBus bus;
 
+    private static Integer MAX_IBUS_RESULT_SET_SIZE = 100;
+
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/xml");
         long overallStartTime = 0;
         if (log.isDebugEnabled()) {
             overallStartTime = System.currentTimeMillis();
@@ -82,6 +85,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         if (page <= 0)
             page = 1;
         int startHit = (page - 1) * hitsPerPage;
+        int pageSize = (hitsPerPage > MAX_IBUS_RESULT_SET_SIZE) ? MAX_IBUS_RESULT_SET_SIZE : hitsPerPage;
 
         // set timeout
         int maxSearchTimeout = SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 60000);
@@ -90,17 +94,70 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             searchTimeout = maxSearchTimeout;
         }
 
+        PrintWriter pout = null;
+        IBusQueryResultIterator hitIterator = null;
+        int hitCounter = 0;
         try {
-            IngridHits hits = bus.searchAndDetail(query, hitsPerPage, page, startHit, searchTimeout, requestedMetadata);
 
-            Document doc = createXMLDocumentFromIngrid(requestWrapper, hits, false);
+            hitIterator = new IBusQueryResultIterator(query, requestedMetadata, bus, pageSize, startHit, hitsPerPage * page);
+            response.setCharacterEncoding("UTF-8");
+            pout = response.getWriter();
+            Document doc = DocumentHelper.createDocument();
+            while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter ==0) {
+                if (hitCounter == 0) {
+                    pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
+                    pout.write("<channel>");
+                    pout.write("<title>" + StringEscapeUtils.escapeXml(getChannelTitle(requestWrapper)) + "</title>");
+                    String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.PROXY_URL, null);
+                    String url = null;
+                    String queryString = requestWrapper.getRequest().getQueryString();
+                    if (queryString == null)
+                        queryString = "";
+                    queryString.replace("+", "%2B");
+                    if (proxyurl != null && proxyurl.trim().length() > 0) {
+                        url = proxyurl.concat("/query").concat("?").concat(queryString);
+                    } else {
+                        url = requestWrapper.getRequest().getRequestURL().toString().concat("?").concat(queryString);
+                    }
+                    pout.write("<link>" + StringEscapeUtils.escapeXml(url) + "</link>");
+                    pout.write("<description>Search results</description>");
+                    pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
+                    pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
+                    pout.write("<opensearch:itemsPerPage>" + String.valueOf(requestWrapper.getHitsPerPage()) + "</opensearch:itemsPerPage>");
+                    pout.write("<opensearch:Query role=\"request\" searchTerms=\"" + StringEscapeUtils.escapeXml(requestWrapper.getQueryString()) + "\"/>");
+                }
+                if (hitIterator.hasNext()) {
+                    IngridHit hit = hitIterator.next();
+                    Element item = doc.addElement("item");
+                    item.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
+                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail()) {
+                        item.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
+                    }
+                    if (requestWrapper.withGeoRSS()) {
+                        item.addNamespace("georss", "http://www.georss.org/georss");
+                    }
+    
+                    IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
+    
+                    addItemTitle(item, hit, requestWrapper, true);
+                    addItemLink(item, hit, requestWrapper, true);
+                    item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
+                    item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
+                    addIngridData(item, hit, requestWrapper, true);
+                    addGeoRssData(item, hit, requestWrapper);
+                    pout.write(doc.getRootElement().asXML());
+                    doc.clearContent();
+                }
+                hitCounter++;
+            }
+            doc.clearContent();
+            doc = null;
+            pout.write("</channel></rss>");
 
-            PrintWriter pout = response.getWriter();
-
-            pout.write(doc.asXML());
             pout.close();
             request.getInputStream().close();
-            doc.clearContent();
+            response.setContentType("text/xml");
 
             if (log.isDebugEnabled()) {
                 log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
@@ -112,6 +169,15 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         } catch (Exception e) {
             log.error("Error serving request", e);
             throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
+        } finally {
+            hitIterator.cleanup();
+            hitIterator = null;
+            if (pout != null) {
+                if (hitCounter > 0) {
+                    pout.write("</channel></rss>");
+                }
+            }
+            pout.close();
         }
 
     }

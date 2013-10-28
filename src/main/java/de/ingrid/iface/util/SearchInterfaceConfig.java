@@ -45,6 +45,12 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String ATOM_DOWNLOAD_DATASET_FEED_EXTENSION = "atom.download.dataset.feed.extension";
 
+    public static final String ATOM_DOWNLOAD_OPENSEARCH_DESCRIBE_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.describe.spatial.dataset.template";
+
+    public static final String ATOM_DOWNLOAD_OPENSEARCH_GET_RESULTS_TEMPLATE = "atom.download.opensearch.get.results.template";
+    
+    public static final String ATOM_DOWNLOAD_OPENSEARCH_GET_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.get.spatial.dataset.template";
+    
     public static final String ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION = "atom.download.opensearch.definition.extension";
 
     public SearchInterfaceConfig() throws ConfigurationException {

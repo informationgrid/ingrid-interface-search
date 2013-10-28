@@ -45,7 +45,7 @@ public class ServiceFeedProducer {
 
     private String atomDownloadServiceFeedUrlPattern = null;
 
-    private String atomDownloadopenSearchDefinitionUrlPattern = null;
+    private String atomDownloadOpensearchDefinitionUrlPattern = null;
 
     private final static Log log = LogFactory.getLog(ServiceFeedProducer.class);
     
@@ -56,8 +56,8 @@ public class ServiceFeedProducer {
         atomDownloadServiceFeedUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadServiceFeedUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_FEED_EXTENSION);
 
-        atomDownloadopenSearchDefinitionUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
-        atomDownloadopenSearchDefinitionUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION);
+        atomDownloadOpensearchDefinitionUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadOpensearchDefinitionUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION);
     }
 
     public ServiceFeed produce(ServiceFeedRequest serviceFeedRequest) throws ParseException, Exception {
@@ -91,7 +91,7 @@ public class ServiceFeedProducer {
             serviceFeed.setMetadataAccessUrl(link);
 
             link = new Link();
-            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
+            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/atom+xml");
             link.setRel("this document");
@@ -100,7 +100,7 @@ public class ServiceFeedProducer {
             serviceFeed.setIdentifier(link.getHref());
 
             link = new Link();
-            link.setHref(atomDownloadopenSearchDefinitionUrlPattern.replace("{uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
+            link.setHref(atomDownloadOpensearchDefinitionUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/opensearchdescription+xml");
             link.setTitle("Open Search Description");

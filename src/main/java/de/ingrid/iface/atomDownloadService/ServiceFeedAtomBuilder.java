@@ -12,6 +12,7 @@ public class ServiceFeedAtomBuilder {
     public String build(ServiceFeed serviceFeed) {
 
         StringBuilder result = new StringBuilder();
+        result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         result.append("<!-- Example \"Download Service Feed\" -->\n");
         result.append("<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:georss=\"http://www.georss.org/georss\" xmlns:inspire_dls=\"http://inspire.ec.europa.eu/schemas/inspire_dls/1.0\" xml:lang=\"de\">\n");
         result.append("<!-- feed title -->\n");

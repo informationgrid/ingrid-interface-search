@@ -12,6 +12,7 @@ public class DatasetFeedAtomBuilder {
     public String build(DatasetFeed datasetFeed) {
 
         StringBuilder result = new StringBuilder();
+        result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         result.append("<!-- Example \" Dataset Feed\" -->\n");
         result.append("<feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:georss=\"http://www.georss.org/georss\" xml:lang=\"de\">\n");
         result.append("<!-- feed title -->\n");

@@ -48,7 +48,7 @@ public class RequestWrapperTest extends TestCase {
         }
         assertNotNull(w);
         assertEquals(w.getRequestedPage(), 1);
-        assertEquals(w.getHitsPerPage(), 100);
+        assertEquals(w.getHitsPerPage(), 10000);
         assertEquals(w.getPlugId(), "ingrid:test/test:ingrid");
         assertEquals(w.getDocId(), 1234567);
         assertEquals(w.getAltDocId(), "1234567QWERTA");
@@ -76,7 +76,7 @@ public class RequestWrapperTest extends TestCase {
         }
         assertNotNull(w);
         assertEquals(w.getRequestedPage(), 1);
-        assertEquals(w.getHitsPerPage(), 100);
+        assertEquals(w.getHitsPerPage(), 10000);
         assertEquals(w.getPlugId(), "ingrid:test/test:ingrid");
         assertEquals(w.getDocId(), 1234567);
         assertEquals(w.getAltDocId(), "1234567QWERTA");

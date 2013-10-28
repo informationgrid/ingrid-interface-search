@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServlet;
 
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,10 @@ public class SearchInterfaceServletConfigurator {
     @Autowired
     List<SearchInterfaceServlet> searchInterfaceServlet;
 
-    public void addServlets(Context rootContext) {
+    public void addServlets(ServletHandler handler) {
 
         for (SearchInterfaceServlet servlet : searchInterfaceServlet) {
-            rootContext.addServlet(new ServletHolder((HttpServlet) servlet), servlet.getPathSpec());
+            handler.addServletWithMapping(new ServletHolder((HttpServlet) servlet), servlet.getPathSpec());
         }
 
     }

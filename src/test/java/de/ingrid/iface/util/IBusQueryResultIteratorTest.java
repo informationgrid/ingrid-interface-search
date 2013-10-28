@@ -26,7 +26,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
         }
         IngridHits hits_1_10 = new IngridHits(10, details);
 
-        when(mockedIBus.searchAndDetail(q, 10, 1, 10, 30000, new String[] { "" })).thenReturn(hits_1_10);
+        when(mockedIBus.searchAndDetail(q, 10, 1, 0, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), new String[] { "" })).thenReturn(hits_1_10);
 
         IBusQueryResultIterator it = new IBusQueryResultIterator(q, new String[] { "" }, mockedIBus);
         try {
@@ -63,8 +63,8 @@ public class IBusQueryResultIteratorTest extends TestCase {
         }
         IngridHits hits_11_19 = new IngridHits(19, details);
 
-        when(mockedIBus.searchAndDetail(q, 10, 1, 10, 30000, new String[] { "" })).thenReturn(hits_1_10);
-        when(mockedIBus.searchAndDetail(q, 10, 2, 10, 30000, new String[] { "" })).thenReturn(hits_11_19);
+        when(mockedIBus.searchAndDetail(q, 10, 1, 0, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), new String[] { "" })).thenReturn(hits_1_10);
+        when(mockedIBus.searchAndDetail(q, 10, 2, 10, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), new String[] { "" })).thenReturn(hits_11_19);
 
         it = new IBusQueryResultIterator(q, new String[] { "" }, mockedIBus);
         try {

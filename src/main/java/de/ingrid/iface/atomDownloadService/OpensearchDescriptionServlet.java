@@ -13,22 +13,22 @@ import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
-import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
+import de.ingrid.iface.atomDownloadService.om.OpensearchDescription;
+import de.ingrid.iface.atomDownloadService.requests.OpensearchDescriptionRequest;
 import de.ingrid.iface.util.SearchInterfaceServlet;
 
 @Service
-public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInterfaceServlet {
+public class OpensearchDescriptionServlet extends HttpServlet implements SearchInterfaceServlet {
 
-    private static final long serialVersionUID = 13414157L;
-
-    @Autowired
-    private DatasetFeedAtomBuilder datasetFeedAtomBuilder;
+    private static final long serialVersionUID = 134123478157L;
 
     @Autowired
-    private DatasetFeedProducer datasetFeedProducer;
+    private OpensearchDescriptionProducer opensearchDescriptionProducer;
 
-    private final static Log log = LogFactory.getLog(DownloadDatasetFeedServlet.class);
+    @Autowired
+    private OpensearchDescriptionBuilder opensearchDescriptionBuilder;
+
+    private final static Log log = LogFactory.getLog(OpensearchDescriptionServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -37,26 +37,27 @@ public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInt
         }
         try {
             // extract method from path
-            DatasetFeedRequest datasetFeedRequest = new DatasetFeedRequest(req);
+            OpensearchDescriptionRequest opensearchDescriptionRequest = new OpensearchDescriptionRequest(req);
             // handle method, create response
-            DatasetFeed datasetFeed = datasetFeedProducer.produce(datasetFeedRequest);
-            String body = datasetFeedAtomBuilder.build(datasetFeed);
-            resp.setContentType("application/atom+xml");
+            OpensearchDescription opensearchDescription = opensearchDescriptionProducer.produce(opensearchDescriptionRequest);
+            String body = opensearchDescriptionBuilder.build(opensearchDescription);
+            resp.setContentType("application/opensearchdescription+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
+
         } catch (Exception e) {
-            log.error("Error executing get dataset feed.", e);
+            log.error("Error executing get opensearch description.", e);
         }
     }
 
     @Override
     public String getName() {
-        return "AtomDownloadDatasetFeed";
+        return "OpensearchDescriptionService";
     }
 
     @Override
     public String getPathSpec() {
-        return "/dls/dataset/*";
+        return "/dls/opensearch-description/*";
     }
 
 }

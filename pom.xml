@@ -26,11 +26,11 @@
 
 	<dependencyManagement>
 		<dependencies>
-            <dependency>
-                <groupId>de.ingrid</groupId>
-                <artifactId>ingrid-utils</artifactId>
-                <version>3.3.0.1</version>
-            </dependency>
+			<dependency>
+				<groupId>de.ingrid</groupId>
+				<artifactId>ingrid-utils</artifactId>
+				<version>3.3.0.1</version>
+			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -64,7 +64,6 @@
 				<artifactId>spring-core</artifactId>
 				<version>3.0.7.RELEASE</version>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 
@@ -74,21 +73,23 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.4</version>
 		</dependency>
-<!--
- 		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-parsers</artifactId>
-			<version>1.4</version>
-		</dependency>
- -->		
+		<!-- <dependency> <groupId>org.apache.tika</groupId> <artifactId>tika-parsers</artifactId> 
+			<version>1.4</version> </dependency> -->
 		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jetty</artifactId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.1.13.v20130916</version>
 		</dependency>
-		<dependency>
-			<groupId>org.mortbay.jetty</groupId>
-			<artifactId>jsp-2.1</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>8.1.13.v20130916</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-http</artifactId>
+            <version>8.1.13.v20130916</version>
+        </dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
