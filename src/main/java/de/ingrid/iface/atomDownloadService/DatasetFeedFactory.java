@@ -69,11 +69,6 @@ public class DatasetFeedFactory {
                 }
             }
         }
-        
-        if (doc == null) {
-            log.error("No dataset feed document for " + datasetFeedRequest.toString() + " found.");
-            throw new Exception("No dataset feed document for " + datasetFeedRequest.toString() + " found.");
-        }
         return doc;
     }
 

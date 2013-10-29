@@ -58,44 +58,48 @@ public class DatasetFeedProducer {
             log.debug("Build dataset feed for dataset: " + datasetFeedRequest.toString());
         }
 
-        DatasetFeed datasetFeed = new DatasetFeed();
+        DatasetFeed datasetFeed = null;
 
         Document doc = datasetFeedFactory.getDatasetFeedDocument(datasetFeedRequest);
+        if (doc != null) {
 
-        datasetFeed.setUuid(XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
-        datasetFeed.setTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
-        datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
+            datasetFeed = new DatasetFeed();
 
-        Link link = new Link();
-        link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{dataset-uuid}", StringUtils.encodeForPath(datasetFeed.getUuid())));
-        link.setHrefLang("de");
-        link.setType("application/atom+xml");
-        link.setRel("self");
-        datasetFeed.setSelfReferencingLink(link);
-        datasetFeed.setIdentifier(link.getHref());
+            datasetFeed.setUuid(XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
+            datasetFeed.setTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
+            datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
-        link = new Link();
-        link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
-        link.setHrefLang("de");
-        link.setType("application/atom+xml");
-        link.setRel("up");
-        link.setTitle("The parent service feed document.");
-        datasetFeed.setDownloadServiceFeed(link);
+            Link link = new Link();
+            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{dataset-uuid}", StringUtils.encodeForPath(datasetFeed.getUuid())));
+            link.setHrefLang("de");
+            link.setType("application/atom+xml");
+            link.setRel("self");
+            datasetFeed.setSelfReferencingLink(link);
+            datasetFeed.setIdentifier(link.getHref());
 
-        datasetFeed.setRights(XPATH.getString(doc, "//gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue"));
-        datasetFeed.setUpdated(XPATH.getString(doc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
+            link = new Link();
+            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
+            link.setHrefLang("de");
+            link.setType("application/atom+xml");
+            link.setRel("up");
+            link.setTitle("The parent service feed document.");
+            datasetFeed.setDownloadServiceFeed(link);
 
-        Author author = new Author();
-        author.setName(XPATH.getString(doc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
-        author.setEmail(XPATH.getString(doc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
-        datasetFeed.setAuthor(author);
+            datasetFeed.setRights(XPATH.getString(doc, "//gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue"));
+            datasetFeed.setUpdated(XPATH.getString(doc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
 
-        List<DatasetFeedEntry> entryList = new ArrayList<DatasetFeedEntry>();
-        for (DatasetFeedEntryProducer producer : datasetFeedEntryProducer) {
-            entryList.addAll(producer.produce(doc));
+            Author author = new Author();
+            author.setName(XPATH.getString(doc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
+            author.setEmail(XPATH.getString(doc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
+            datasetFeed.setAuthor(author);
+
+            List<DatasetFeedEntry> entryList = new ArrayList<DatasetFeedEntry>();
+            for (DatasetFeedEntryProducer producer : datasetFeedEntryProducer) {
+                entryList.addAll(producer.produce(doc));
+            }
+
+            datasetFeed.setEntries(entryList);
         }
-
-        datasetFeed.setEntries(entryList);
 
         return datasetFeed;
 
