@@ -16,14 +16,8 @@ import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
-import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
-import de.ingrid.iface.util.IBusHelper;
-import de.ingrid.iface.util.IBusQueryResultIterator;
-import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
-import de.ingrid.utils.IBus;
-import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.queryparser.ParseException;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
@@ -31,11 +25,10 @@ import de.ingrid.utils.xpath.XPathUtils;
 @Service
 public class DatasetFeedProducer {
 
-    private static final String[] REQUESTED_FIELDS = new String[] {};
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
     @Autowired
-    private IngridQueryProducer ingridQueryProducer;
+    private DatasetFeedFactory datasetFeedFactory;
 
     @Autowired
     private SearchInterfaceConfig config;
@@ -62,37 +55,12 @@ public class DatasetFeedProducer {
     public DatasetFeed produce(DatasetFeedRequest datasetFeedRequest) throws ParseException, Exception {
 
         if (log.isDebugEnabled()) {
-            log.debug("Build dataset feed for service: " + datasetFeedRequest.getServiceFeedUuid() + " and dataset: " + datasetFeedRequest.getUuid());
+            log.debug("Build dataset feed for dataset: " + datasetFeedRequest.toString());
         }
 
         DatasetFeed datasetFeed = new DatasetFeed();
 
-        Document doc = null;
-
-        if (datasetFeedRequest.getUuid().toLowerCase().contains("request=getrecordbyid")) {
-            if (log.isDebugEnabled()) {
-                log.debug("Found external dataset: " + datasetFeedRequest.getUuid());
-            }
-            // ISO Metadaten
-            doc = StringUtils.urlToDocument(datasetFeedRequest.getUuid());
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Found IGC based dataset: " + datasetFeedRequest.getUuid());
-            }
-            // igc Metadaten
-            IBus iBus = IBusHelper.getIBus();
-
-            // create response header
-            IBusQueryResultIterator datasetIterator = new IBusQueryResultIterator(ingridQueryProducer.createDatasetFeedInGridQuery(datasetFeedRequest.getUuid()), REQUESTED_FIELDS, iBus);
-            IngridHit hit = null;
-            if (datasetIterator.hasNext()) {
-                hit = datasetIterator.next();
-                doc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
-            } else {
-                log.error("No dataset with uuid '" + datasetFeedRequest.getUuid() + "' found in IGC catalogs.");
-                throw new Exception("No dataset with uuid '" + datasetFeedRequest.getUuid() + "' found in IGC catalogs.");
-            }
-        }
+        Document doc = datasetFeedFactory.getDatasetFeedDocument(datasetFeedRequest);
 
         datasetFeed.setUuid(XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
         datasetFeed.setTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));

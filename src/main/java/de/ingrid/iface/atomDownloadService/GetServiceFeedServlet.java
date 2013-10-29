@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.http.HttpException;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.util.SearchInterfaceServlet;
 
 @Service
-public class DownloadServiceFeedServlet extends HttpServlet implements SearchInterfaceServlet {
+public class GetServiceFeedServlet extends HttpServlet implements SearchInterfaceServlet {
 
     private static final long serialVersionUID = 13414157L;
 
@@ -28,7 +29,7 @@ public class DownloadServiceFeedServlet extends HttpServlet implements SearchInt
     @Autowired
     private ServiceFeedProducer serviceFeedProducer;
 
-    private final static Log log = LogFactory.getLog(DownloadServiceFeedServlet.class);
+    private final static Log log = LogFactory.getLog(GetServiceFeedServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,11 +41,16 @@ public class DownloadServiceFeedServlet extends HttpServlet implements SearchInt
             ServiceFeedRequest serviceFeedRequest = new ServiceFeedRequest(req);
             // handle method, create response
             ServiceFeed serviceFeed = serviceFeedProducer.produce(serviceFeedRequest);
+            if (serviceFeed == null) {
+                throw (HttpException) new HttpException(404, "Service Feed not found.");
+            }
             String body = serviceFeedAtomBuilder.build(serviceFeed);
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
 
+        } catch (HttpException e) {
+            throw(e);
         } catch (Exception e) {
             log.error("Error executing get service feed.", e);
         }

@@ -18,6 +18,7 @@ import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
+import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
@@ -52,7 +53,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         atomDownloadDatasetFeedUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_DATASET_FEED_EXTENSION);
     }
 
-    public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed) throws Exception {
+    public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed, ServiceFeedRequest serviceFeedRequest) throws Exception {
 
         if (log.isDebugEnabled()) {
             log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());
@@ -62,7 +63,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
         String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
-        IBusQueryResultIterator serviceEntryIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedEntryInGridQuery(coupledUuids), REQUESTED_FIELDS, iBus);
+        IBusQueryResultIterator serviceEntryIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedEntryInGridQuery(coupledUuids, serviceFeedRequest), REQUESTED_FIELDS, iBus);
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
             if (log.isDebugEnabled()) {

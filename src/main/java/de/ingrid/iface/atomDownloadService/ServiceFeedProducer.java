@@ -66,12 +66,13 @@ public class ServiceFeedProducer {
             log.debug("Build service feed from IGC resource for service: " + serviceFeedRequest.getUuid());
         }
         
-        ServiceFeed serviceFeed = new ServiceFeed();
+        ServiceFeed serviceFeed = null;
         IBus iBus = IBusHelper.getIBus();
 
         // create response header
-        IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest.getUuid()), REQUESTED_FIELDS, iBus);
+        IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest), REQUESTED_FIELDS, iBus);
         if (serviceIterator.hasNext()) {
+            serviceFeed = new ServiceFeed();
             IngridHit hit = serviceIterator.next();
             if (log.isDebugEnabled()) {
                 log.debug("Found valid service: " + hit.getHitDetail().getTitle());
@@ -114,12 +115,12 @@ public class ServiceFeedProducer {
 
             List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
             for (ServiceFeedEntryProducer producer : serviceFeedEntryProducer) {
-                entryList.addAll(producer.produce(idfDoc, serviceFeed));
+                entryList.addAll(producer.produce(idfDoc, serviceFeed, serviceFeedRequest));
             }
 
             serviceFeed.setEntries(entryList);
         }
-
+        
         return serviceFeed;
 
     }

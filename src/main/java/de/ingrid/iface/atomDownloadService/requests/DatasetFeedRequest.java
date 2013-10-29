@@ -6,26 +6,56 @@ import org.springframework.util.StringUtils;
 
 public class DatasetFeedRequest {
 
-    private String uuid;
+    private String datasetFeedUuid;
     private String serviceFeedUuid;
+    private String spatialDatasetIdentifierCode;
+    private String spatialDatasetIdentifierNamespace;
+    private String language;
+    private String crs;
 
     public DatasetFeedRequest(HttpServletRequest req) throws Exception {
 
+        String p = req.getParameter("spatial_dataset_identifier_code");
+        if (p != null) {
+            spatialDatasetIdentifierCode = p;
+        }
+
+        p = req.getParameter("spatial_dataset_identifier_namespace");
+        if (p != null) {
+            spatialDatasetIdentifierNamespace = p;
+        }
+
+        p = req.getParameter("language");
+        if (p != null) {
+            language = p;
+        }
+
+        p = req.getParameter("crs");
+        if (p != null) {
+            crs = p;
+        }
+
         String path = StringUtils.trimLeadingCharacter(req.getPathInfo(), '/');
         int idx = path.indexOf('/');
-        if (idx <= 0) {
-            throw new Exception("Could not handle data set request parameter: " + req.getPathInfo());
+        if (idx > 0) {
+            serviceFeedUuid = path.substring(0, idx);
+            datasetFeedUuid = path.substring(idx + 1);
+        } else {
+            serviceFeedUuid = path;
         }
-        serviceFeedUuid = path.substring(0, idx - 1);
-        uuid = path.substring(idx + 1);
     }
 
-    public String getUuid() {
-        return uuid;
+    public String toString() {
+        return "DatasetFeedRequest: {servicefeedUuid:" + serviceFeedUuid + ", datasetFeedUuid:" + datasetFeedUuid + ", spatialDatasetIdentifierCode: " + spatialDatasetIdentifierCode + ", spatialDatasetIdentifierNamespace: "
+                + spatialDatasetIdentifierNamespace + ", crs:" + crs + ", language:" + language;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public String getDatasetFeedUuid() {
+        return datasetFeedUuid;
+    }
+
+    public void setDatasetFeedUuid(String uuid) {
+        this.datasetFeedUuid = uuid;
     }
 
     public String getServiceFeedUuid() {
@@ -34,6 +64,38 @@ public class DatasetFeedRequest {
 
     public void setServiceFeedUuid(String serviceFeedUuid) {
         this.serviceFeedUuid = serviceFeedUuid;
+    }
+
+    public String getSpatialDatasetIdentifierCode() {
+        return spatialDatasetIdentifierCode;
+    }
+
+    public void setSpatialDatasetIdentifierCode(String spatialDatasetIdentifierCode) {
+        this.spatialDatasetIdentifierCode = spatialDatasetIdentifierCode;
+    }
+
+    public String getSpatialDatasetIdentifierNamespace() {
+        return spatialDatasetIdentifierNamespace;
+    }
+
+    public void setSpatialDatasetIdentifierNamespace(String spatialDatasetIdentifierNamespace) {
+        this.spatialDatasetIdentifierNamespace = spatialDatasetIdentifierNamespace;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getCrs() {
+        return crs;
+    }
+
+    public void setCrs(String crs) {
+        this.crs = crs;
     }
 
 }

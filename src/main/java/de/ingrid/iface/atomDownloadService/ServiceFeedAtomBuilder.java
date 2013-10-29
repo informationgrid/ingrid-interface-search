@@ -73,6 +73,7 @@ public class ServiceFeedAtomBuilder {
             }
             result.append("</entry>\n");
         }
+        result.append("</feed>\n");
 
         return result.toString();
 

@@ -1,6 +1,7 @@
 package de.ingrid.iface.atomDownloadService;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,21 +15,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
+import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
+import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.util.SearchInterfaceServlet;
 
 @Service
-public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInterfaceServlet {
+public class GetDatasetServlet extends HttpServlet implements SearchInterfaceServlet {
 
-    private static final long serialVersionUID = 13414157L;
+    private static final long serialVersionUID = 13411244157L;
 
     @Autowired
-    private DatasetFeedAtomBuilder datasetFeedAtomBuilder;
+    private DatasetAtomBuilder datasetAtomBuilder;
 
     @Autowired
     private DatasetFeedProducer datasetFeedProducer;
 
-    private final static Log log = LogFactory.getLog(DownloadDatasetFeedServlet.class);
+    private final static Log log = LogFactory.getLog(GetDatasetServlet.class);
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -40,7 +43,21 @@ public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInt
             DatasetFeedRequest datasetFeedRequest = new DatasetFeedRequest(req);
             // handle method, create response
             DatasetFeed datasetFeed = datasetFeedProducer.produce(datasetFeedRequest);
-            String body = datasetFeedAtomBuilder.build(datasetFeed);
+            // check if we only have one download link, if yes, redirect to the download link
+            List<DatasetFeedEntry> datasetFeedEntries = datasetFeed.getEntries();
+            if (datasetFeedEntries != null && datasetFeedEntries.size() == 1) {
+                DatasetFeedEntry entry = datasetFeedEntries.get(0);
+                List<Link> links = entry.getLinks();
+                if (links != null && links.size() == 1) {
+                    Link link = links.get(0);
+                    resp.sendRedirect(link.getHref());
+                    ((Request) req).setHandled(true);
+                    return;
+                }
+            }
+            
+            // if we have more than one download link, create a atom feed wit all of them
+            String body = datasetAtomBuilder.build(datasetFeed);
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
@@ -51,12 +68,12 @@ public class DownloadDatasetFeedServlet extends HttpServlet implements SearchInt
 
     @Override
     public String getName() {
-        return "AtomDownloadDatasetFeed";
+        return "AtomDownloadDataset";
     }
 
     @Override
     public String getPathSpec() {
-        return "/dls/dataset/*";
+        return "/dls/get-dataset/*";
     }
 
 }

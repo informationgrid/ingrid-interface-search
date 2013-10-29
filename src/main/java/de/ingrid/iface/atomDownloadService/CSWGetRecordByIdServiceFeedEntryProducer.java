@@ -18,6 +18,7 @@ import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
+import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
@@ -43,7 +44,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
         atomDownloadDatasetFeedUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_DATASET_FEED_EXTENSION);
     }
 
-    public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed) throws Exception {
+    public List<ServiceFeedEntry> produce(Document idfDoc, ServiceFeed serviceFeed, ServiceFeedRequest serviceFeedRequest) throws Exception {
 
         if (log.isDebugEnabled()) {
             log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());

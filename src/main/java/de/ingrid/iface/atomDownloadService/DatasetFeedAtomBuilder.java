@@ -43,6 +43,7 @@ public class DatasetFeedAtomBuilder {
             result.append("<id>" + entry.getId() + "</id>\n");
             result.append("</entry>\n");
         }
+        result.append("</feed>\n");
 
         return result.toString();
 
