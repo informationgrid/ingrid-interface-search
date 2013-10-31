@@ -27,13 +27,10 @@ public class DatasetFeedProducer {
 
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
-    @Autowired
     private DatasetFeedFactory datasetFeedFactory;
 
-    @Autowired
     private SearchInterfaceConfig config;
 
-    @Autowired
     private List<DatasetFeedEntryProducer> datasetFeedEntryProducer;
 
     private String atomDownloadDatasetFeedUrlPattern = null;
@@ -103,6 +100,21 @@ public class DatasetFeedProducer {
 
         return datasetFeed;
 
+    }
+
+    @Autowired
+    public void setDatasetFeedFactory(DatasetFeedFactory datasetFeedFactory) {
+        this.datasetFeedFactory = datasetFeedFactory;
+    }
+
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
+    }
+
+    @Autowired
+    public void setDatasetFeedEntryProducer(List<DatasetFeedEntryProducer> datasetFeedEntryProducer) {
+        this.datasetFeedEntryProducer = datasetFeedEntryProducer;
     }
 
 }

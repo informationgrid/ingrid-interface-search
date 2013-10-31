@@ -30,7 +30,6 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
-    @Autowired
     private SearchInterfaceConfig config;
 
     private String atomDownloadDatasetFeedUrlPattern = null;
@@ -118,6 +117,11 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
         }
 
         return entryList;
+    }
+
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
     }
 
 }

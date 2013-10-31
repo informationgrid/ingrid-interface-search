@@ -15,36 +15,39 @@ import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.StringUtilsService;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 
 @Service
 public class DatasetFeedFactory {
-    
-    @Autowired
+
     private IngridQueryProducer ingridQueryProducer;
-    
-    @Autowired
+
     private ServiceFeedProducer serviceFeedProducer;
+
+    private IBusHelper iBusHelper;
+
+    private StringUtilsService stringUtilsService;
 
     private final static Log log = LogFactory.getLog(DatasetFeedFactory.class);
 
     private static final String[] REQUESTED_FIELDS = new String[] {};
 
-    Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
-        
+    public Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
+
         Document doc = null;
-        
+
         String datasetFeedUuid = datasetFeedRequest.getDatasetFeedUuid();
         if (datasetFeedUuid != null && datasetFeedUuid.toLowerCase().contains("request=getrecordbyid")) {
             if (log.isDebugEnabled()) {
                 log.debug("Found external dataset: " + datasetFeedRequest.getDatasetFeedUuid());
             }
             // ISO Metadaten
-            doc = StringUtils.urlToDocument(datasetFeedRequest.getDatasetFeedUuid());
+            doc = stringUtilsService.urlToDocument(datasetFeedRequest.getDatasetFeedUuid());
         } else {
             // igc Metadaten
-            IBus iBus = IBusHelper.getIBus();
+            IBus iBus = iBusHelper.getIBus();
 
             IBusQueryResultIterator datasetIterator = new IBusQueryResultIterator(ingridQueryProducer.createDatasetFeedInGridQuery(datasetFeedRequest), REQUESTED_FIELDS, iBus);
             IngridHit hit = null;
@@ -61,8 +64,8 @@ public class DatasetFeedFactory {
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
                     if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
-                        if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode()) &&
-                                entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
+                        if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())
+                                && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
                             doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref());
                         }
                     }
@@ -70,6 +73,26 @@ public class DatasetFeedFactory {
             }
         }
         return doc;
+    }
+
+    @Autowired
+    public void setIngridQueryProducer(IngridQueryProducer ingridQueryProducer) {
+        this.ingridQueryProducer = ingridQueryProducer;
+    }
+
+    @Autowired
+    public void setServiceFeedProducer(ServiceFeedProducer serviceFeedProducer) {
+        this.serviceFeedProducer = serviceFeedProducer;
+    }
+
+    @Autowired
+    public void setiBusHelper(IBusHelper iBusHelper) {
+        this.iBusHelper = iBusHelper;
+    }
+
+    @Autowired
+    public void setStringUtilsService(StringUtilsService stringUtilsService) {
+        this.stringUtilsService = stringUtilsService;
     }
 
 }

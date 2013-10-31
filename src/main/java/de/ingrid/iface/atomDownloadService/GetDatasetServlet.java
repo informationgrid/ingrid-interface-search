@@ -26,10 +26,8 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
 
     private static final long serialVersionUID = 13411244157L;
 
-    @Autowired
     private DatasetAtomBuilder datasetAtomBuilder;
 
-    @Autowired
     private DatasetFeedProducer datasetFeedProducer;
 
     private final static Log log = LogFactory.getLog(GetDatasetServlet.class);
@@ -47,7 +45,8 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
             if (datasetFeed == null) {
                 throw (HttpException) new HttpException(404, "Dataset not found.");
             }
-            // check if we only have one download link, if yes, redirect to the download link
+            // check if we only have one download link, if yes, redirect to the
+            // download link
             List<DatasetFeedEntry> datasetFeedEntries = datasetFeed.getEntries();
             if (datasetFeedEntries != null && datasetFeedEntries.size() == 1) {
                 DatasetFeedEntry entry = datasetFeedEntries.get(0);
@@ -59,8 +58,9 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
                     return;
                 }
             }
-            
-            // if we have more than one download link, create a atom feed wit all of them
+
+            // if we have more than one download link, create a atom feed wit
+            // all of them
             String body = datasetAtomBuilder.build(datasetFeed);
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
@@ -78,6 +78,16 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
     @Override
     public String getPathSpec() {
         return "/dls/get-dataset/*";
+    }
+
+    @Autowired
+    public void setDatasetAtomBuilder(DatasetAtomBuilder datasetAtomBuilder) {
+        this.datasetAtomBuilder = datasetAtomBuilder;
+    }
+
+    @Autowired
+    public void setDatasetFeedProducer(DatasetFeedProducer datasetFeedProducer) {
+        this.datasetFeedProducer = datasetFeedProducer;
     }
 
 }

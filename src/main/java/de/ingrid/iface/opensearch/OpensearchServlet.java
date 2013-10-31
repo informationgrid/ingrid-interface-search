@@ -24,6 +24,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.eclipse.jetty.http.HttpException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.opensearch.util.OpensearchUtil;
@@ -56,9 +57,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
 
-    private IBus bus;
+    @Autowired
+    private IBusHelper iBusHelper;
 
     private static Integer MAX_IBUS_RESULT_SET_SIZE = 100;
+
+    private IBus bus;
 
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
@@ -99,11 +103,11 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         int hitCounter = 0;
         try {
 
-            hitIterator = new IBusQueryResultIterator(query, requestedMetadata, bus, pageSize, startHit, hitsPerPage * page);
+            hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, startHit, hitsPerPage * page);
             response.setCharacterEncoding("UTF-8");
             pout = response.getWriter();
             Document doc = DocumentHelper.createDocument();
-            while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter ==0) {
+            while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
                 if (hitCounter == 0) {
                     pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
@@ -137,9 +141,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     if (requestWrapper.withGeoRSS()) {
                         item.addNamespace("georss", "http://www.georss.org/georss");
                     }
-    
+
                     IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
-    
+
                     addItemTitle(item, hit, requestWrapper, true);
                     addItemLink(item, hit, requestWrapper, true);
                     item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
@@ -217,7 +221,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
      */
     public void init(ServletConfig arg0) throws ServletException {
         try {
-            bus = IBusHelper.getIBus();
+            bus = iBusHelper.getIBus();
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -227,7 +231,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     private IngridQuery createIngridQueryFromRequest(RequestWrapper requestWrapper) {
         IngridQuery query = requestWrapper.getQuery();
 
-        IBusHelper.injectCache(query);
+        iBusHelper.injectCache(query);
 
         // if detail data are requested, set direct data property to get the
         // date during search

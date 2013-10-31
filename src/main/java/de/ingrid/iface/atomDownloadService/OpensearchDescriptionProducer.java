@@ -34,13 +34,12 @@ import de.ingrid.utils.xpath.XPathUtils;
 @Service
 public class OpensearchDescriptionProducer {
 
-    @Autowired
     private IngridQueryProducer ingridQueryProducer;
 
-    @Autowired
     private SearchInterfaceConfig config;
 
-    @Autowired
+    private IBusHelper iBusHelper;
+
     private ServiceFeedProducer serviceFeedProducer;
 
     private static final String[] REQUESTED_FIELDS = new String[] {};
@@ -79,7 +78,7 @@ public class OpensearchDescriptionProducer {
             log.debug("Build service feed from IGC resource for service: " + opensearchDescriptionRequest.getUuid());
         }
 
-        IBus iBus = IBusHelper.getIBus();
+        IBus iBus = iBusHelper.getIBus();
 
         // create response header
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(opensearchDescriptionRequest.getUuid()), REQUESTED_FIELDS, iBus);
@@ -147,6 +146,26 @@ public class OpensearchDescriptionProducer {
         }
 
         return result;
+    }
+
+    @Autowired
+    public void setIngridQueryProducer(IngridQueryProducer ingridQueryProducer) {
+        this.ingridQueryProducer = ingridQueryProducer;
+    }
+
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
+    }
+
+    @Autowired
+    public void setiBusHelper(IBusHelper iBusHelper) {
+        this.iBusHelper = iBusHelper;
+    }
+
+    @Autowired
+    public void setServiceFeedProducer(ServiceFeedProducer serviceFeedProducer) {
+        this.serviceFeedProducer = serviceFeedProducer;
     }
 
 }

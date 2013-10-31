@@ -22,10 +22,8 @@ public class OpensearchDescriptionServlet extends HttpServlet implements SearchI
 
     private static final long serialVersionUID = 134123478157L;
 
-    @Autowired
     private OpensearchDescriptionProducer opensearchDescriptionProducer;
 
-    @Autowired
     private OpensearchDescriptionBuilder opensearchDescriptionBuilder;
 
     private final static Log log = LogFactory.getLog(OpensearchDescriptionServlet.class);
@@ -58,6 +56,16 @@ public class OpensearchDescriptionServlet extends HttpServlet implements SearchI
     @Override
     public String getPathSpec() {
         return "/dls/opensearch-description/*";
+    }
+
+    @Autowired
+    public void setOpensearchDescriptionProducer(OpensearchDescriptionProducer opensearchDescriptionProducer) {
+        this.opensearchDescriptionProducer = opensearchDescriptionProducer;
+    }
+
+    @Autowired
+    public void setOpensearchDescriptionBuilder(OpensearchDescriptionBuilder opensearchDescriptionBuilder) {
+        this.opensearchDescriptionBuilder = opensearchDescriptionBuilder;
     }
 
 }

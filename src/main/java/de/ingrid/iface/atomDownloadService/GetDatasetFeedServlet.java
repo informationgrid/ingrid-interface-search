@@ -23,10 +23,8 @@ public class GetDatasetFeedServlet extends HttpServlet implements SearchInterfac
 
     private static final long serialVersionUID = 13414157L;
 
-    @Autowired
     private DatasetFeedAtomBuilder datasetFeedAtomBuilder;
 
-    @Autowired
     private DatasetFeedProducer datasetFeedProducer;
 
     private final static Log log = LogFactory.getLog(GetDatasetFeedServlet.class);
@@ -61,6 +59,16 @@ public class GetDatasetFeedServlet extends HttpServlet implements SearchInterfac
     @Override
     public String getPathSpec() {
         return "/dls/dataset/*";
+    }
+
+    @Autowired
+    public void setDatasetFeedAtomBuilder(DatasetFeedAtomBuilder datasetFeedAtomBuilder) {
+        this.datasetFeedAtomBuilder = datasetFeedAtomBuilder;
+    }
+
+    @Autowired
+    public void setDatasetFeedProducer(DatasetFeedProducer datasetFeedProducer) {
+        this.datasetFeedProducer = datasetFeedProducer;
     }
 
 }

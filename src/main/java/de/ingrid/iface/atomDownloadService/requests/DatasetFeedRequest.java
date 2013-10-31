@@ -13,6 +13,10 @@ public class DatasetFeedRequest {
     private String language;
     private String crs;
 
+    public DatasetFeedRequest() {
+        super();
+    }
+
     public DatasetFeedRequest(HttpServletRequest req) throws Exception {
 
         String p = req.getParameter("spatial_dataset_identifier_code");

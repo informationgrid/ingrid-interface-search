@@ -118,6 +118,11 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
             if (log.isDebugEnabled()) {
                 startTimer = System.currentTimeMillis();
             }
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Executed InGrid Query (query: " + q.toString() + ", pageSize:" + pageSize + ", currentPage:" + currentPage + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"
+                        + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000));
+            }
             result = iBus.searchAndDetail(q, pageSize, currentPage, (currentPage - 1) * pageSize + startHit, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), this.requestedFields);
             if (log.isDebugEnabled()) {
                 log.debug("Executed InGrid Query (pageSize:" + pageSize + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"

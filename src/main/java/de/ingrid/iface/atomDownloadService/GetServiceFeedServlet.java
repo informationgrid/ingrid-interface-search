@@ -23,10 +23,8 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
 
     private static final long serialVersionUID = 13414157L;
 
-    @Autowired
     private ServiceFeedAtomBuilder serviceFeedAtomBuilder;
 
-    @Autowired
     private ServiceFeedProducer serviceFeedProducer;
 
     private final static Log log = LogFactory.getLog(GetServiceFeedServlet.class);
@@ -50,7 +48,7 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
             ((Request) req).setHandled(true);
 
         } catch (HttpException e) {
-            throw(e);
+            throw (e);
         } catch (Exception e) {
             log.error("Error executing get service feed.", e);
         }
@@ -64,6 +62,16 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
     @Override
     public String getPathSpec() {
         return "/dls/service/*";
+    }
+
+    @Autowired
+    public void setServiceFeedAtomBuilder(ServiceFeedAtomBuilder serviceFeedAtomBuilder) {
+        this.serviceFeedAtomBuilder = serviceFeedAtomBuilder;
+    }
+
+    @Autowired
+    public void setServiceFeedProducer(ServiceFeedProducer serviceFeedProducer) {
+        this.serviceFeedProducer = serviceFeedProducer;
     }
 
 }

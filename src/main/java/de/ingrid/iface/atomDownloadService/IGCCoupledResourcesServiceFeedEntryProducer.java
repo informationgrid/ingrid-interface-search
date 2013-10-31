@@ -36,11 +36,11 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
     private static final String[] REQUESTED_FIELDS = new String[] {};
 
-    @Autowired
     private IngridQueryProducer ingridQueryProducer;
 
-    @Autowired
     private SearchInterfaceConfig config;
+
+    private IBusHelper iBusHelper;
 
     private final static Log log = LogFactory.getLog(IGCCoupledResourcesServiceFeedEntryProducer.class);
 
@@ -59,7 +59,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             log.debug("Build service feed entries from IGC resource for service: " + serviceFeed.getUuid());
         }
 
-        IBus iBus = IBusHelper.getIBus();
+        IBus iBus = iBusHelper.getIBus();
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
         String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
@@ -127,6 +127,21 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         }
 
         return entryList;
+    }
+
+    @Autowired
+    public void setIngridQueryProducer(IngridQueryProducer ingridQueryProducer) {
+        this.ingridQueryProducer = ingridQueryProducer;
+    }
+
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
+    }
+
+    @Autowired
+    public void setiBusHelper(IBusHelper iBusHelper) {
+        this.iBusHelper = iBusHelper;
     }
 
 }

@@ -2,6 +2,7 @@ package de.ingrid.iface.util;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.ibus.client.BusClient;
@@ -14,11 +15,15 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Service
 public class IBusHelper {
-    private static IBus bus = null;
 
-    private static boolean cache = false;
+    @Autowired
+    private SearchInterfaceConfig config;
 
-    public static IBus getIBus() throws Exception {
+    private IBus bus = null;
+
+    private boolean cache = false;
+
+    public IBus getIBus() throws Exception {
         BusClient client;
 
         if (bus == null) {
@@ -36,7 +41,7 @@ public class IBusHelper {
         return bus;
     }
 
-    public static void injectCache(IngridQuery q) {
+    public void injectCache(IngridQuery q) {
         if (!q.containsKey("cache")) {
             if (cache) {
                 q.put("cache", "on");
@@ -50,12 +55,10 @@ public class IBusHelper {
 
         List<IngridHit> results = null;
 
-        IBus iBus = IBusHelper.getIBus();
-
         long cnt = 0;
         IngridHits hits;
         do {
-            hits = iBus.search(q, 10, 1, 10, 30000);
+            hits = bus.search(q, 10, 1, 10, 30000);
             cnt += hits.getHits().length;
             results.addAll(Arrays.asList(hits.getHits()));
         } while (cnt <= hits.length());

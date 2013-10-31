@@ -34,22 +34,20 @@ public class ServiceFeedProducer {
     private static final String[] REQUESTED_FIELDS = new String[] {};
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
-    @Autowired
     private IngridQueryProducer ingridQueryProducer;
 
-    @Autowired
     private List<ServiceFeedEntryProducer> serviceFeedEntryProducer;
 
-    @Autowired
     private SearchInterfaceConfig config;
+
+    private IBusHelper iBusHelper;
 
     private String atomDownloadServiceFeedUrlPattern = null;
 
     private String atomDownloadOpensearchDefinitionUrlPattern = null;
 
     private final static Log log = LogFactory.getLog(ServiceFeedProducer.class);
-    
-    
+
     @PostConstruct
     public void init() {
 
@@ -65,9 +63,9 @@ public class ServiceFeedProducer {
         if (log.isDebugEnabled()) {
             log.debug("Build service feed from IGC resource for service: " + serviceFeedRequest.getUuid());
         }
-        
+
         ServiceFeed serviceFeed = null;
-        IBus iBus = IBusHelper.getIBus();
+        IBus iBus = iBusHelper.getIBus();
 
         // create response header
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest), REQUESTED_FIELDS, iBus);
@@ -77,7 +75,7 @@ public class ServiceFeedProducer {
             if (log.isDebugEnabled()) {
                 log.debug("Found valid service: " + hit.getHitDetail().getTitle());
             }
-            
+
             Document idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
             serviceFeed.setUuid(XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString"));
             serviceFeed.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
@@ -120,9 +118,29 @@ public class ServiceFeedProducer {
 
             serviceFeed.setEntries(entryList);
         }
-        
+
         return serviceFeed;
 
+    }
+
+    @Autowired
+    public void setIngridQueryProducer(IngridQueryProducer ingridQueryProducer) {
+        this.ingridQueryProducer = ingridQueryProducer;
+    }
+
+    @Autowired
+    public void setServiceFeedEntryProducer(List<ServiceFeedEntryProducer> serviceFeedEntryProducer) {
+        this.serviceFeedEntryProducer = serviceFeedEntryProducer;
+    }
+
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
+    }
+
+    @Autowired
+    public void setiBusHelper(IBusHelper iBusHelper) {
+        this.iBusHelper = iBusHelper;
     }
 
 }
