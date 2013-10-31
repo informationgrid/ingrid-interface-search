@@ -1,5 +1,6 @@
-package de.ingrid.iface.util;
+package de.ingrid.iface_test.util;
 
+import de.ingrid.iface.util.StringUtils;
 import junit.framework.TestCase;
 
 public class StringUtilsTest extends TestCase {

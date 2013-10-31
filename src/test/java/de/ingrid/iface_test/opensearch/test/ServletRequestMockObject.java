@@ -1,4 +1,4 @@
-package de.ingrid.iface.opensearch.test;
+package de.ingrid.iface_test.opensearch.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;

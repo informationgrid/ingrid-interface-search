@@ -1,4 +1,4 @@
-package de.ingrid.iface.util;
+package de.ingrid.iface_test.util;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 
 import junit.framework.TestCase;
 import de.ingrid.ibus.Bus;
+import de.ingrid.iface.util.IBusQueryResultIterator;
+import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.query.IngridQuery;

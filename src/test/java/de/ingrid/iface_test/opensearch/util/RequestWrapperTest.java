@@ -1,7 +1,8 @@
-package de.ingrid.iface.opensearch.util;
+package de.ingrid.iface_test.opensearch.util;
 
 import junit.framework.TestCase;
-import de.ingrid.iface.opensearch.test.ServletRequestMockObject;
+import de.ingrid.iface.opensearch.util.RequestWrapper;
+import de.ingrid.iface_test.opensearch.test.ServletRequestMockObject;
 
 public class RequestWrapperTest extends TestCase {
 
