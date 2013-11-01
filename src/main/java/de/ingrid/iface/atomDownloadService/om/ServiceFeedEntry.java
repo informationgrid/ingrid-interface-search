@@ -3,8 +3,10 @@ package de.ingrid.iface.atomDownloadService.om;
 import java.util.List;
 
 public class ServiceFeedEntry {
-    
-    public enum EntryType {IGC, CSW};
+
+    public enum EntryType {
+        IGC, CSW
+    };
 
     private String uuid;
     private String title;
@@ -132,7 +134,5 @@ public class ServiceFeedEntry {
     public void setType(EntryType type) {
         this.type = type;
     }
-    
-    
 
 }

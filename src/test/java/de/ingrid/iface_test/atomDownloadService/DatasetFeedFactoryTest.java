@@ -61,6 +61,16 @@ public class DatasetFeedFactoryTest {
 
         assertEquals("28B5456A-AA9A-41F3-8EFA-27A0597A8FD9", XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
 
+        datasetFeedRequest = new DatasetFeedRequest();
+        datasetFeedRequest.setServiceFeedUuid("SERVICE_FEED_UUID_1");
+        datasetFeedRequest.setSpatialDatasetIdentifierCode("0e416521-9974-455e-9a49-538dca0546d6");
+        datasetFeedRequest.setSpatialDatasetIdentifierNamespace("http://portalu.de/igc_testNS");
+
+        doc = datasetFeedFactory.getDatasetFeedDocument(datasetFeedRequest);
+
+        assertEquals("DATASET_FEED_UUID_2", XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
+        
+        
     }
 
     @Before
@@ -108,12 +118,49 @@ public class DatasetFeedFactoryTest {
             record.put("data", data);
             when(mockedIbus.getRecord(hits[i])).thenReturn(record);
         }
-        IngridHits hits_1_10 = new IngridHits(hits.length, hits);
+        IngridHits hitsObject = new IngridHits(hits.length, hits);
 
         when(
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
-                        Matchers.any(String[].class))).thenReturn(hits_1_10);
+                        Matchers.any(String[].class))).thenReturn(hitsObject);
 
+        q = QueryStringParser.parse("ranking:score t01_object.obj_id:SERVICE_FEED_UUID_1");
+
+        hits = new IngridHit[1];
+        for (int i = 0; i < hits.length; i++) {
+            hits[i] = new IngridHit("plugid", i, 0, 1.0f);
+            hits[i].setHitDetail(new IngridHitDetail("plugid", i, 0, 1.0f, "service feed " + i, "summary service feed " + i));
+            Record record = new Record();
+            String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_service_" + (i + 1) + ".xml"));
+            record.put("compressed", "false");
+            record.put("data", data);
+            when(mockedIbus.getRecord(hits[i])).thenReturn(record);
+        }
+        hitsObject = new IngridHits(hits.length, hits);
+
+        when(
+                mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
+                        Matchers.any(String[].class))).thenReturn(hitsObject);
+        
+        q = QueryStringParser.parse("ranking:score iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\")");
+
+        hits = new IngridHit[1];
+        for (int i = 0; i < hits.length; i++) {
+            hits[i] = new IngridHit("plugid", i, 0, 1.0f);
+            hits[i].setHitDetail(new IngridHitDetail("plugid", i, 0, 1.0f, "service feed " + i, "summary service feed " + i));
+            Record record = new Record();
+            String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml"));
+            record.put("compressed", "false");
+            record.put("data", data);
+            when(mockedIbus.getRecord(hits[i])).thenReturn(record);
+        }
+        hitsObject = new IngridHits(hits.length, hits);
+        
+        when(
+                mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
+                        Matchers.any(String[].class))).thenReturn(hitsObject);
+        
+        
         when(iBusHelper.getIBus()).thenReturn(mockedIbus);
 
         when(

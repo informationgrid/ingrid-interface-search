@@ -10,6 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import de.ingrid.iface.atomDownloadService.om.Author;
 import de.ingrid.iface.atomDownloadService.om.Link;
@@ -81,7 +83,24 @@ public class ServiceFeedProducer {
             serviceFeed.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
             serviceFeed.setSubTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
             serviceFeed.setUpdated(XPATH.getString(idfDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
-            serviceFeed.setCopyright(XPATH.getString(idfDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue"));
+            
+            NodeList resourceConstraints = XPATH.getNodeList(idfDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
+            StringBuilder copyRight = new StringBuilder();
+            for (int i=0; i< resourceConstraints.getLength(); i++) {
+                Node resourceConstraint = resourceConstraints.item(i);
+                String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
+                if (copyRight.length() > 0) {
+                    copyRight.append("; ");
+                }
+                copyRight.append(restrictionCode);
+                if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
+                    String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
+                    if (otherRestrictions != null && otherRestrictions.length() > 0) {
+                        copyRight.append(": ").append(otherRestrictions);
+                    }
+                }
+            }
+            serviceFeed.setCopyright(copyRight.toString());
 
             Link link = new Link();
             link.setHref(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", serviceFeed.getUuid()));

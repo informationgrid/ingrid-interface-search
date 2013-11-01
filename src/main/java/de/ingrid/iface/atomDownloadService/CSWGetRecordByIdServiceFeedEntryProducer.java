@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import de.ingrid.iface.atomDownloadService.om.Author;
@@ -84,6 +85,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 link.setHrefLang("en");
                 link.setType("application/atom+xml");
                 entry.setDatasetFeed(link);
+                entry.setDatasetIdentifier(link.getHref());
 
                 String code = XPATH.getString(isoDoc, "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
                 if (code != null) {
@@ -93,7 +95,23 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 }
                 entry.setUpdated(XPATH.getString(isoDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
 
-                entry.setRights(XPATH.getString(isoDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints/*/gmd:accessConstraints/*/@codeListValue"));
+                NodeList resourceConstraints = XPATH.getNodeList(isoDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
+                StringBuilder copyRight = new StringBuilder();
+                for (int j=0; j< resourceConstraints.getLength(); j++) {
+                    Node resourceConstraint = resourceConstraints.item(j);
+                    String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
+                    if (copyRight.length() > 0) {
+                        copyRight.append("; ");
+                    }
+                    copyRight.append(restrictionCode);
+                    if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
+                        String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
+                        if (otherRestrictions != null && otherRestrictions.length() > 0) {
+                            copyRight.append(": ").append(otherRestrictions);
+                        }
+                    }
+                }
+                entry.setRights(copyRight.toString());
 
                 Author author = new Author();
                 author.setName(XPATH.getString(isoDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));

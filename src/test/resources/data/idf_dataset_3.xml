@@ -3,7 +3,7 @@
   <idf:body>
     <idf:idfMdMetadata xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://schemas.opengis.net/csw/2.0.2/profiles/apiso/1.0.0/apiso.xsd">
       <gmd:fileIdentifier>
-        <gco:CharacterString>C501F153-B144-4FD8-B007-A8B948DD1F8D</gco:CharacterString>
+        <gco:CharacterString>DATASET_FEED_UUID_3</gco:CharacterString>
       </gmd:fileIdentifier>
       <gmd:language>
         <gmd:LanguageCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#LanguageCode" codeListValue="ger">ger</gmd:LanguageCode>
@@ -356,30 +356,6 @@
               </gmd:specification>
             </gmd:MD_Format>
           </gmd:distributionFormat>
-          <gmd:transferOptions>
-            <gmd:MD_DigitalTransferOptions>
-              <gmd:onLine>
-                <idf:idfOnlineResource>
-                  <gmd:linkage>
-                    <gmd:URL>http://www.kalenderpedia.de/download/kalender-2014-querformat.xls</gmd:URL>
-                  </gmd:linkage>
-                  <gmd:applicationProfile>
-                    <gco:CharacterString>Excel</gco:CharacterString>
-                  </gmd:applicationProfile>
-                  <gmd:name>
-                    <gco:CharacterString>Kalender 2014</gco:CharacterString>
-                  </gmd:name>
-                  <gmd:description>
-                    <gco:CharacterString>Kalender 2014 CSV Daten download</gco:CharacterString>
-                  </gmd:description>
-                  <gmd:function>
-                    <gmd:CI_OnLineFunctionCode codeList="http://www.tc211.org/ISO19139/resources/codeList.xml#CI_OnLineFunctionCode" codeListValue="Download of data">Download of data</gmd:CI_OnLineFunctionCode>
-                  </gmd:function>
-                  <idf:attachedToField entry-id="9990" list-id="2000">Datendownload</idf:attachedToField>
-                </idf:idfOnlineResource>
-              </gmd:onLine>
-            </gmd:MD_DigitalTransferOptions>
-          </gmd:transferOptions>
           <gmd:transferOptions>
             <gmd:MD_DigitalTransferOptions>
               <gmd:onLine>
