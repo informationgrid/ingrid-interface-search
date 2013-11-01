@@ -43,6 +43,7 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
                 throw (HttpException) new HttpException(404, "Service Feed not found.");
             }
             String body = serviceFeedAtomBuilder.build(serviceFeed);
+            resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);

@@ -62,6 +62,7 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
             // if we have more than one download link, create a atom feed wit
             // all of them
             String body = datasetAtomBuilder.build(datasetFeed);
+            resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
