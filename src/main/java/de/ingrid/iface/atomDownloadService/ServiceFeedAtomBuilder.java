@@ -1,5 +1,6 @@
 package de.ingrid.iface.atomDownloadService;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.atomDownloadService.om.Category;
@@ -19,12 +20,12 @@ public class ServiceFeedAtomBuilder {
         result.append("<!-- identifier -->\n");
         result.append("<id>" + serviceFeed.getSelfReferencingLink().getHref() + "</id>\n");
         result.append("<!-- link to download service ISO 19139 metadata -->\n");
-        result.append("<link href=\"" + serviceFeed.getMetadataAccessUrl().getHref() + "\" rel=\"" + serviceFeed.getMetadataAccessUrl().getRel() + "\" type=\"" + serviceFeed.getMetadataAccessUrl().getType() + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getMetadataAccessUrl().getHref()) + "\" rel=\"" + serviceFeed.getMetadataAccessUrl().getRel() + "\" type=\"" + serviceFeed.getMetadataAccessUrl().getType() + "\"/>\n");
         result.append("<!-- self-referencing link to this feed -->\n");
-        result.append("<link href=\"" + serviceFeed.getSelfReferencingLink().getHref() + "\" rel=\"" + serviceFeed.getSelfReferencingLink().getRel() + "\" type=\"" + serviceFeed.getSelfReferencingLink().getType() + "\" hreflang=\""
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + serviceFeed.getSelfReferencingLink().getRel() + "\" type=\"" + serviceFeed.getSelfReferencingLink().getType() + "\" hreflang=\""
                 + serviceFeed.getSelfReferencingLink().getHrefLang() + "\" title=\"" + serviceFeed.getSelfReferencingLink().getTitle() + "\"/>\n");
         result.append("<!-- link to Open Search definition file for this service -->\n");
-        result.append("<link href=\"" + serviceFeed.getOpenSearchDefinitionLink().getHref() + "\" rel=\"" + serviceFeed.getOpenSearchDefinitionLink().getRel() + "\" type=\"" + serviceFeed.getOpenSearchDefinitionLink().getType()
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getHref()) + "\" rel=\"" + serviceFeed.getOpenSearchDefinitionLink().getRel() + "\" type=\"" + serviceFeed.getOpenSearchDefinitionLink().getType()
                 + "\" hreflang=\"" + serviceFeed.getOpenSearchDefinitionLink().getHrefLang() + "\" title=\"" + serviceFeed.getOpenSearchDefinitionLink().getTitle() + "\"/>\n");
         result.append("<!-- rights, access restrictions  -->\n");
         result.append("<rights>" + serviceFeed.getCopyright() + "</rights>\n");
@@ -40,9 +41,9 @@ public class ServiceFeedAtomBuilder {
             result.append("<!-- identifier for \"Dataset Feed\" for pre-defined dataset -->\n");
             result.append("<id>" + entry.getDatasetIdentifier() + "</id>\n");
             result.append("<!-- link to dataset metadata record -->\n");
-            result.append("<link href=\"" + entry.getDatasetMetadataRecord().getHref() + "\" rel=\"" + entry.getDatasetMetadataRecord().getRel() + "\" type=\"" + entry.getDatasetMetadataRecord().getType() + "\"/>\n");
+            result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetMetadataRecord().getHref()) + "\" rel=\"" + entry.getDatasetMetadataRecord().getRel() + "\" type=\"" + entry.getDatasetMetadataRecord().getType() + "\"/>\n");
             result.append("<!-- link to Dataset Feed -->\n");
-            result.append("<link href=\"" + entry.getDatasetFeed().getHref() + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\"" + entry.getDatasetFeed().getHrefLang() + "\" title=\"" + (entry.getDatasetFeed().getTitle() == null ? ""
+            result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\"" + entry.getDatasetFeed().getHrefLang() + "\" title=\"" + (entry.getDatasetFeed().getTitle() == null ? ""
                     : entry.getDatasetFeed().getTitle()) + "\"/>\n");
             result.append("<!-- rights, access info for pre-defined dataset -->\n");
             result.append("<rights>" + entry.getRights() + "</rights>\n");
