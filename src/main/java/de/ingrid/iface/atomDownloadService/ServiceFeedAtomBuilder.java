@@ -20,13 +20,16 @@ public class ServiceFeedAtomBuilder {
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getHref()) + "</id>\n");
         result.append("<!-- link to download service ISO 19139 metadata -->\n");
-        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getMetadataAccessUrl().getHref()) + "\" rel=\"" + serviceFeed.getMetadataAccessUrl().getRel() + "\" type=\"" + serviceFeed.getMetadataAccessUrl().getType() + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getMetadataAccessUrl().getHref()) + "\" rel=\"" + serviceFeed.getMetadataAccessUrl().getRel() + "\" type=\"" + serviceFeed.getMetadataAccessUrl().getType()
+                + "\"/>\n");
         result.append("<!-- self-referencing link to this feed -->\n");
-        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + serviceFeed.getSelfReferencingLink().getRel() + "\" type=\"" + serviceFeed.getSelfReferencingLink().getType() + "\" hreflang=\""
-                + serviceFeed.getSelfReferencingLink().getHrefLang() + "\" title=\"" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getTitle()) + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + serviceFeed.getSelfReferencingLink().getRel() + "\" type=\""
+                + serviceFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + serviceFeed.getSelfReferencingLink().getHrefLang() + "\" title=\"" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getTitle())
+                + "\"/>\n");
         result.append("<!-- link to Open Search definition file for this service -->\n");
-        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getHref()) + "\" rel=\"" + serviceFeed.getOpenSearchDefinitionLink().getRel() + "\" type=\"" + serviceFeed.getOpenSearchDefinitionLink().getType()
-                + "\" hreflang=\"" + serviceFeed.getOpenSearchDefinitionLink().getHrefLang() + "\" title=\"" + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getTitle()) + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getHref()) + "\" rel=\"" + serviceFeed.getOpenSearchDefinitionLink().getRel() + "\" type=\""
+                + serviceFeed.getOpenSearchDefinitionLink().getType() + "\" hreflang=\"" + serviceFeed.getOpenSearchDefinitionLink().getHrefLang() + "\" title=\""
+                + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getTitle()) + "\"/>\n");
         result.append("<!-- rights, access restrictions  -->\n");
         result.append("<rights>" + StringEscapeUtils.escapeXml(serviceFeed.getCopyright()) + "</rights>\n");
         result.append("<!-- feed subtitle -->\n");
@@ -41,10 +44,11 @@ public class ServiceFeedAtomBuilder {
             result.append("<!-- identifier for \"Dataset Feed\" for pre-defined dataset -->\n");
             result.append("<id>" + StringEscapeUtils.escapeXml(entry.getDatasetIdentifier()) + "</id>\n");
             result.append("<!-- link to dataset metadata record -->\n");
-            result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetMetadataRecord().getHref()) + "\" rel=\"" + entry.getDatasetMetadataRecord().getRel() + "\" type=\"" + entry.getDatasetMetadataRecord().getType() + "\"/>\n");
+            result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetMetadataRecord().getHref()) + "\" rel=\"" + entry.getDatasetMetadataRecord().getRel() + "\" type=\"" + entry.getDatasetMetadataRecord().getType()
+                    + "\"/>\n");
             result.append("<!-- link to Dataset Feed -->\n");
-            result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\"" + entry.getDatasetFeed().getHrefLang() + "\" title=\"" + (entry.getDatasetFeed().getTitle() == null ? ""
-                    : entry.getDatasetFeed().getTitle()) + "\"/>\n");
+            result.append("<link rel=\"" + entry.getDatasetFeed().getRel() + "\" href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\""
+                    + entry.getDatasetFeed().getHrefLang() + "\" title=\"" + (entry.getDatasetFeed().getTitle() == null ? "" : entry.getDatasetFeed().getTitle()) + "\"/>\n");
             result.append("<!-- rights, access info for pre-defined dataset -->\n");
             result.append("<rights>" + StringEscapeUtils.escapeXml(entry.getRights()) + "</rights>\n");
             result.append("<!-- summary -->\n");

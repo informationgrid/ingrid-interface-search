@@ -84,6 +84,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(linkage)).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
                 link.setHrefLang("en");
                 link.setType("application/atom+xml");
+                link.setRel("alternate");
                 entry.setDatasetFeed(link);
                 entry.setDatasetIdentifier(link.getHref());
 

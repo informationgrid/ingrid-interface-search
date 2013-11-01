@@ -95,6 +95,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(entry.getUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("en");
             link.setType("application/atom+xml");
+            link.setRel("alternate");
             entry.setDatasetFeed(link);
             entry.setDatasetIdentifier(link.getHref());
 
