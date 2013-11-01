@@ -1,6 +1,5 @@
 package de.ingrid.iface.atomDownloadService.om;
 
-import java.util.Date;
 import java.util.List;
 
 public class ServiceFeed {

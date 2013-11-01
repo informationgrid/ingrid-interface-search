@@ -22,6 +22,10 @@ public class DatasetFeedAtomBuilder {
         result.append("<!-- self-referencing link to this feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + datasetFeed.getSelfReferencingLink().getRel() + "\" type=\"" + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\""
                 + datasetFeed.getSelfReferencingLink().getHrefLang() + "\" title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle()) + "\"/>\n");
+        result.append("<!-- link to download service ISO 19139 metadata -->\n");
+        for (Link link : datasetFeed.getDescribedBy()) {
+            result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"  title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+        }
         result.append("<!-- ‘upward’ link to the corresponding download service feed -->");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\"" + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\""
                 + datasetFeed.getDownloadServiceFeed() + "\" title=\"" + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle())) + "\"/>\n");

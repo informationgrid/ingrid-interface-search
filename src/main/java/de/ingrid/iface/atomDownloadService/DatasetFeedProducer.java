@@ -77,6 +77,13 @@ public class DatasetFeedProducer {
             datasetFeed.setIdentifier(link.getHref());
 
             link = new Link();
+            link.setHref(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", datasetFeed.getUuid()));
+            link.setRel("describedby");
+            link.setType("application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+            datasetFeed.setDescribedBy(new ArrayList<Link>());
+            datasetFeed.getDescribedBy().add(link);
+            
+            link = new Link();
             link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
