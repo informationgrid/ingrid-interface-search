@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
+import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
@@ -45,6 +46,8 @@ public class DatasetFeedFactory {
             }
             // ISO Metadaten
             doc = stringUtilsService.urlToDocument(datasetFeedRequest.getDatasetFeedUuid());
+            // TODO: not nice to alter the request, change this 
+            datasetFeedRequest.setType(EntryType.CSW);
         } else {
             // igc Metadaten
             IBus iBus = iBusHelper.getIBus();
@@ -57,6 +60,7 @@ public class DatasetFeedFactory {
                     log.debug("Found IGC dataset: " + hit.getHitDetail().getTitle());
                 }
                 doc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+                datasetFeedRequest.setType(EntryType.IGC);
             } else {
                 // no hit found, try all datasets related to the service
                 ServiceFeedRequest sr = new ServiceFeedRequest();
@@ -67,6 +71,7 @@ public class DatasetFeedFactory {
                         if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())
                                 && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
                             doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref());
+                            datasetFeedRequest.setType(EntryType.CSW);
                         }
                     }
                 }

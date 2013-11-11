@@ -17,6 +17,7 @@ import de.ingrid.iface.atomDownloadService.om.Author;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.Link;
+import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
@@ -69,7 +70,7 @@ public class DatasetFeedProducer {
             datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             Link link = new Link();
-            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(datasetFeed.getUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
+            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getDatasetFeedUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
             link.setRel("self");
@@ -77,7 +78,11 @@ public class DatasetFeedProducer {
             datasetFeed.setIdentifier(link.getHref());
 
             link = new Link();
-            link.setHref(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", datasetFeed.getUuid()));
+            if (datasetFeedRequest.getType().equals(EntryType.CSW)) {
+                link.setHref(datasetFeedRequest.getMetadataUrl());
+            } else {
+                link.setHref(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", datasetFeed.getUuid()));
+            }
             link.setRel("describedby");
             link.setType("application/vnd.ogc.csw.GetRecordByIdResponse_xml");
             datasetFeed.setDescribedBy(new ArrayList<Link>());

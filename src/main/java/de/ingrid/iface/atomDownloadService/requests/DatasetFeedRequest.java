@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.StringUtils;
 
+import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
+
 public class DatasetFeedRequest {
 
     private String datasetFeedUuid;
@@ -12,6 +14,9 @@ public class DatasetFeedRequest {
     private String spatialDatasetIdentifierNamespace;
     private String language;
     private String crs;
+    
+    private EntryType type;
+    private String metadataUrl;
 
     public DatasetFeedRequest() {
         super();
@@ -47,6 +52,12 @@ public class DatasetFeedRequest {
         } else {
             serviceFeedUuid = path;
         }
+        
+        if (datasetFeedUuid != null && datasetFeedUuid.toLowerCase().contains("getrecordbyid")) {
+            this.setType(EntryType.CSW);
+            this.setMetadataUrl(datasetFeedUuid);
+        }
+        
     }
 
     public String toString() {
@@ -101,5 +112,23 @@ public class DatasetFeedRequest {
     public void setCrs(String crs) {
         this.crs = crs;
     }
+
+    public EntryType getType() {
+        return type;
+    }
+
+    public void setType(EntryType type) {
+        this.type = type;
+    }
+
+    public String getMetadataUrl() {
+        return metadataUrl;
+    }
+
+    public void setMetadataUrl(String metadataUrl) {
+        this.metadataUrl = metadataUrl;
+    }
+
+    
 
 }
