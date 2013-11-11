@@ -31,7 +31,7 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String OPENSEARCH_METADATA_DETAILS_URL = "opensearch.metadata.details.url";
 
-    public static final String DESCRIPTOR_FILE = "descriptor.file";
+    public static final String DESCRIPTOR_FILE = "opensearch.descriptor.file";
 
     public static final String IBUS_SEARCH_MAX_TIMEOUT = "ibus.search.max.timeout";
 

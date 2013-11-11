@@ -75,6 +75,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
                 assertEquals(cnt, it.next().getDocumentId());
                 cnt++;
             }
+            assertEquals(19, cnt);
         } catch (NoSuchElementException e) {
             assertTrue(false);
         }
@@ -91,8 +92,20 @@ public class IBusQueryResultIteratorTest extends TestCase {
             assertTrue(true);
         }
 
-        assertTrue(true);
 
+        // test results starting from other than page 1
+        int startPage = 1;
+        it = new IBusQueryResultIterator(q, new String[] { "" }, mockedIBus, 10, startPage, 1000);
+        try {
+            int cnt = 0;
+            while (it.hasNext()) {
+                assertEquals(startPage * 10 + cnt, it.next().getDocumentId());
+                cnt++;
+            }
+            assertEquals(9, cnt);
+        } catch (NoSuchElementException e) {
+            assertTrue(false);
+        }
     }
 
 }

@@ -35,6 +35,7 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
     private int pageSize = 10;
     private int startHit = 0;
     private int maxHits = Integer.MAX_VALUE;
+    private int startPage = 0;
 
     public IBusQueryResultIterator(IngridQuery q, String[] requestedFields, IBus iBus) {
         this.q = q;
@@ -49,13 +50,25 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
         this.pageSize = pageSize;
     }
 
-    public IBusQueryResultIterator(IngridQuery q, String[] requestedFields, IBus iBus, int pageSize, int startHit, int maxHits) {
+    /**
+     * Constructs a query iterator.
+     * 
+     * @param q
+     * @param requestedFields
+     * @param iBus
+     * @param pageSize
+     * @param startPage
+     *            First page is 0.
+     * @param maxHits
+     */
+    public IBusQueryResultIterator(IngridQuery q, String[] requestedFields, IBus iBus, int pageSize, int startPage, int maxHits) {
         this.q = q;
         this.requestedFields = requestedFields;
         this.iBus = iBus;
         this.pageSize = pageSize;
-        this.startHit = startHit;
         this.maxHits = maxHits;
+        this.startPage = startPage;
+        this.startHit = this.startPage * pageSize;
     }
 
     @Override
@@ -64,12 +77,12 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
         if (resultBuffer == null) {
             resultBuffer = fetchHits(resultPageCursor);
         }
-        if (resultBuffer.getHits() != null && resultBufferCursor >= resultBuffer.getHits().length && resultCursor < resultBuffer.length() && resultCursor < maxHits) {
+        if (resultBuffer.getHits() != null && resultBufferCursor >= resultBuffer.getHits().length && (resultCursor + this.startHit) < resultBuffer.length() && resultCursor < maxHits) {
             resultPageCursor++;
             resultBuffer = fetchHits(resultPageCursor);
             resultBufferCursor = 0;
         }
-        if (resultCursor < resultBuffer.length() && resultBuffer.length() > 0 && resultCursor < maxHits) {
+        if ((resultCursor + this.startHit) < resultBuffer.length() && resultBuffer.length() > 0 && resultCursor < maxHits) {
             return true;
         } else {
             return false;
@@ -118,16 +131,17 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
             if (log.isDebugEnabled()) {
                 startTimer = System.currentTimeMillis();
             }
-            
+
             if (log.isDebugEnabled()) {
                 log.debug("Executed InGrid Query (query: " + q.toString() + ", pageSize:" + pageSize + ", currentPage:" + currentPage + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"
                         + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000));
             }
-            result = iBus.searchAndDetail(q, pageSize, currentPage, (currentPage - 1) * pageSize + startHit, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), this.requestedFields);
+            result = iBus.searchAndDetail(q, pageSize, this.startPage + currentPage, (currentPage - 1) * pageSize + startHit, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000),
+                    this.requestedFields);
             if (log.isDebugEnabled()) {
                 log.debug("Executed InGrid Query (pageSize:" + pageSize + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"
-                        + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000) + ") within " + (System.currentTimeMillis() - startTimer) + "ms returning " + (result.getHits() == null ? 0 : result
-                        .getHits().length) + " hits");
+                        + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000) + ") within " + (System.currentTimeMillis() - startTimer) + "ms returning "
+                        + (result.getHits() == null ? 0 : result.getHits().length) + " hits");
             }
         } catch (Exception e) {
             log.error("Error querying ibus.", e);

@@ -88,7 +88,6 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         int hitsPerPage = requestWrapper.getHitsPerPage();
         if (page <= 0)
             page = 1;
-        int startHit = (page - 1) * hitsPerPage;
         int pageSize = (hitsPerPage > MAX_IBUS_RESULT_SET_SIZE) ? MAX_IBUS_RESULT_SET_SIZE : hitsPerPage;
 
         // set timeout
@@ -103,7 +102,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         int hitCounter = 0;
         try {
 
-            hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, startHit, hitsPerPage * page);
+            hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/rss+xml");
             pout = response.getWriter();
