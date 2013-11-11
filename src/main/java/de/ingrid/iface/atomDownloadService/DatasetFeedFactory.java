@@ -72,6 +72,7 @@ public class DatasetFeedFactory {
                                 && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
                             doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref());
                             datasetFeedRequest.setType(EntryType.CSW);
+                            datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
                         }
                     }
                 }

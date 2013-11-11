@@ -17,7 +17,7 @@ public class DatasetAtomBuilder {
         result.append("<!-- Example \" Dataset Feed\" -->\n");
         result.append("<feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"de\">\n");
         result.append("<!-- feed title -->\n");
-        result.append("<title>" + StringEscapeUtils.escapeXml(datasetFeed.getTitle()) + "</title>\n");
+        result.append("<title>" + (datasetFeed.getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getTitle())) + "</title>\n");
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(datasetFeed.getUuid()) + "</id>\n");
         result.append("<!-- date/time this feed was last updated -->\n");
@@ -29,7 +29,7 @@ public class DatasetAtomBuilder {
             result.append("<title>" + StringEscapeUtils.escapeXml(entry.getTitle()) + "</title>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
-                result.append("<link href=\"" + link.getHref() + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + link.getLength() + "\" title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+                result.append("<link href=\"" + link.getHref() + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + link.getLength() + "\" title=\"" + (link.getTitle() == null ? "" : StringEscapeUtils.escapeXml(link.getTitle())) + "\"/>\n");
             }
             result.append("<updated>" + entry.getUpdated() + "</updated>\n");
             result.append("</entry>\n");

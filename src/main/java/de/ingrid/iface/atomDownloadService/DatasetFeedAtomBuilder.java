@@ -20,15 +20,17 @@ public class DatasetFeedAtomBuilder {
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "</id>\n");
         result.append("<!-- self-referencing link to this feed -->\n");
-        result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + datasetFeed.getSelfReferencingLink().getRel() + "\" type=\"" + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\""
-                + datasetFeed.getSelfReferencingLink().getHrefLang() + "\" title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle()) + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + datasetFeed.getSelfReferencingLink().getRel() + "\" type=\""
+                + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + "\" title=\""
+                + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle())) + "\"/>\n");
         result.append("<!-- link to download service ISO 19139 metadata -->\n");
         for (Link link : datasetFeed.getDescribedBy()) {
             result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"  title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
         }
         result.append("<!-- ‘upward’ link to the corresponding download service feed -->");
-        result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\"" + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\""
-                + datasetFeed.getDownloadServiceFeed() + "\" title=\"" + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle())) + "\"/>\n");
+        result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\""
+                + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed() + "\" title=\""
+                + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle())) + "\"/>\n");
         result.append("<!-- rights, access restrictions  -->\n");
         result.append("<rights>" + StringEscapeUtils.escapeXml(datasetFeed.getRights()) + "</rights>\n");
         result.append("<!-- feed subtitle -->\n");
@@ -43,9 +45,10 @@ public class DatasetFeedAtomBuilder {
             result.append("<id>" + entry.getId() + "</id>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
-                result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + link.getLength() + "\" title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+                result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + (link.getLength() == null ? "" : link.getLength()) + "\" title=\""
+                        + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
             }
-            result.append("<title>" + StringEscapeUtils.escapeXml(entry.getTitle()) + "</title>\n");
+            result.append("<title>" + (entry.getTitle() == null ? "" : StringEscapeUtils.escapeXml(entry.getTitle())) + "</title>\n");
             result.append("</entry>\n");
         }
         result.append("</feed>\n");
