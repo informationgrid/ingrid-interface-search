@@ -105,6 +105,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, startHit, hitsPerPage * page);
             response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/rss+xml");
             pout = response.getWriter();
             Document doc = DocumentHelper.createDocument();
             while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
@@ -161,7 +162,6 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             pout.close();
             request.getInputStream().close();
-            response.setContentType("text/xml");
 
             if (log.isDebugEnabled()) {
                 log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");

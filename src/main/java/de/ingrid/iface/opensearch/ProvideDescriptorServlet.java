@@ -38,10 +38,12 @@ public class ProvideDescriptorServlet extends HttpServlet implements SearchInter
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        String descriptorFile = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DESCRIPTOR_FILE,
-                "conf/descriptor.xml");
-        log.debug("returning descriptor: " + descriptorFile);
-        response.setContentType("text/xml");
+        String descriptorFile = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DESCRIPTOR_FILE, "conf/descriptor.xml");
+        if (log.isDebugEnabled()) {
+            log.debug("returning descriptor: " + descriptorFile);
+        }
+        response.setContentType("application/opensearchdescription+xml");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         String thisLine;
         BufferedReader in = null;
@@ -50,6 +52,8 @@ public class ProvideDescriptorServlet extends HttpServlet implements SearchInter
             while ((thisLine = in.readLine()) != null) {
                 out.println(thisLine);
             }
+        } catch (Exception e) {
+            log.error("Error delivering opensearch descriptor", e);
         } finally {
             if (in != null) {
                 in.close();
@@ -61,8 +65,7 @@ public class ProvideDescriptorServlet extends HttpServlet implements SearchInter
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
      *      javax.servlet.http.HttpServletResponse)
      */
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 
