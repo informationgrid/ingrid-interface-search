@@ -106,7 +106,7 @@ public class DatasetFeedFactoryTest {
 
         datasetFeedFactory.setStringUtilsService(stringUtilsService);
 
-        IngridQuery q = QueryStringParser.parse("ranking:score t01_object.obj_id:DATASET_FEED_UUID_1");
+        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:DATASET_FEED_UUID_1 OR t01_object.org_obj_id:DATASET_FEED_UUID_1)");
 
         IngridHit[] hits = new IngridHit[2];
         for (int i = 0; i < hits.length; i++) {
@@ -124,7 +124,7 @@ public class DatasetFeedFactoryTest {
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
 
-        q = QueryStringParser.parse("ranking:score t01_object.obj_id:SERVICE_FEED_UUID_1");
+        q = QueryStringParser.parse("ranking:score (t01_object.obj_id:SERVICE_FEED_UUID_1 OR t01_object.org_obj_id:SERVICE_FEED_UUID_1)");
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
