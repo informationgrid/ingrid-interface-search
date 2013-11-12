@@ -21,14 +21,14 @@ public class IngridQueryProducer {
 
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
 
-        IngridQuery q = QueryStringParser.parse("ranking:score t01_object.obj_id:" + uuid);
+        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")");
         return q;
 
     }
 
     public IngridQuery createServiceFeedInGridQuery(ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr = "ranking:score t01_object.obj_id:" + serviceFeedRequest.getUuid();
+        String queryStr = "ranking:score (t01_object.obj_id:" + serviceFeedRequest.getUuid() + " OR t01_object.org_obj_id:" + serviceFeedRequest.getUuid() + ")";
         IngridQuery q = QueryStringParser.parse(queryStr);
         return q;
 
@@ -36,7 +36,7 @@ public class IngridQueryProducer {
 
     public IngridQuery createServiceFeedEntryInGridQuery(String[] uuids, ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ")";
+        String queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
         if (serviceFeedRequest.getQuery() != null) {
             queryStr += " " + serviceFeedRequest.getQuery();
         }
@@ -47,17 +47,17 @@ public class IngridQueryProducer {
 
     public IngridQuery createDatasetFeedInGridQuery(String uuid) throws ParseException {
 
-        IngridQuery q = QueryStringParser.parse("ranking:score t01_object.obj_id:" + uuid);
+        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")");
         return q;
     }
 
     public IngridQuery createDatasetFeedInGridQuery(DatasetFeedRequest datasetFeedRequest) throws Exception {
 
         if (datasetFeedRequest.getDatasetFeedUuid() != null && datasetFeedRequest.getDatasetFeedUuid().length() > 0) {
-            IngridQuery q = QueryStringParser.parse("ranking:score t01_object.obj_id:" + datasetFeedRequest.getDatasetFeedUuid());
+            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + datasetFeedRequest.getDatasetFeedUuid() + " OR t01_object.org_obj_id:" + datasetFeedRequest.getDatasetFeedUuid() + ")");
             return q;
         } else {
-            IngridQuery q = QueryStringParser.parse("ranking:score t01_object.obj_id:" + datasetFeedRequest.getServiceFeedUuid());
+            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + datasetFeedRequest.getServiceFeedUuid() + " OR t01_object.org_obj_id:" + datasetFeedRequest.getServiceFeedUuid() + ")");
             IBus iBus = iBusHelper.getIBus();
             IBusQueryResultIterator queryIterator = new IBusQueryResultIterator(q, new String[] {}, iBus);
             IngridHit hit = null;

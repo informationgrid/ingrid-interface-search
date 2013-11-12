@@ -61,18 +61,22 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         }
 
         IBus iBus = iBusHelper.getIBus();
+        Document idfCoupledResourceDoc = null;
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
         String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
+        if (coupledUuids.length == 0) {
+            return entryList;
+        }
         IBusQueryResultIterator serviceEntryIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedEntryInGridQuery(coupledUuids, serviceFeedRequest), REQUESTED_FIELDS, iBus);
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
             if (log.isDebugEnabled()) {
                 log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
             }
-            idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+            idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
             // check for data sets without data download links
-            if (!XPATH.nodeExists(idfDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
+            if (!XPATH.nodeExists(idfCoupledResourceDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
                 if (log.isDebugEnabled()) {
                     log.debug("No Download Data Links found in coupled resource: " + hit.getHitDetail().getTitle());
                 }
@@ -81,9 +85,9 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
 
             ServiceFeedEntry entry = new ServiceFeedEntry();
             entry.setType(EntryType.IGC);
-            entry.setUuid(XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString"));
-            entry.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
-            entry.setSummary(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
+            entry.setUuid(XPATH.getString(idfCoupledResourceDoc, "//gmd:fileIdentifier/gco:CharacterString"));
+            entry.setTitle(XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
+            entry.setSummary(XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             Link link = new Link();
             link.setHref(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", entry.getUuid()));
@@ -99,15 +103,15 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setDatasetFeed(link);
             entry.setDatasetIdentifier(link.getHref());
 
-            String code = XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
+            String code = XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
             if (code != null) {
                 String[] codeParts = code.split("#");
                 entry.setSpatialDatasetIdentifierCode(codeParts[1]);
                 entry.setSpatialDatasetIdentifierNamespace(codeParts[0]);
             }
-            entry.setUpdated(XPATH.getString(idfDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
+            entry.setUpdated(XPATH.getString(idfCoupledResourceDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
 
-            NodeList resourceConstraints = XPATH.getNodeList(idfDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
+            NodeList resourceConstraints = XPATH.getNodeList(idfCoupledResourceDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
             StringBuilder copyRight = new StringBuilder();
             for (int i=0; i< resourceConstraints.getLength(); i++) {
                 Node resourceConstraint = resourceConstraints.item(i);
@@ -126,13 +130,13 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setRights(copyRight.toString());
 
             Author author = new Author();
-            author.setName(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
-            author.setEmail(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
+            author.setName(XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
+            author.setEmail(XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
             entry.setAuthor(author);
 
-            entry.setPolygon(IdfUtils.getEnclosingBoundingBoxAsPolygon(idfDoc));
+            entry.setPolygon(IdfUtils.getEnclosingBoundingBoxAsPolygon(idfCoupledResourceDoc));
 
-            NodeList nl = XPATH.getNodeList(idfDoc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
+            NodeList nl = XPATH.getNodeList(idfCoupledResourceDoc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
             List<Category> catList = new ArrayList<Category>();
             for (int i = 0; i < nl.getLength(); i++) {
                 Category cat = new Category();
