@@ -124,7 +124,7 @@ public class StringUtils {
     public static String assureDateTime(String dateStr) {
         String result = dateStr;
         if (!result.contains("T")) {
-            result += "T00:00:00";
+            result += "T00:00:00Z";
         }
         return result;
     }
