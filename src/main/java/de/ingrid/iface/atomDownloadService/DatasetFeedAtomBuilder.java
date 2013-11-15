@@ -30,7 +30,7 @@ public class DatasetFeedAtomBuilder {
                 + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + "\"" + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle() + "\"")) + "/>\n");
         result.append("<!-- upward link to the corresponding download service feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\""
-                + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() 
+                + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() + "\""
                 + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle()) + "\"") + "/>\n");
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "</id>\n");
