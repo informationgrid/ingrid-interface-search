@@ -31,7 +31,7 @@ public class DatasetAtomBuilder {
             result.append("<id>" + entry.getId() + "</id>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
-                result.append("<link href=\"" + link.getHref() + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + link.getLength() + "\" title=\"" + (link.getTitle() == null ? "" : StringEscapeUtils.escapeXml(link.getTitle())) + "\"/>\n");
+                result.append("<link href=\"" + link.getHref() + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"" + ( link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"") + " title=\"" + (link.getTitle() == null ? "" : StringEscapeUtils.escapeXml(link.getTitle())) + "\"/>\n");
             }
             result.append("<updated>" + StringUtils.assureDateTime(entry.getUpdated()) + "</updated>\n");
             if (entry.getCrs() != null && entry.getCrs().size() > 0) {

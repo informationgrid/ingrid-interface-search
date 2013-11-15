@@ -47,7 +47,7 @@ public class DatasetFeedAtomBuilder {
             result.append("<title>" + (entry.getTitle() == null ? "" : StringEscapeUtils.escapeXml(entry.getTitle())) + "</title>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
-                result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\" length=\"" + (link.getLength() == null ? "" : link.getLength()) + "\" title=\""
+                result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"" + (link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"") + " title=\""
                         + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
             }
             result.append("<id>" + entry.getId() + "</id>\n");
