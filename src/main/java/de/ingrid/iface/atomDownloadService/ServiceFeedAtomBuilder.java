@@ -29,8 +29,8 @@ public class ServiceFeedAtomBuilder {
                 + "\"/>\n");
         result.append("<!-- link to Open Search definition file for this service -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getHref()) + "\" rel=\"" + serviceFeed.getOpenSearchDefinitionLink().getRel() + "\" type=\""
-                + serviceFeed.getOpenSearchDefinitionLink().getType() + "\" hreflang=\"" + serviceFeed.getOpenSearchDefinitionLink().getHrefLang() + "\" title=\""
-                + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getTitle()) + "\"/>\n");
+                + serviceFeed.getOpenSearchDefinitionLink().getType() + "\" hreflang=\"" + serviceFeed.getOpenSearchDefinitionLink().getHrefLang() + "\"" + (serviceFeed.getOpenSearchDefinitionLink().getTitle() == null ? "" : " title=\""
+                + StringEscapeUtils.escapeXml(serviceFeed.getOpenSearchDefinitionLink().getTitle()) + "\"") + "/>\n");
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(serviceFeed.getSelfReferencingLink().getHref()) + "</id>\n");
         result.append("<!-- rights, access restrictions  -->\n");
@@ -56,7 +56,7 @@ public class ServiceFeedAtomBuilder {
                     + "\"/>\n");
             result.append("<!-- link to Dataset Feed -->\n");
             result.append("<link rel=\"" + entry.getDatasetFeed().getRel() + "\" href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\""
-                    + entry.getDatasetFeed().getHrefLang() + "\" title=\"" + (entry.getDatasetFeed().getTitle() == null ? "" : entry.getDatasetFeed().getTitle()) + "\"/>\n");
+                    + entry.getDatasetFeed().getHrefLang() + "\"" + (entry.getDatasetFeed().getTitle() == null ? "" : " title=\"" + entry.getDatasetFeed().getTitle() + "\"") + "/>\n");
             result.append("<!-- identifier for \"Dataset Feed\" for pre-defined dataset -->\n");
             result.append("<id>" + StringEscapeUtils.escapeXml(entry.getDatasetIdentifier()) + "</id>\n");
             result.append("<!-- rights, access info for pre-defined dataset -->\n");
