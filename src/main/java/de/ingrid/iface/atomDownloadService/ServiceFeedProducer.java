@@ -110,16 +110,16 @@ public class ServiceFeedProducer {
 
             link = new Link();
             link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
-            link.setHrefLang("en");
+            link.setHrefLang("de");
             link.setType("application/atom+xml");
-            link.setRel("this document");
+            link.setRel("self");
             link.setTitle("Feed containing the dataset (in one or more downloadable formats)");
             serviceFeed.setSelfReferencingLink(link);
             serviceFeed.setIdentifier(link.getHref());
 
             link = new Link();
             link.setHref(atomDownloadOpensearchDefinitionUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
-            link.setHrefLang("en");
+            link.setHrefLang("de");
             link.setType("application/opensearchdescription+xml");
             link.setTitle("Open Search Description");
             link.setRel("search");

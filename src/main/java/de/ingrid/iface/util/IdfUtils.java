@@ -74,8 +74,8 @@ public class IdfUtils {
     /**
      * Returns the largest BBOX of an IDF document as stated in
      * gmd:EX_GeographicBoundingBox as a List of polygon values. The result
-     * contains 10 values describing the bbox as a polygon (west, south, east,
-     * south, east, north, east, south, west, south).
+     * contains 10 values describing the bbox as a polygon (south, west, north, west, north, east,
+     * south, east, south, west).
      * 
      * In case the BBOX is just one point, the polygon only consists off 2
      * values (0- longitude, 1-latitude)
@@ -88,19 +88,19 @@ public class IdfUtils {
 
         List<Double> result = new ArrayList<Double>();
         if (bbox[0].equals(bbox[1]) && bbox[2].equals(bbox[3])) {
-            result.add(bbox[0]);
             result.add(bbox[2]);
+            result.add(bbox[0]);
         } else {
+            result.add(bbox[2]);
             result.add(bbox[0]);
-            result.add(bbox[2]);
-            result.add(bbox[1]);
-            result.add(bbox[2]);
-            result.add(bbox[1]);
+            result.add(bbox[3]);
+            result.add(bbox[0]);
             result.add(bbox[3]);
             result.add(bbox[1]);
             result.add(bbox[2]);
-            result.add(bbox[0]);
+            result.add(bbox[1]);
             result.add(bbox[2]);
+            result.add(bbox[0]);
         }
 
         return result;
@@ -148,7 +148,7 @@ public class IdfUtils {
             value = Double.valueOf(south[i]);
             if (outerSouth == null) {
                 outerSouth = value;
-            } else if (outerSouth < value) {
+            } else if (outerSouth > value) {
                 outerSouth = value;
             }
         }

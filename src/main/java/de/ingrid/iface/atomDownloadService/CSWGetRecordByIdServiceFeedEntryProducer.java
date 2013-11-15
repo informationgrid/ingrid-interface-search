@@ -61,7 +61,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 }
                 Document isoDoc = StringUtils.urlToDocument(linkage);
                 // check for data sets without data download links
-                if (!XPATH.nodeExists(isoDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
+                if (!XPATH.nodeExists(isoDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']")) {
                     if (log.isDebugEnabled()) {
                         log.debug("No Download Data Links found in coupled resource: " + linkage);
                     }
@@ -82,7 +82,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
                 link = new Link();
                 link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(linkage)).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
-                link.setHrefLang("en");
+                link.setHrefLang("de");
                 link.setType("application/atom+xml");
                 link.setRel("alternate");
                 entry.setDatasetFeed(link);
@@ -91,8 +91,12 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 String code = XPATH.getString(isoDoc, "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
                 if (code != null) {
                     String[] codeParts = code.split("#");
-                    entry.setSpatialDatasetIdentifierCode(codeParts[1]);
-                    entry.setSpatialDatasetIdentifierNamespace(codeParts[0]);
+                    if (codeParts.length == 2) {
+                        entry.setSpatialDatasetIdentifierCode(codeParts[1]);
+                        entry.setSpatialDatasetIdentifierNamespace(codeParts[0]);
+                    } else {
+                        entry.setSpatialDatasetIdentifierCode(codeParts[0]);
+                    }
                 }
                 entry.setUpdated(XPATH.getString(isoDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
 
@@ -104,12 +108,13 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                     if (copyRight.length() > 0) {
                         copyRight.append("; ");
                     }
-                    copyRight.append(restrictionCode);
                     if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
                         String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
                         if (otherRestrictions != null && otherRestrictions.length() > 0) {
-                            copyRight.append(": ").append(otherRestrictions);
+                            copyRight.append(otherRestrictions);
                         }
+                    } else {
+                        copyRight.append(restrictionCode);
                     }
                 }
                 entry.setRights(copyRight.toString());
@@ -124,9 +129,15 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 NodeList nl = XPATH.getNodeList(isoDoc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
                 List<Category> catList = new ArrayList<Category>();
                 for (int j = 0; j < nl.getLength(); j++) {
+                    String refSystemCode = XPATH.getString(nl.item(j), "gmd:code/gco:CharacterString");
+                    String epsgNumber = StringUtils.extractEpsgCodeNumber(refSystemCode);
                     Category cat = new Category();
-                    cat.setLabel(XPATH.getString(nl.item(j), "gmd:code/gco:CharacterString"));
-                    cat.setTerm(XPATH.getString(nl.item(j), "gmd:codeSpace/gco:CharacterString"));
+                    cat.setLabel(refSystemCode);
+                    if (epsgNumber != null) {
+                        cat.setTerm("EPSG: "+ epsgNumber);
+                    } else {
+                        cat.setTerm(XPATH.getString(nl.item(j), "gmd:codeSpace/gco:CharacterString"));
+                    }
                     catList.add(cat);
                 }
                 entry.setCrs(catList);

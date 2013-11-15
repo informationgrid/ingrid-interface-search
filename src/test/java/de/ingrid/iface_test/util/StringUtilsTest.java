@@ -11,5 +11,13 @@ public class StringUtilsTest extends TestCase {
         assertEquals("http://numis.niedersachsen.de/202/csw%3FREQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=28B5456A-AA9A-41F3-8EFA-27A0597A8FD9&iplug=ingrid-group:iplug-ouk-db-numis&elementSetName=full&elementSetName=full", StringUtils.encodeForPath("http://numis.niedersachsen.de/202/csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=28B5456A-AA9A-41F3-8EFA-27A0597A8FD9&iplug=ingrid-group:iplug-ouk-db-numis&elementSetName=full&elementSetName=full"));
         assertEquals("äöü&/$$%25@:%5C%5C", StringUtils.encodeForPath("äöü&/$$%@:\\\\"));
     }
+    
+    public void testExtractEpsgCodeNumber() {
+        assertEquals("4326", StringUtils.extractEpsgCodeNumber("epsg: 4326 (WGS 84)"));
+        assertEquals("4326", StringUtils.extractEpsgCodeNumber("das ist ein epsg:4326 (WGS 84 code)"));
+        assertEquals("43264", StringUtils.extractEpsgCodeNumber("das ist ein epsg:43264 (WGS 84 code)"));
+        assertEquals(null, StringUtils.extractEpsgCodeNumber("das ist ein epsg:432645 (WGS 84 code)"));
+        assertEquals("4326", StringUtils.extractEpsgCodeNumber("das ist ein epsg4326 (WGS 84 code)"));
+    }
 
 }

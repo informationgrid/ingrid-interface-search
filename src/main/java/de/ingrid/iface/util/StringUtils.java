@@ -10,7 +10,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -114,5 +119,36 @@ public class StringUtils {
             result.replaceAll("%2F", "/");
         }
         return result;
+    }
+
+    public static String assureDateTime(String dateStr) {
+        String result = dateStr;
+        if (!result.contains("T")) {
+            result += "T00:00:00";
+        }
+        return result;
+    }
+    
+    public static String extractEpsgCodeNumber(String in) {
+        String result = null;
+        
+        String pattern = "epsg\\D*(\\d{4,5})\\D";
+        List<MatchResult> mResults = findMatches(pattern, in.toLowerCase());
+        if (mResults.size() > 0) {
+            result = mResults.get(0).group(1);
+        }
+        
+        return result;
+    }
+    
+    
+    static List<MatchResult> findMatches( String pattern, CharSequence s )
+    {
+      List<MatchResult> results = new ArrayList<MatchResult>();
+
+      for ( Matcher m = Pattern.compile(pattern).matcher(s); m.find(); )
+        results.add( m.toMatchResult() );
+
+      return results;
     }
 }

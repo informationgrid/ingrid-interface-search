@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import de.ingrid.iface.atomDownloadService.om.Category;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.Link;
+import de.ingrid.iface.util.StringUtils;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
 
@@ -31,7 +33,23 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     public List<DatasetFeedEntry> produce(Document doc) throws Exception {
         List<DatasetFeedEntry> results = new ArrayList<DatasetFeedEntry>();
 
-        NodeList linkages = XPATH.getNodeList(doc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']");
+        NodeList nl = XPATH.getNodeList(doc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
+        List<Category> catList = new ArrayList<Category>();
+        for (int i = 0; i < nl.getLength(); i++) {
+            String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString");
+            String epsgNumber = StringUtils.extractEpsgCodeNumber(refSystemCode);
+            Category cat = new Category();
+            cat.setLabel(refSystemCode);
+            if (epsgNumber != null) {
+                cat.setTerm("EPSG: "+ epsgNumber);
+            } else {
+                cat.setTerm(XPATH.getString(nl.item(i), "gmd:codeSpace/gco:CharacterString"));
+            }
+            catList.add(cat);
+        }
+        
+        
+        NodeList linkages = XPATH.getNodeList(doc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']");
         for (int i = 0; i < linkages.getLength(); i++) {
             DatasetFeedEntry entry = new DatasetFeedEntry();
 
@@ -64,6 +82,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             links.add(link);
             entry.setLinks(links);
             entry.setId(link.getHref());
+            entry.setCrs(catList);
 
             results.add(entry);
         }

@@ -104,12 +104,13 @@ public class DatasetFeedProducer {
                 if (copyRight.length() > 0) {
                     copyRight.append("; ");
                 }
-                copyRight.append(restrictionCode);
                 if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
                     String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
                     if (otherRestrictions != null && otherRestrictions.length() > 0) {
-                        copyRight.append(": ").append(otherRestrictions);
+                        copyRight.append(otherRestrictions);
                     }
+                } else {
+                    copyRight.append(restrictionCode);
                 }
             }
             datasetFeed.setRights(copyRight.toString());
