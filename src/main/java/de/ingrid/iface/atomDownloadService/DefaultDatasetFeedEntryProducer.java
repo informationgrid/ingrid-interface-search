@@ -41,7 +41,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             Category cat = new Category();
             cat.setLabel(refSystemCode);
             if (epsgNumber != null) {
-                cat.setTerm("EPSG: "+ epsgNumber);
+                cat.setTerm("EPSG:"+ epsgNumber);
             } else {
                 cat.setTerm(XPATH.getString(nl.item(i), "gmd:codeSpace/gco:CharacterString"));
             }

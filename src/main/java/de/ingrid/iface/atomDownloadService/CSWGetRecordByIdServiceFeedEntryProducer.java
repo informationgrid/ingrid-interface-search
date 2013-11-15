@@ -134,7 +134,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                     Category cat = new Category();
                     cat.setLabel(refSystemCode);
                     if (epsgNumber != null) {
-                        cat.setTerm("EPSG: "+ epsgNumber);
+                        cat.setTerm("EPSG:"+ epsgNumber);
                     } else {
                         cat.setTerm(XPATH.getString(nl.item(j), "gmd:codeSpace/gco:CharacterString"));
                     }
