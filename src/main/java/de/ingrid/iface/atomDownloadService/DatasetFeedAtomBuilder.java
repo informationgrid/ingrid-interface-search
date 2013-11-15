@@ -27,12 +27,11 @@ public class DatasetFeedAtomBuilder {
         }
         result.append("<!-- self-referencing link to this feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + datasetFeed.getSelfReferencingLink().getRel() + "\" type=\""
-                + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + "\" title=\""
-                + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle())) + "\"/>\n");
+                + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle() + "\"")) + "/>\n");
         result.append("<!-- 'upward' link to the corresponding download service feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\""
-                + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() + "\" title=\""
-                + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle())) + "\"/>\n");
+                + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() 
+                + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle() + "\"")) + "/>\n");
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "</id>\n");
         result.append("<!-- rights, access restrictions  -->\n");
