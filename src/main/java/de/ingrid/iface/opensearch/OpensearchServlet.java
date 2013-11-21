@@ -113,7 +113,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
                     pout.write("<channel>");
                     pout.write("<title>" + StringEscapeUtils.escapeXml(getChannelTitle(requestWrapper)) + "</title>");
-                    String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.PROXY_URL, null);
+                    String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
                     String url = null;
                     String queryString = requestWrapper.getRequest().getQueryString();
                     if (queryString == null)
@@ -290,7 +290,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         Element channel = doc.addElement("channel");
         channel.addElement("title").addText(getChannelTitle(requestWrapper));
 
-        String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.PROXY_URL, null);
+        String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
         String url = null;
         String queryString = requestWrapper.getRequest().getQueryString();
         if (queryString == null)
@@ -527,7 +527,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             String metadataDetailsUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_METADATA_DETAILS_URL, null);
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
-            String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.PROXY_URL, null);
+            String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
 
             String qStr;
             try {

@@ -1,8 +1,11 @@
 package de.ingrid.iface_test.atomDownloadService;
 
 import java.io.StringReader;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -115,7 +118,7 @@ public class ServiceFeedTestRunner {
             Document atomServiceFeed = stringToDocument(body);
 
             TestCase.assertEquals(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", uuid), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='describedby']/@href"));
-            TestCase.assertEquals(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(uuid)), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='this document']/@href"));
+            TestCase.assertEquals(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(uuid)), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='self']/@href"));
             TestCase.assertEquals(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:title"));
 
             // get the data manually
@@ -139,6 +142,29 @@ public class ServiceFeedTestRunner {
                     }
                 }
             }
+            // check service feed against W3C validator
+            String feedUrl = atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='self']/@href");
+            String validatorUrl = "http://validator.w3.org/feed/check.cgi?url=" + URLEncoder.encode(feedUrl, "UTF-8");
+            Scanner s = new Scanner(new URL(validatorUrl).openStream(), "UTF-8").useDelimiter("\\A");
+            String out = s.next();
+            s.close();
+            if (!out.toLowerCase().contains("this is a valid atom 1.0 feed.")) {
+                System.out.println("Invalid ATOM Feed:" + feedUrl);
+                TestCase.assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
+            } else {
+                String[] datasetFeedUrls = atomXPath.getStringArray(atomServiceFeed, "/atom:feed/atom:entry/atom:link[@rel='alternate']/@href");
+                for (String datasetFeedUrl : datasetFeedUrls) {
+                    validatorUrl = "http://validator.w3.org/feed/check.cgi?url=" + URLEncoder.encode(datasetFeedUrl, "UTF-8");
+                    s = new Scanner(new URL(validatorUrl).openStream(), "UTF-8").useDelimiter("\\A");
+                    out = s.next();
+                    s.close();
+                    if (!out.toLowerCase().contains("this is a valid atom 1.0 feed.")) {
+                        System.out.println("Invalid ATOM Feed:" + feedUrl);
+                        TestCase.assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
+                    }
+                }
+            }
+            
         }
         System.out.println("Test finished.");
     }

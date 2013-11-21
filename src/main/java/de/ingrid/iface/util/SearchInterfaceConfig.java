@@ -27,7 +27,7 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String OPENSEARCH_MAX_REQUESTED_HITS = "opensearch.max.requested.hits";
 
-    public static final String PROXY_URL = "proxy.url";
+    public static final String OPENSEARCH_PROXY_URL = "opensearch.proxy.url";
 
     public static final String OPENSEARCH_METADATA_DETAILS_URL = "opensearch.metadata.details.url";
 
