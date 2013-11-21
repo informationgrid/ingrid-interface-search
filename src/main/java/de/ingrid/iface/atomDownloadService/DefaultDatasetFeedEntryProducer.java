@@ -25,10 +25,9 @@ import de.ingrid.utils.xpath.XPathUtils;
 public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer {
 
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
-    
+
     private TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
     private Detector detector = tikaConfig.getDetector();
-
 
     public List<DatasetFeedEntry> produce(Document doc) throws Exception {
         List<DatasetFeedEntry> results = new ArrayList<DatasetFeedEntry>();
@@ -41,15 +40,15 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             Category cat = new Category();
             cat.setLabel(refSystemCode);
             if (epsgNumber != null) {
-                cat.setTerm("EPSG:"+ epsgNumber);
+                cat.setTerm("EPSG:" + epsgNumber);
             } else {
                 cat.setTerm(XPATH.getString(nl.item(i), "gmd:codeSpace/gco:CharacterString"));
             }
             catList.add(cat);
         }
-        
-        
-        NodeList linkages = XPATH.getNodeList(doc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']");
+
+        NodeList linkages = XPATH.getNodeList(doc,
+                "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']");
         for (int i = 0; i < linkages.getLength(); i++) {
             DatasetFeedEntry entry = new DatasetFeedEntry();
 
