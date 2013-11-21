@@ -64,8 +64,12 @@ public class IngridQueryProducer {
             if (queryIterator.hasNext()) {
                 hit = queryIterator.next();
                 String plugId = hit.getPlugId();
-                q = QueryStringParser.parse("ranking:score iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
-                        + datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "#" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\")");
+                String qStr = "ranking:score iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
+                        + datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "#" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\")";
+                if (datasetFeedRequest.getCrs() != null && datasetFeedRequest.getCrs().length() > 0) {
+                    qStr = qStr + " t011_obj_geo.referencesystem_id:" + (datasetFeedRequest.getCrs().contains(":") ? "\"" + datasetFeedRequest.getCrs() + "\"" : datasetFeedRequest.getCrs());
+                }
+                q = QueryStringParser.parse(qStr);
                 return q;
             }
             throw new Exception("Cannot create InGrid query from dataset feed request: " + datasetFeedRequest);
