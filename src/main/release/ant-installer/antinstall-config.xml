@@ -60,10 +60,10 @@
 			name		="openSearchOptions"
 			displayText	="Einstellungen fuer die OpenSearch Schnittstelle">
 			
-            <comment displayText="" explanatoryText="Anzahl der Ergebnisse, die pro OpenSearch Anfrage zurückgegeben werden. Diese Eigenschaft begrenzt die Belastung des Systems."/>
-            <text property="maxRequestedHits" displayText="max. Ergebnisse pro Anfrage:" defaultValue="100"/>
+            <comment displayText="" explanatoryText="Anzahl der Ergebnisse, die max. pro OpenSearch Anfrage zurückgegeben werden. Diese Eigenschaft begrenzt die Belastung des Systems."/>
+            <text property="maxRequestedHits" displayText="max. Ergebnisse pro Anfrage:" defaultValue="10000"/>
 			<comment displayText="" explanatoryText="Um Detaildaten von IGC-Metadaten anzuzeigen, kann hier eine Basis-Url hinterlegt werden. Links für IGC Metadaten Details werden dann über diese URL realisiert."/>
-            <text property="metadataDetailsUrl"   displayText="URL für IGC Detaildaten:"   defaultValue="http://portalu.de/ingrid-portal/portal/search-detail.psml"/>
+            <text property="metadataDetailsUrl"   displayText="URL für IGC Detaildaten:"   defaultValue="http://www.portalu.de/trefferanzeige"/>
 	</page>
 
 	<page
@@ -71,10 +71,8 @@
 			name		="openSearchOptions2"
 			displayText	="Proxy-Einstellungen fuer die OpenSearch Schnittstelle">
 
-            <comment displayText="" explanatoryText="Die externen Einstellungen werden in den Ergebnissen der Schnittstelle verwendet, um den externen Zugriff auf die Schnittstelle zu beschreiben. Die Werte können geändert werden, wenn z.B. eine Proxy-Weiterleitung zum OpenSearch Server eingerichtet wurde."/>			
-			<text property="externalInterfaceHost"   displayText="Externer Servername:"   defaultValue="127.0.0.1"/>
-			<text property="externalInterfacePort"   displayText="Externer Port:"   defaultValue="80"/>
-			<text property="externalInterfacePath"   displayText="Externer Pfad:"   defaultValue="opensearch/search"/>
+            <comment displayText="" explanatoryText="Die URL wird in den Ergebnissen der Schnittstelle verwendet, um den externen Zugriff auf die Schnittstelle zu beschreiben."/>			
+			<text property="opensearchInterfaceUrl"   displayText="Externe Schnittstellen-Url:"   defaultValue="http://localhost/opensearch"/>
 	</page>
 
 	<page
@@ -85,8 +83,8 @@
 
             <comment displayText="" explanatoryText="Das URL Muster für den externen Zugriff auf ISO Metadaten. '{uuid}' wird durch den fileIdentifier des Metadatensatzes ersetzt."/>          
             <text property="metadataAccessUrl"              displayText="Url:"   defaultValue="http://www.portalu.de/csw202?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;id={uuid}&amp;elementSetName=full"/>
-            <comment displayText="" explanatoryText="Die URL für den externen Zugriff auf den ATOM download service."/>          
-            <text property="atomDownloadServiceUrl"     displayText="Url:"   defaultValue="http://www.portalu.de/dls"/>
+            <comment displayText="" explanatoryText="Die URL für den externen Zugriff auf den ATOM download service. Diese wird in den Ergebnissen verwendet."/>          
+            <text property="atomDownloadServiceUrl"     displayText="Externe Schnittstellen-Url:"   defaultValue="http://localhost/dls"/>
     </page>
 	
 	<!--  type="input" shows a list of editable options for the installer -->

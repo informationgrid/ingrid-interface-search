@@ -35,7 +35,7 @@
 		<echo>Schreibe Konfiguration in interface-search.properties</echo>
 		<replace file="${search-properties}" token="@LOCAL_SERVER_PORT@"          value="${localServerPort}"/>
 		<replace file="${search-properties}" token="@MAX_REQUESTED_HITS@"         value="${maxRequestedHits}"/>
-		<replace file="${search-properties}" token="@PROXY_URL@"                  value="http://${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
+		<replace file="${search-properties}" token="@PROXY_URL@"                  value="${opensearchInterfaceUrl}"/>
 		<replace file="${search-properties}" token="@METADATA_DETAILS_URL@"       value="${metadataDetailsUrl}"/>
 		<replace file="${search-properties}" token="@ENABLE_CACHING@"             value="${enableCaching}"/>
         <replace file="${search-properties}" token="@METADATA_ASSESS_URL@"        value="${metadataAccessUrl}"/>
