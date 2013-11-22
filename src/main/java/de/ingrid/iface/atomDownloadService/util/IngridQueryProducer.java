@@ -7,6 +7,7 @@ import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
+import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
@@ -17,6 +18,8 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 @Service
 public class IngridQueryProducer {
 
+    private SearchInterfaceConfig config;
+    
     private IBusHelper iBusHelper;
 
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
@@ -69,6 +72,15 @@ public class IngridQueryProducer {
                 if (datasetFeedRequest.getCrs() != null && datasetFeedRequest.getCrs().length() > 0) {
                     qStr = qStr + " t011_obj_geo.referencesystem_id:" + (datasetFeedRequest.getCrs().contains(":") ? "\"" + datasetFeedRequest.getCrs() + "\"" : datasetFeedRequest.getCrs());
                 }
+                if (datasetFeedRequest.getLanguage() != null && datasetFeedRequest.getLanguage().length() > 0) {
+                    String[] supportedLanguages = config.getStringArray(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_SUPPORTED_LANGUAGES);
+                    for (String supportedLanguage : supportedLanguages) {
+                        if (supportedLanguage.equals(datasetFeedRequest.getLanguage())) {
+                            qStr = qStr + " lang:" + datasetFeedRequest.getLanguage();
+                            break;
+                        }
+                    }
+                }
                 q = QueryStringParser.parse(qStr);
                 return q;
             }
@@ -80,5 +92,11 @@ public class IngridQueryProducer {
     public void setiBusHelper(IBusHelper iBusHelper) {
         this.iBusHelper = iBusHelper;
     }
+    
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
+    }
+
 
 }

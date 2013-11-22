@@ -52,6 +52,8 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
     public static final String ATOM_DOWNLOAD_OPENSEARCH_GET_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.get.spatial.dataset.template";
     
     public static final String ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION = "atom.download.opensearch.definition.extension";
+    
+    public static final String ATOM_DOWNLOAD_OPENSEARCH_SUPPORTED_LANGUAGES = "atom.download.opensearch.supported.languages";
 
     public SearchInterfaceConfig() throws ConfigurationException {
         super("interface-search.properties");
