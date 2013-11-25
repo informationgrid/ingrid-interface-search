@@ -19,16 +19,16 @@ public class OpensearchDescriptionBuilder {
         result.append("<Description>" +  StringEscapeUtils.escapeXml(opensearchDescription.getDescription()) + "</Description>\n");
         result.append("<!--URL of this document-->\n");
         OpensearchDescriptionUrl tpl = opensearchDescription.getSelfReferencingUrlTemplate();
-        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " temlate=\"" + tpl.getTemplate() + "\"" + "/>\n");
+        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " template=\"" + tpl.getTemplate() + "\"" + "/>\n");
         result.append("<!--Generic URL template for browser integration-->\n");
         tpl = opensearchDescription.getResultsUrlTemplate();
-        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " temlate=\"" + tpl.getTemplate() + "\"" + "/>\n");
+        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " template=\"" + tpl.getTemplate() + "\"" + "/>\n");
         result.append("<!--Describe Spatial Data Set Operation request URL template to be used in order to retrieve the description of Spatial Object Types in a Spatial Dataset-->\n");
         tpl = opensearchDescription.getDescribeSpatialDatasetOperationUrlTemplate();
-        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " temlate=\"" + tpl.getTemplate() + "\"" + "/>\n");
+        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " template=\"" + tpl.getTemplate() + "\"" + "/>\n");
         result.append("<!--Get Spatial Data Set Operation request URL template to be used in order to retrieve a Spatial Dataset-->\n");
         tpl = opensearchDescription.getGetSpatialDatasetOperationUrlTemplate();
-        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " temlate=\"" + tpl.getTemplate() + "\"" + "/>\n");
+        result.append("<Url type=\"" + tpl.getType() + "\"" + " rel=\"" + tpl.getRel() + "\"" + " template=\"" + tpl.getTemplate() + "\"" + "/>\n");
         result.append("<Contact>" +  StringEscapeUtils.escapeXml(opensearchDescription.getContact()) + "</Contact>\n");
         result.append("<LongName>" +  StringEscapeUtils.escapeXml(opensearchDescription.getLongName()) + "</LongName>\n");
 
