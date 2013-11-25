@@ -39,9 +39,11 @@ public class IngridQueryProducer {
 
     public IngridQuery createServiceFeedEntryInGridQuery(String[] uuids, ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
-        if (serviceFeedRequest.getQuery() != null) {
-            queryStr += " " + serviceFeedRequest.getQuery();
+        String queryStr;
+        if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
+            queryStr = "ranking:score ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:") + ")) OR ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:") + "))";
+        } else {
+            queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
         }
         IngridQuery q = QueryStringParser.parse(queryStr);
         return q;
