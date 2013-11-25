@@ -21,7 +21,7 @@ public class DatasetFeedAtomBuilder {
         result.append("<title>" + StringEscapeUtils.escapeXml(datasetFeed.getTitle()) + "</title>\n");
         result.append("<!-- feed subtitle -->\n");
         result.append("<subtitle>" + StringEscapeUtils.escapeXml(datasetFeed.getSubTitle()) + "</subtitle>\n");
-        result.append("<!-- link to download service ISO 19139 metadata -->\n");
+        result.append("<!-- link to ISO 19139 metadata -->\n");
         for (Link link : datasetFeed.getDescribedBy()) {
             result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"  title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
         }
