@@ -28,14 +28,14 @@ public class IngridQueryProducer {
 
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
 
-        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")");
+        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
         return q;
 
     }
 
     public IngridQuery createServiceFeedInGridQuery(ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr = "ranking:score (t01_object.obj_id:" + serviceFeedRequest.getUuid() + " OR t01_object.org_obj_id:" + serviceFeedRequest.getUuid() + ")";
+        String queryStr = "ranking:score (t01_object.obj_id:\"" + serviceFeedRequest.getUuid() + "\" OR t01_object.org_obj_id:\"" + serviceFeedRequest.getUuid() + "\")";
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
@@ -48,10 +48,10 @@ public class IngridQueryProducer {
 
         String queryStr;
         if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
-            queryStr = "ranking:score ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:") + ")) OR (("
-                    + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:") + "))";
+            queryStr = "ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\")) OR (("
+                    + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:\"") + "\"))";
         } else {
-            queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
+            queryStr = "ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\") OR (" + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")";
         }
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
@@ -63,7 +63,7 @@ public class IngridQueryProducer {
 
     public IngridQuery createDatasetFeedInGridQuery(String uuid) throws ParseException {
 
-        String queryStr = "ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")";
+        String queryStr = "ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")";
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
@@ -74,10 +74,10 @@ public class IngridQueryProducer {
     public IngridQuery createDatasetFeedInGridQuery(DatasetFeedRequest datasetFeedRequest) throws Exception {
 
         if (datasetFeedRequest.getDatasetFeedUuid() != null && datasetFeedRequest.getDatasetFeedUuid().length() > 0) {
-            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + datasetFeedRequest.getDatasetFeedUuid() + " OR t01_object.org_obj_id:" + datasetFeedRequest.getDatasetFeedUuid() + ")");
+            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\")");
             return q;
         } else {
-            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + datasetFeedRequest.getServiceFeedUuid() + " OR t01_object.org_obj_id:" + datasetFeedRequest.getServiceFeedUuid() + ")");
+            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\")");
             IBus iBus = iBusHelper.getIBus();
             IBusQueryResultIterator queryIterator = new IBusQueryResultIterator(q, new String[] {}, iBus);
             IngridHit hit = null;
