@@ -1,5 +1,7 @@
 package de.ingrid.iface.atomDownloadService.util;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,10 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 public class IngridQueryProducer {
 
     private SearchInterfaceConfig config;
-    
+
     private IBusHelper iBusHelper;
+
+    private final static Log log = LogFactory.getLog(IngridQueryProducer.class);
 
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
 
@@ -32,6 +36,9 @@ public class IngridQueryProducer {
     public IngridQuery createServiceFeedInGridQuery(ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
         String queryStr = "ranking:score (t01_object.obj_id:" + serviceFeedRequest.getUuid() + " OR t01_object.org_obj_id:" + serviceFeedRequest.getUuid() + ")";
+        if (log.isDebugEnabled()) {
+            log.debug("Query string: " + queryStr);
+        }
         IngridQuery q = QueryStringParser.parse(queryStr);
         return q;
 
@@ -41,7 +48,8 @@ public class IngridQueryProducer {
 
         String queryStr;
         if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
-            queryStr = "ranking:score ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:") + ")) OR ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:") + "))";
+            queryStr = "ranking:score ((" + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:") + ")) OR (("
+                    + StringUtils.join(uuids, ") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:") + "))";
         } else {
             queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
         }
@@ -94,11 +102,10 @@ public class IngridQueryProducer {
     public void setiBusHelper(IBusHelper iBusHelper) {
         this.iBusHelper = iBusHelper;
     }
-    
+
     @Autowired
     public void setConfig(SearchInterfaceConfig config) {
         this.config = config;
     }
-
 
 }
