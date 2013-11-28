@@ -53,6 +53,9 @@ public class IngridQueryProducer {
         } else {
             queryStr = "ranking:score (" + StringUtils.join(uuids, " OR ", "t01_object.obj_id:") + ") OR (" + StringUtils.join(uuids, " OR ", "t01_object.org_obj_id:") + ")";
         }
+        if (log.isDebugEnabled()) {
+            log.debug("Query string: " + queryStr);
+        }
         IngridQuery q = QueryStringParser.parse(queryStr);
         return q;
 
@@ -60,7 +63,11 @@ public class IngridQueryProducer {
 
     public IngridQuery createDatasetFeedInGridQuery(String uuid) throws ParseException {
 
-        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")");
+        String queryStr = "ranking:score (t01_object.obj_id:" + uuid + " OR t01_object.org_obj_id:" + uuid + ")";
+        if (log.isDebugEnabled()) {
+            log.debug("Query string: " + queryStr);
+        }
+        IngridQuery q = QueryStringParser.parse(queryStr);
         return q;
     }
 
@@ -90,6 +97,9 @@ public class IngridQueryProducer {
                             break;
                         }
                     }
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("Query string: " + qStr);
                 }
                 q = QueryStringParser.parse(qStr);
                 return q;
