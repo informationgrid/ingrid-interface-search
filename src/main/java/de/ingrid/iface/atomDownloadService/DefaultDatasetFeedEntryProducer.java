@@ -5,6 +5,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
@@ -28,6 +30,9 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
 
     private TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
     private Detector detector = tikaConfig.getDetector();
+    
+    private final static Log log = LogFactory.getLog(DefaultDatasetFeedEntryProducer.class);
+
 
     public List<DatasetFeedEntry> produce(Document doc) throws Exception {
         List<DatasetFeedEntry> results = new ArrayList<DatasetFeedEntry>();
@@ -66,6 +71,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                 MediaType mediaType = detector.detect(stream, metadata);
                 link.setType(mediaType.toString());
             } catch (UnknownHostException e) {
+                log.info("Invalid download url: " + link.getHref());
                 continue;
             } catch (Exception e) {
                 link.setType("application/octet-stream");

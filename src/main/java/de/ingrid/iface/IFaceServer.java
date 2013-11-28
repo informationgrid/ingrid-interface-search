@@ -28,7 +28,7 @@ public class IFaceServer {
      */
     public static void main(String[] args) throws Exception {
         // Create the server
-        log.info("starting opensearch server...");
+        log.info("starting search server...");
 
         Server server = new Server(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80));
         ServletHandler handler = new ServletHandler();
@@ -40,7 +40,7 @@ public class IFaceServer {
         searchInterfaceServletConfigurator.addServlets(handler);
         server.start();
         log.info(server.getClass().getPackage().getImplementationVersion());
-        log.info("Started Opensearch IFaceServer on port " + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80) + " waiting for requests.");
+        log.info("Started Search IFaceServer on port " + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80) + " waiting for requests.");
     }
 
 }
