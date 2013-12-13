@@ -33,7 +33,7 @@ public class DatasetAtomBuilder {
             for (Link link : entry.getLinks()) {
                 result.append("<link href=\"" + link.getHref() + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"" + ( link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"") + (link.getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"") + "/>\n");
             }
-            result.append("<updated>" + StringUtils.assureDateTime(entry.getUpdated()) + "</updated>\n");
+            result.append("<updated>" + StringUtils.assureDateTime(datasetFeed.getUpdated()) + "</updated>\n");
             if (entry.getCrs() != null && entry.getCrs().size() > 0) {
                 result.append("<!-- CRSs in which the pre-defined Dataset is available -->\n");
                 for (Category cat : entry.getCrs()) {

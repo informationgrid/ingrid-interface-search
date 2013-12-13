@@ -1,10 +1,12 @@
 package de.ingrid.iface.atomDownloadService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Service
 public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedEntryProducer {
@@ -64,17 +67,31 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         Document idfCoupledResourceDoc = null;
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
-        String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
+        String[] coupledDataUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
+        String[] coupledOtherUuids = XPATH.getStringArray(idfDoc, "//idf:crossReference[./idf:attachedToField/@entry-id='9990' and ./idf:attachedToField/@list-id='2000']/@uuid");
+        String[] coupledUuids = (String[]) ArrayUtils.addAll(coupledDataUuids, coupledOtherUuids);
+        coupledUuids = (new HashSet<String>(Arrays.asList(coupledUuids))).toArray(new String[0]);
+        
+        
         if (coupledUuids.length == 0) {
             return entryList;
         }
         IBusQueryResultIterator serviceEntryIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedEntryInGridQuery(coupledUuids, serviceFeedRequest), REQUESTED_FIELDS, iBus);
+        List<String> coupledResourceUuids = new ArrayList<String>();
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
             if (log.isDebugEnabled()) {
                 log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
             }
             idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+            
+            // do not process data with identical uuids (filter duplicates)
+            String uuid = IdfUtils.getRecordId(idfCoupledResourceDoc).toString();
+            if (coupledResourceUuids.contains(uuid)) {
+                continue;
+            }
+            coupledResourceUuids.add(uuid);
+            
             // check for data sets without data download links
             if (!XPATH.nodeExists(idfCoupledResourceDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']")) {
                 if (log.isDebugEnabled()) {
