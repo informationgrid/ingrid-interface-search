@@ -1,0 +1,19 @@
+<project name="search-interface patches">
+	
+    <target name="patchFromVersion3.3.2">
+        <compareVersion value1="${oldVersion}" value2="3.3.2" prop="compResult"/>
+        <if>
+            <not>
+                <equals arg1="${compResult}" arg2="1" />
+            </not>
+            <then>
+                <echo>Patching interface-search.properties file in basedir: </echo>
+                <patchFile patchFile="patches/3.3.2.1/interface-search.properties.patch" originalFile="${installDir}/conf/interface-search.properties" />
+            </then>
+        </if>
+    </target>
+	
+    <target name="patchFiles" depends="patchFromVersion3.3.2">
+        <!-- patch order determined through depends-order -->
+    </target>
+</project>

@@ -83,10 +83,10 @@ public class ServiceFeedProducer {
             serviceFeed.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
             serviceFeed.setSubTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
             serviceFeed.setUpdated(XPATH.getString(idfDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
-            
+
             NodeList resourceConstraints = XPATH.getNodeList(idfDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
             StringBuilder copyRight = new StringBuilder();
-            for (int i=0; i< resourceConstraints.getLength(); i++) {
+            for (int i = 0; i < resourceConstraints.getLength(); i++) {
                 Node resourceConstraint = resourceConstraints.item(i);
                 String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
                 if (copyRight.length() > 0) {

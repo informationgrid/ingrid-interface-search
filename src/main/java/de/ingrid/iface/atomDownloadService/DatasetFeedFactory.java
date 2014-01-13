@@ -15,6 +15,7 @@ import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
+import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
 import de.ingrid.iface.util.StringUtilsService;
 import de.ingrid.utils.IBus;
@@ -30,6 +31,8 @@ public class DatasetFeedFactory {
     private IBusHelper iBusHelper;
 
     private StringUtilsService stringUtilsService;
+    
+    private SearchInterfaceConfig config;
 
     private final static Log log = LogFactory.getLog(DatasetFeedFactory.class);
 
@@ -38,6 +41,9 @@ public class DatasetFeedFactory {
     public Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
 
         Document doc = null;
+        
+        Integer connectionTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_CONNECTION_TIMEOUT, 1000);
+        Integer readTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_READ_TIMEOUT, 1000);
 
         String datasetFeedUuid = datasetFeedRequest.getDatasetFeedUuid();
         if (datasetFeedUuid != null && datasetFeedUuid.toLowerCase().contains("request=getrecordbyid")) {
@@ -45,7 +51,11 @@ public class DatasetFeedFactory {
                 log.debug("Found external dataset: " + datasetFeedRequest.getDatasetFeedUuid());
             }
             // ISO Metadaten
-            doc = stringUtilsService.urlToDocument(datasetFeedRequest.getDatasetFeedUuid());
+            try {
+                doc = stringUtilsService.urlToDocument(datasetFeedRequest.getDatasetFeedUuid(), connectionTimeout, readTimeout);
+            } catch (Exception e) {
+                log.warn("Unable to obtain XML document from " + datasetFeedRequest.getDatasetFeedUuid(), e);
+            }
             // TODO: not nice to alter the request, change this 
             datasetFeedRequest.setType(EntryType.CSW);
         } else {
@@ -70,7 +80,11 @@ public class DatasetFeedFactory {
                     if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
                         if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())
                                 && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
-                            doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref());
+                            try {
+                                doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
+                            } catch (Exception e) {
+                                log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
+                            }
                             datasetFeedRequest.setType(EntryType.CSW);
                             datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
                         }
@@ -99,6 +113,11 @@ public class DatasetFeedFactory {
     @Autowired
     public void setStringUtilsService(StringUtilsService stringUtilsService) {
         this.stringUtilsService = stringUtilsService;
+    }
+    
+    @Autowired
+    public void setConfig(SearchInterfaceConfig config) {
+        this.config = config;
     }
 
 }

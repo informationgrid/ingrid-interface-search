@@ -55,6 +55,10 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
     
     public static final String ATOM_DOWNLOAD_OPENSEARCH_SUPPORTED_LANGUAGES = "atom.download.opensearch.supported.languages";
 
+    public static final String ATOM_URL_CONNECTION_TIMEOUT = "atom.url.connect.timeout";
+    
+    public static final String ATOM_URL_READ_TIMEOUT = "atom.url.read.timeout";
+    
     public SearchInterfaceConfig() throws ConfigurationException {
         super("interface-search.properties");
 

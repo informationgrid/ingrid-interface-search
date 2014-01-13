@@ -82,6 +82,7 @@ public class DatasetFeedFactoryTest {
 
         datasetFeedFactory = new DatasetFeedFactory();
         datasetFeedFactory.setiBusHelper(iBusHelper);
+        datasetFeedFactory.setConfig(SearchInterfaceConfig.getInstance());
 
         IngridQueryProducer ingridQueryProducer = new IngridQueryProducer();
         ingridQueryProducer.setiBusHelper(iBusHelper);
@@ -165,7 +166,7 @@ public class DatasetFeedFactoryTest {
 
         when(
                 stringUtilsService
-                        .urlToDocument("http://numis.niedersachsen.de/202/csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=28B5456A-AA9A-41F3-8EFA-27A0597A8FD9&iplug=/ingrid-group:iplug-ouk-db-numis&elementSetName=full&elementSetName=full"))
+                        .urlToDocument("http://numis.niedersachsen.de/202/csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id=28B5456A-AA9A-41F3-8EFA-27A0597A8FD9&iplug=/ingrid-group:iplug-ouk-db-numis&elementSetName=full&elementSetName=full", 1000, 1000))
                 .thenReturn(StringUtils.inputSourceToDocument(new InputSource(this.getClass().getClassLoader().getResourceAsStream("data/csw_numis.xml"))));
 
     }

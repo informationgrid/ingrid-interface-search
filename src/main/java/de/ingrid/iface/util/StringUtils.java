@@ -9,6 +9,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +76,12 @@ public class StringUtils {
         return StringUtils.inputSourceToDocument(new InputSource(new StringReader(string)));
     }
 
-    public static Document urlToDocument(String urlString) throws Exception {
-        URL url = new URL(urlString);
-        InputStream stream = url.openStream();
+    public static Document urlToDocument(String urlString, Integer connectTimeout, Integer readTimeout) throws Exception {
+        
+        URLConnection conn = new URL(urlString).openConnection();
+        conn.setConnectTimeout(connectTimeout);
+        conn.setReadTimeout(readTimeout);
+        InputStream stream = conn.getInputStream();
         Document doc = StringUtils.inputSourceToDocument(new InputSource(stream));
         return doc;
     }

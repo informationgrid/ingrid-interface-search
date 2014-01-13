@@ -59,9 +59,21 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 if (log.isDebugEnabled()) {
                     log.debug("Found external coupled resource: " + linkage);
                 }
-                Document isoDoc = StringUtils.urlToDocument(linkage);
+
+                Integer connectionTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_CONNECTION_TIMEOUT, 1000);
+                Integer readTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_READ_TIMEOUT, 1000);
+
+                Document isoDoc = null;
+                try {
+                    isoDoc = StringUtils.urlToDocument(linkage, connectionTimeout, readTimeout);
+                } catch (Exception e) {
+                    log.error("Unable to obtain XML document from " + linkage, e);
+                    continue;
+                }
+                    
                 // check for data sets without data download links
-                if (!XPATH.nodeExists(isoDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']")) {
+                if (!XPATH.nodeExists(isoDoc,
+                        "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']")) {
                     if (log.isDebugEnabled()) {
                         log.debug("No Download Data Links found in coupled resource: " + linkage);
                     }
@@ -102,7 +114,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
                 NodeList resourceConstraints = XPATH.getNodeList(isoDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
                 StringBuilder copyRight = new StringBuilder();
-                for (int j=0; j< resourceConstraints.getLength(); j++) {
+                for (int j = 0; j < resourceConstraints.getLength(); j++) {
                     Node resourceConstraint = resourceConstraints.item(j);
                     String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
                     if (copyRight.length() > 0) {
@@ -134,7 +146,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                     Category cat = new Category();
                     cat.setLabel(refSystemCode);
                     if (epsgNumber != null) {
-                        cat.setTerm("EPSG:"+ epsgNumber);
+                        cat.setTerm("EPSG:" + epsgNumber);
                     } else {
                         cat.setTerm(XPATH.getString(nl.item(j), "gmd:codeSpace/gco:CharacterString"));
                     }
