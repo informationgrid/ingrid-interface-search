@@ -6,8 +6,14 @@
   </properties>
   <body>
     <release version="3.3.3" date="2014-01-27" description="Feature Release InGrid 3.3.3">
+      <action type="fix" dev="wemove">
+        Installer: Do not overwrite communication.xml on update-mode.
+      </action>
       <action type="add" dev="wemove">
         Add long names for partner and provider as partner-name and provider-name tags.
+      </action>
+      <action type="update" dev="wemove">
+        Better logging settings.
       </action>
     </release>
     <release version="3.3.2.1" date="2014-01-13" description="Bugfix-Release InGrid 3.3.2.1">
