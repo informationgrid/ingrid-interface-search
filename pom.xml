@@ -12,8 +12,8 @@
 	<packaging>jar</packaging>
 	<name>ingrid-interface-search</name>
 	<scm>
-		<connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-interface-search/trunk</connection>
-		<developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-interface-search/trunk</developerConnection>
+		<connection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/branches/ingrid-interface-search-3.3.x</connection>
+		<developerConnection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/branches/ingrid-interface-search-3.3.x</developerConnection>
 	</scm>
 	<repositories>
 		<repository>
