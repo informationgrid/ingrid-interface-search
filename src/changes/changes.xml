@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.3.3-SNAPSHOT" date="2014-01-27" description="Feature Release InGrid 3.3.3">
+    <release version="3.3.3" date="2014-01-27" description="Feature Release InGrid 3.3.3">
       <action type="add" dev="wemove">
         Add long names for partner and provider as partner-name and provider-name tags.
       </action>
