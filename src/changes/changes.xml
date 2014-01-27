@@ -5,6 +5,11 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.3.3" date="2014-01-27" description="Feature Release InGrid 3.3.3">
+      <action type="add" dev="wemove">
+        Add long names for partner and provider as partner-name and provider-name tags.
+      </action>
+    </release>
     <release version="3.3.2.1" date="2014-01-13" description="Bugfix-Release InGrid 3.3.2.1">
       <action type="fix" dev="wemove">
         Do not crash on timeout exception, if an external resource (GetRecordByIdResponse) is not available.
