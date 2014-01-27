@@ -6,7 +6,9 @@
   <xs:element name="docid" type="xs:integer"/>
   <xs:element name="altdocid" type="xs:string"/>
   <xs:element name="provider" type="xs:string"/>
+  <xs:element name="provider-name" type="xs:string"/>
   <xs:element name="partner" type="xs:string"/>
+  <xs:element name="partner-name" type="xs:string"/>
   <xs:element name="source" type="xs:string"/>
   <xs:element name="udk-class" type="xs:integer"/>
   <xs:element name="udk-addr-class" type="xs:integer"/>

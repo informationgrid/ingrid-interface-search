@@ -38,8 +38,12 @@
         <xs:element ref="ingridsearch:altdocid" minOccurs="0"/>
         <!-- The provider of the iplug. -->
         <xs:element ref="ingridsearch:provider" minOccurs="0"/>
+        <!-- The name of the provider of the iplug. -->
+        <xs:element ref="ingridsearch:provider-name" minOccurs="0"/>
         <!-- The partner of the iplug. -->
         <xs:element ref="ingridsearch:partner" minOccurs="0"/>
+        <!-- The name of the partner of the iplug. -->
+        <xs:element ref="ingridsearch:partner-name" minOccurs="0"/>
         <!-- The source description of the iplug. -->
         <xs:element ref="ingridsearch:source" minOccurs="0"/>
         <!-- The udk class (val:0-5), see udk documentation -->

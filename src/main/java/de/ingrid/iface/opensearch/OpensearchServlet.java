@@ -405,16 +405,24 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             if (altDocId != null && altDocId.length() > 0) {
                 item.addElement("ingrid:altdocid").addText(altDocId);
             }
-            String provider = OpensearchUtil.getDetailValue(detail, "provider");
-            detail.get("searchTerms");
-            if (provider == null) {
-                provider = detail.getOrganisation();
-            }
-            item.addElement("ingrid:provider").addText(OpensearchUtil.deNullify(provider));
 
-            String partner = OpensearchUtil.getDetailValue(detail, "partner");
-            item.addElement("ingrid:partner").addText(OpensearchUtil.deNullify(partner));
+            String providerId = OpensearchUtil.getDetailValue(detail, "provider");
+            String providerName = iBusHelper.getProviderName(providerId, detail.getOrganisation());
+            if (providerId == null || providerId.length() == 0) {
+                providerId = detail.getOrganisation();
+            }
+            item.addElement("ingrid:provider").addText(OpensearchUtil.deNullify(providerId));
+            item.addElement("ingrid:provider-name").addText(OpensearchUtil.deNullify(providerName));
+
+            String partnerId = OpensearchUtil.getDetailValue(detail, "partner");
+            String partnerName = iBusHelper.getPartnerName(partnerId, detail.getOrganisation());
+            if (partnerId == null || partnerId.length() == 0) {
+                partnerId = detail.getOrganisation();
+            }
+            item.addElement("ingrid:partner").addText(OpensearchUtil.deNullify(partnerId));
+            item.addElement("ingrid:partner-name").addText(OpensearchUtil.deNullify(partnerName));
             item.addElement("ingrid:source").addText(OpensearchUtil.deNullify(detail.getDataSourceName()));
+            
 
             // handle udk class
             if (udkClass != null && udkClass.length() > 0) {
