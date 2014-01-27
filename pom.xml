@@ -8,12 +8,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.ingrid</groupId>
 	<artifactId>ingrid-interface-search</artifactId>
-	<version>3.3.4-SNAPSHOT</version>
+	<version>3.3.3</version>
 	<packaging>jar</packaging>
 	<name>ingrid-interface-search</name>
 	<scm>
-		<connection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/branches/ingrid-interface-search-3.3.x</connection>
-		<developerConnection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/branches/ingrid-interface-search-3.3.x</developerConnection>
+		<connection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/tags/ingrid-interface-search-3.3.3</connection>
+		<developerConnection>scm:svn:https://harrison.its-technidata.de/svn/ingrid/ingrid-interface-search/tags/ingrid-interface-search-3.3.3</developerConnection>
 	</scm>
 	<repositories>
 		<repository>
