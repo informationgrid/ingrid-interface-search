@@ -1,7 +1,11 @@
 package de.ingrid.iface.util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +14,14 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Service
 public class IBusHelper {
+
+    private final static Log log = LogFactory.getLog(IBusHelper.class);
 
     @Autowired
     private SearchInterfaceConfig config;
@@ -64,6 +71,68 @@ public class IBusHelper {
         } while (cnt <= hits.length());
 
         return results;
+
+    }
+
+    public String getPartnerName(String id, String defaultValue) {
+
+        String result = defaultValue;
+
+        IngridHits hits;
+        try {
+            final IngridQuery ingridQuery = new IngridQuery();
+            ingridQuery.addField(new FieldQuery(false, false, "datatype", "management"));
+            ingridQuery.addField(new FieldQuery(false, false, "management_request_type", "1"));
+            ingridQuery.addField(new FieldQuery(false, false, "cache", "off"));
+
+            hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
+
+            if (hits.length() > 0) {
+                final ArrayList<Map<String, String>> partners = hits.getHits()[0].getArrayList("partner");
+                for (final Map<String, String> partner : partners) {
+                    final String partnerId = partner.get("partnerid");
+                    if (partnerId.equals(id)) {
+                        result = partner.get("name");
+                        break;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            log.info("Error obtaining partner name for id: " + id, e);
+        }
+
+        return result;
+
+    }
+
+    public String getProviderName(String id, String defaultValue) {
+
+        String result = defaultValue;
+
+        IngridHits hits;
+        try {
+            final IngridQuery ingridQuery = new IngridQuery();
+            ingridQuery.addField(new FieldQuery(false, false, "datatype", "management"));
+            ingridQuery.addField(new FieldQuery(false, false, "management_request_type", "2"));
+            ingridQuery.addField(new FieldQuery(false, false, "cache", "off"));
+
+            hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
+            if (hits.length() > 0) {
+                final ArrayList<Map<String, String>> providerss = hits.getHits()[0].getArrayList("provider");
+                for (final Map<String, String> provider : providerss) {
+                    final String providerId = provider.get("providerid");
+                    if (providerId.equals(id)) {
+                        result = provider.get("name");
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.info("Error obtaining provider name for id: " + id, e);
+        }
+
+        return result;
 
     }
 
