@@ -1,17 +1,21 @@
 package de.ingrid.iface.atomDownloadService;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.atomDownloadService.om.Category;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.UserAgentDetector;
 
 @Service
 public class ServiceFeedAtomBuilder {
 
-    public String build(ServiceFeed serviceFeed) {
+    private UserAgentDetector userAgentDetector = null;
+
+    public String build(ServiceFeed serviceFeed, String agentString) {
 
         StringBuilder result = new StringBuilder();
         result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -40,23 +44,24 @@ public class ServiceFeedAtomBuilder {
         result.append("<!-- author contact information -->\n");
         result.append("<author>\n" + "<name>" + StringEscapeUtils.escapeXml(serviceFeed.getAuthor().getName()) + "</name>\n" + "<email>" + StringEscapeUtils.escapeXml(serviceFeed.getAuthor().getEmail()) + "</email>\n" + "</author>\n");
 
+        boolean isBrowserIE = userAgentDetector.isIE(agentString);
+
         for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
             result.append("<entry>\n");
             result.append("<!-- title dataset feed -->\n");
             result.append("<title>" + StringEscapeUtils.escapeXml(entry.getTitle()) + "</title>\n");
-            result.append("<!-- Spatial Dataset Unique Resourse Identifier for this dataset -->\n");
-            if (entry.getSpatialDatasetIdentifierCode() != null) {
-                result.append("<inspire_dls:spatial_dataset_identifier_code>" + StringEscapeUtils.escapeXml(entry.getSpatialDatasetIdentifierCode()) + "</inspire_dls:spatial_dataset_identifier_code>\n");
-                if (entry.getSpatialDatasetIdentifierNamespace() != null) {
-                    result.append("<inspire_dls:spatial_dataset_identifier_namespace>" + StringEscapeUtils.escapeXml(entry.getSpatialDatasetIdentifierNamespace()) + "</inspire_dls:spatial_dataset_identifier_namespace>\n");
-                }
+            result.append("<!-- link to Dataset Feed -->\n");
+            if (isBrowserIE) {
+                result.append("<!-- do not add attribute \"type\" for IE browsers, since links are not displayed properly -->\n");
+                result.append("<link rel=\"" + entry.getDatasetFeed().getRel() + "\" href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" hreflang=\""
+                        + entry.getDatasetFeed().getHrefLang() + "\"" + (entry.getDatasetFeed().getTitle() == null ? "" : " title=\"" + entry.getDatasetFeed().getTitle() + "\"") + "/>\n");
+            } else {
+                result.append("<link rel=\"" + entry.getDatasetFeed().getRel() + "\" href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\""
+                        + entry.getDatasetFeed().getHrefLang() + "\"" + (entry.getDatasetFeed().getTitle() == null ? "" : " title=\"" + entry.getDatasetFeed().getTitle() + "\"") + "/>\n");
             }
             result.append("<!-- link to dataset metadata record -->\n");
             result.append("<link href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetMetadataRecord().getHref()) + "\" rel=\"" + entry.getDatasetMetadataRecord().getRel() + "\" type=\"" + entry.getDatasetMetadataRecord().getType()
                     + "\"/>\n");
-            result.append("<!-- link to Dataset Feed -->\n");
-            result.append("<link rel=\"" + entry.getDatasetFeed().getRel() + "\" href=\"" + StringEscapeUtils.escapeXml(entry.getDatasetFeed().getHref()) + "\" type=\"" + entry.getDatasetFeed().getType() + "\" hreflang=\""
-                    + entry.getDatasetFeed().getHrefLang() + "\"" + (entry.getDatasetFeed().getTitle() == null ? "" : " title=\"" + entry.getDatasetFeed().getTitle() + "\"") + "/>\n");
             result.append("<!-- identifier for \"Dataset Feed\" for pre-defined dataset -->\n");
             result.append("<id>" + StringEscapeUtils.escapeXml(entry.getDatasetIdentifier()) + "</id>\n");
             result.append("<!-- rights, access info for pre-defined dataset -->\n");
@@ -82,12 +87,24 @@ public class ServiceFeedAtomBuilder {
                     result.append("<category term=\"" + StringEscapeUtils.escapeXml(cat.term) + "\" label=\"" + StringEscapeUtils.escapeXml(cat.getLabel()) + "\"/>\n");
                 }
             }
+            result.append("<!-- Spatial Dataset Unique Resourse Identifier for this dataset -->\n");
+            if (entry.getSpatialDatasetIdentifierCode() != null) {
+                result.append("<inspire_dls:spatial_dataset_identifier_code>" + StringEscapeUtils.escapeXml(entry.getSpatialDatasetIdentifierCode()) + "</inspire_dls:spatial_dataset_identifier_code>\n");
+                if (entry.getSpatialDatasetIdentifierNamespace() != null) {
+                    result.append("<inspire_dls:spatial_dataset_identifier_namespace>" + StringEscapeUtils.escapeXml(entry.getSpatialDatasetIdentifierNamespace()) + "</inspire_dls:spatial_dataset_identifier_namespace>\n");
+                }
+            }
             result.append("</entry>\n");
         }
         result.append("</feed>\n");
 
         return result.toString();
 
+    }
+
+    @Autowired
+    public void setUserAgentDetector(UserAgentDetector userAgentDetector) {
+        this.userAgentDetector = userAgentDetector;
     }
 
 }

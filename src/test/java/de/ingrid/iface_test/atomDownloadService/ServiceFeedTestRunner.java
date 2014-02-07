@@ -29,6 +29,7 @@ import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.UserAgentDetector;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.queryparser.ParseException;
@@ -114,7 +115,8 @@ public class ServiceFeedTestRunner {
                 continue;
             }
             ServiceFeedAtomBuilder serviceFeedAtomBuilder = new ServiceFeedAtomBuilder();
-            String body = serviceFeedAtomBuilder.build(serviceFeed);
+            serviceFeedAtomBuilder.setUserAgentDetector(new UserAgentDetector());
+            String body = serviceFeedAtomBuilder.build(serviceFeed, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; WOW64; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; Media Center PC 5.0; .NET CLR 1.1.4322)");
             Document atomServiceFeed = stringToDocument(body);
 
             TestCase.assertEquals(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", uuid), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='describedby']/@href"));
