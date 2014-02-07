@@ -1,6 +1,7 @@
 package de.ingrid.iface.atomDownloadService;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.atomDownloadService.om.Category;
@@ -8,11 +9,14 @@ import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.UserAgentDetector;
 
 @Service
 public class DatasetFeedAtomBuilder {
 
-    public String build(DatasetFeed datasetFeed) {
+    private UserAgentDetector userAgentDetector = null;
+
+    public String build(DatasetFeed datasetFeed, String agentString) {
 
         StringBuilder result = new StringBuilder();
         result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -27,7 +31,8 @@ public class DatasetFeedAtomBuilder {
         }
         result.append("<!-- self-referencing link to this feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "\" rel=\"" + datasetFeed.getSelfReferencingLink().getRel() + "\" type=\""
-                + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + "\"" + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle() + "\"")) + "/>\n");
+                + datasetFeed.getSelfReferencingLink().getType() + "\" hreflang=\"" + datasetFeed.getSelfReferencingLink().getHrefLang() + "\""
+                + (datasetFeed.getSelfReferencingLink().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getTitle() + "\"")) + "/>\n");
         result.append("<!-- upward link to the corresponding download service feed -->\n");
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\""
                 + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() + "\""
@@ -41,13 +46,22 @@ public class DatasetFeedAtomBuilder {
         result.append("<!-- author contact information -->\n");
         result.append("<author>\n" + "<name>" + StringEscapeUtils.escapeXml(datasetFeed.getAuthor().getName()) + "</name>\n" + "<email>" + StringEscapeUtils.escapeXml(datasetFeed.getAuthor().getEmail()) + "</email>\n" + "</author>\n");
 
+        boolean isBrowserIE = userAgentDetector.isIE(agentString);
+
         for (DatasetFeedEntry entry : datasetFeed.getEntries()) {
             result.append("<entry>\n");
             result.append("<title>" + (entry.getTitle() == null ? "" : StringEscapeUtils.escapeXml(entry.getTitle())) + "</title>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
-                result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"" + (link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"") + " title=\""
-                        + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+                if (isBrowserIE) {
+                    result.append("<!-- do not add attribute \"type\" for IE browsers, since links are not displayed properly -->\n");
+                    result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\"" + (link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"") + " title=\""
+                            + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+                } else {
+                    result.append("<link href=\"" + StringEscapeUtils.escapeXml(link.getHref()) + "\" rel=\"" + link.getRel() + "\" type=\"" + link.getType() + "\"" + (link.getLength() == null ? "" : " length=\"" + link.getLength() + "\"")
+                            + " title=\"" + StringEscapeUtils.escapeXml(link.getTitle()) + "\"/>\n");
+                }
+
             }
             result.append("<id>" + entry.getId() + "</id>\n");
             result.append("<!-- date/time this feed was last updated -->\n");
@@ -64,6 +78,11 @@ public class DatasetFeedAtomBuilder {
 
         return result.toString();
 
+    }
+
+    @Autowired
+    public void setUserAgentDetector(UserAgentDetector userAgentDetector) {
+        this.userAgentDetector = userAgentDetector;
     }
 
 }

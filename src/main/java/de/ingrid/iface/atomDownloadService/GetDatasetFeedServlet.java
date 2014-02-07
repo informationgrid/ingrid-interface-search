@@ -42,7 +42,7 @@ public class GetDatasetFeedServlet extends HttpServlet implements SearchInterfac
             if (datasetFeed == null) {
                 throw (HttpException) new HttpException(404, "Dataset Feed not found.");
             }
-            String body = datasetFeedAtomBuilder.build(datasetFeed);
+            String body = datasetFeedAtomBuilder.build(datasetFeed, req.getHeader("user-agent"));
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
