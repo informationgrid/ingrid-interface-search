@@ -13,7 +13,11 @@ public class UserAgentDetector {
     
     public boolean isIE(String agentString) {
         if (log.isDebugEnabled()) {
-            log.debug("Agent string: '" + agentString + "' isIE:" + Browser.parseUserAgentString(agentString).getGroup().equals(Browser.IE));
+            if (agentString == null) {
+                log.debug("Agent string: '" + agentString + "' isIE: false");
+            } else {
+                log.debug("Agent string: '" + agentString + "' isIE:" + Browser.parseUserAgentString(agentString).getGroup().equals(Browser.IE));
+            }
         }
         if (agentString == null) {
             return false;

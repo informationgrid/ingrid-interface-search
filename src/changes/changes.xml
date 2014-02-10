@@ -5,6 +5,11 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.4-SNAPSHOT" date="2014-xx-xx" description="Release InGrid 3.4">
+      <action type="add" dev="wemove">
+        Do not render type attributes to links if the feed is accessed by an IE browser. Otherwise the links will not be active.
+      </action>
+    </release>
     <release version="3.3.3" date="2014-01-27" description="Feature Release InGrid 3.3.3">
       <action type="fix" dev="wemove">
         Installer: Do not overwrite communication.xml on update-mode.

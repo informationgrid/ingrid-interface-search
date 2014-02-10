@@ -54,6 +54,11 @@ public class UserAgentDetectorTest {
 
     String[] ieMobile10 = new String[] { "Mozilla/5.0 (compatible; MSIE 10.0; Windows Phone 8.0; Trident/6.0; IEMobile/10.0; ARM; Touch; NOKIA; Lumia 920)" };
 
+    String[] ie11Rss = new String[] {
+            "Windows-RSS-Platform/2.0 (IE 11.0; Windows NT 6.1)"
+    };
+    
+    
     @Test
     public void testUserAgentDetector() {
 
@@ -67,6 +72,7 @@ public class UserAgentDetectorTest {
         assertTrue(userAgentDetector.isIE(ie11clients[0]));
         assertTrue(userAgentDetector.isIE(ieTooOld[0]));
         assertTrue(userAgentDetector.isIE(ieMobile10[0]));
+        assertTrue(userAgentDetector.isIE(ie11Rss[0]));
         
         assertFalse(userAgentDetector.isIE(null));
         assertFalse(userAgentDetector.isIE(""));
