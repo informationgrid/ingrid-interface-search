@@ -51,12 +51,11 @@
 				<artifactId>ingrid-iplug-se</artifactId>
 				<version>3.0.0</version>
 			</dependency>
-			<!-- Move to Base-POM in next release -->
-			<dependency>
-				<groupId>de.ingrid</groupId>
-				<artifactId>ingrid-iplug-dsc</artifactId>
-				<version>2.3.1</version>
-			</dependency>
+            <dependency>
+                <groupId>de.ingrid</groupId>
+                <artifactId>ingrid-iplug-g2k</artifactId>
+                <version>3.0.0</version>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
@@ -518,44 +517,6 @@
 				<exclusion>
 					<groupId>ant</groupId>
 					<artifactId>ant</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>de.ingrid</groupId>
-			<artifactId>ingrid-iplug-tamino</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>de.ingrid</groupId>
-					<artifactId>ingrid-iplug-dsc</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>TaminoAPI4J</groupId>
-					<artifactId>TaminoAPI4J</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>xalan</groupId>
-					<artifactId>xalan</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>lucene</groupId>
-					<artifactId>lucene</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>uba</groupId>
-					<artifactId>xtmStubs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>de.ingrid</groupId>
-					<artifactId>ingrid-iplug-admin-step1</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>de.ingrid</groupId>
-					<artifactId>ingrid-iplug-admin-step2-tamino</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>xerces</groupId>
-					<artifactId>xercesImpl</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
