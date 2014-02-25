@@ -5,9 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.4-SNAPSHOT" date="2014-xx-xx" description="Release InGrid 3.4">
+    <release version="3.4.0" date="2014-02-25" description="Release InGrid 3.4.0">
       <action type="add" dev="wemove">
         Do not render type attributes to links if the feed is accessed by an IE browser. Otherwise the links will not be active.
+      </action>
+      <action type="add" dev="wemove">
+        Add long names to ingrid specific data in opensearch results.
       </action>
     </release>
     <release version="3.3.3" date="2014-01-27" description="Feature Release InGrid 3.3.3">

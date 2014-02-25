@@ -45,6 +45,7 @@
                 <include name="**/*.*"/>
                 <exclude name="${componentName}/conf/interface-search.properties" />
                 <exclude name="${componentName}/conf/communication.xml" />
+                <exclude name="${componentName}/start.sh" />
             </patternset>
         </unzip>
         
