@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>bitwalker</groupId>
   <artifactId>UserAgentUtils</artifactId>
-  <version>1.13-SNAPSHOT</version>
+  <version>1.13-20140225</version>
   <description>POM was created from install:install-file</description>
 </project>
