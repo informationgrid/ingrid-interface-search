@@ -12,6 +12,9 @@
       <action type="fix" dev="wemove">
         Fix opensearch interface, fix the correct usage of the url to display detailed view of metadata results.
       </action>
+      <action type="fix" dev="wemove">
+        Prevent double XML escaping.
+      </action>
     </release>
     <release version="3.4.0" date="2014-02-25" description="Release InGrid 3.4.0">
       <action type="add" dev="wemove">
