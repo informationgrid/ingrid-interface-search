@@ -52,6 +52,8 @@
         <xs:element ref="ingridsearch:udk-addr-class" minOccurs="0"/>
         <!-- The wms url, if exists -->
         <xs:element ref="ingridsearch:wms-url" minOccurs="0"/>
+        <!-- The iso xml url, if exists -->
+        <xs:element ref="ingridsearch:iso-xml-url" minOccurs="0"/>
         <!-- 
             The details of the entry. This structure will only be used when a detail is
             requested by the query.
