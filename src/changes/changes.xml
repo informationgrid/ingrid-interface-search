@@ -5,6 +5,14 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.4.1" date="2014-03-20" description="Release InGrid 3.4.1">
+      <action type="add" dev="wemove">
+        Add new element "ingrid:iso-xml-url" to the opensearch result. This element contains the metadata xml access url if it exists for the result dataset. 
+      </action>
+      <action type="fix" dev="wemove">
+        Fix opensearch interface, fix the correct usage of the url to display detailed view of metadata results.
+      </action>
+    </release>
     <release version="3.4.0" date="2014-02-25" description="Release InGrid 3.4.0">
       <action type="add" dev="wemove">
         Do not render type attributes to links if the feed is accessed by an IE browser. Otherwise the links will not be active.

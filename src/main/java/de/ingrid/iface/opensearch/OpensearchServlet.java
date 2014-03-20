@@ -436,6 +436,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             if (wmsUrl != null && wmsUrl.length() > 0) {
                 item.addElement("ingrid:wms-url").addText(OpensearchUtil.xmlEscape(wmsUrl));
             }
+            // handle xml csw url
+            String metadatatXmlUrl =  SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL);
+            if (docUuid != null && docUuid.length() > 0 && metadatatXmlUrl != null && metadatatXmlUrl.length() > 0) {
+                metadatatXmlUrl.replace("{uuid}", docUuid);
+                item.addElement("ingrid:iso-xml-url").addText(OpensearchUtil.xmlEscape(wmsUrl));
+            }
 
             // handle time reference
             if (detail.containsKey("t1") || detail.containsKey("t2")) {
@@ -533,7 +539,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = (String) hit.get("alt_document_id");
 
-            String metadataDetailsUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_METADATA_DETAILS_URL, null);
+            String metadataDetailsUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_DETAILS_URL, null);
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
             String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
 

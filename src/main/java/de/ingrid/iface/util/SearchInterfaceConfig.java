@@ -29,7 +29,7 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String OPENSEARCH_PROXY_URL = "opensearch.proxy.url";
 
-    public static final String OPENSEARCH_METADATA_DETAILS_URL = "opensearch.metadata.details.url";
+    public static final String METADATA_DETAILS_URL = "metadata.details.url";
 
     public static final String DESCRIPTOR_FILE = "opensearch.descriptor.file";
 
