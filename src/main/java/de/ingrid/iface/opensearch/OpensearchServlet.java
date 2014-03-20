@@ -146,7 +146,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
                     addItemTitle(item, hit, requestWrapper, true);
                     addItemLink(item, hit, requestWrapper, true);
-                    item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
+                    item.addElement("description").addText(OpensearchUtil.deNullify(detail.getSummary()));
                     item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
                     addIngridData(item, hit, requestWrapper, true);
                     addGeoRssData(item, hit, requestWrapper);
@@ -336,7 +336,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             addItemTitle(item, hit, requestWrapper, ibusConnected);
             addItemLink(item, hit, requestWrapper, ibusConnected);
-            item.addElement("description").addText(OpensearchUtil.xmlEscape(OpensearchUtil.deNullify(detail.getSummary())));
+            item.addElement("description").addText(OpensearchUtil.deNullify(detail.getSummary()));
             item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
             addIngridData(item, hit, requestWrapper, ibusConnected);
             addGeoRssData(item, hit, requestWrapper);
@@ -434,13 +434,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
             // handle wms url
             if (wmsUrl != null && wmsUrl.length() > 0) {
-                item.addElement("ingrid:wms-url").addText(OpensearchUtil.xmlEscape(wmsUrl));
+                item.addElement("ingrid:wms-url").addText(wmsUrl);
             }
             // handle xml csw url
             String metadatatXmlUrl =  SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL);
             if (docUuid != null && docUuid.length() > 0 && metadatatXmlUrl != null && metadatatXmlUrl.length() > 0) {
-                metadatatXmlUrl.replace("{uuid}", docUuid);
-                item.addElement("ingrid:iso-xml-url").addText(OpensearchUtil.xmlEscape(wmsUrl));
+                metadatatXmlUrl = metadatatXmlUrl.replace("{uuid}", docUuid);
+                item.addElement("ingrid:iso-xml-url").addText(metadatatXmlUrl);
             }
 
             // handle time reference
@@ -511,7 +511,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     Element detail = subElement.addElement("ingrid:detail");
                     String columnName = columns[j].getTargetName();
                     detail.addElement("ingrid:detail-key").addText(columnName);
-                    detail.addElement("ingrid:detail-value").addText(OpensearchUtil.xmlEscape(subRecords[i].getValueAsString(columns[j]).trim()).replaceAll("\n", "<br />"));
+                    detail.addElement("ingrid:detail-value").addText(subRecords[i].getValueAsString(columns[j]).trim().replaceAll("\n", "<br />"));
                 }
             }
 
@@ -600,9 +600,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             String title = OpensearchUtil.getDetailValue(detail, "T02_address.title");
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "T02_address.firstname")).concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "T02_address.lastname"));
-            item.addElement("title").addText(OpensearchUtil.xmlEscape(title.trim()));
+            item.addElement("title").addText(title.trim());
         } else {
-            item.addElement("title").addText(OpensearchUtil.xmlEscape(detail.getTitle()));
+            item.addElement("title").addText(detail.getTitle());
         }
 
     }
