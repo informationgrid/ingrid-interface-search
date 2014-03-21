@@ -2,6 +2,7 @@ package de.ingrid.iface.opensearch.util;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
 import de.ingrid.utils.IngridHit;
@@ -17,6 +18,24 @@ public class OpensearchUtil {
                                                                             // replace
             { "&quot;", "&amp;", "&lt;", "&gt;" } // & - replace with
     };
+    
+    public enum XML_TYPE {
+        XML_1_0, XML_1_1  
+    }
+    
+    private static final String XML_1_0_PATTERN = "[^"
+            + "\u0009\r\n"
+            + "\u0020-\uD7FF"
+            + "\uE000-\uFFFD"
+            + "\ud800\udc00-\udbff\udfff"
+            + "]";
+
+    private static final String XML_1_1_PATTERN = "[^"
+            + "\u0001-\uD7FF"
+            + "\uE000-\uFFFD"
+            + "\ud800\udc00-\udbff\udfff"
+            + "]+";
+
 
     public static boolean hasValue(String s) {
         return (s != null && s.length() > 0);
@@ -100,7 +119,23 @@ public class OpensearchUtil {
      * @return The escaped String.
      */
     public static String xmlEscape(String in) {
+        StringEscapeUtils.escapeXml(in);
         return StringUtils.replaceEach(in, XML_ESCAPE[0], XML_ESCAPE[1]);
+    }
+    
+    /**
+     * Remove all illegal chars from a string according to the XML Literal specification.
+     * 
+     * @param in
+     * @param xmlType Optional, defaults to XML 1.0.
+     * @return
+     */
+    public static String removeInvalidChars(String in, XML_TYPE... xmlType) {
+        if (xmlType.equals(XML_TYPE.XML_1_1)) {
+            return in.replaceAll(XML_1_1_PATTERN, "");
+        } else {
+            return in.replaceAll(XML_1_0_PATTERN, "");
+        }
     }
 
 }
