@@ -146,7 +146,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
                     addItemTitle(item, hit, requestWrapper, true);
                     addItemLink(item, hit, requestWrapper, true);
-                    item.addElement("description").addText(OpensearchUtil.deNullify(detail.getSummary()));
+                    item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(detail.getSummary())));
                     item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
                     addIngridData(item, hit, requestWrapper, true);
                     addGeoRssData(item, hit, requestWrapper);
@@ -288,7 +288,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private Element createOpensearchChannel(Element doc, IngridHits hits, RequestWrapper requestWrapper) {
         Element channel = doc.addElement("channel");
-        channel.addElement("title").addText(getChannelTitle(requestWrapper));
+        channel.addElement("title").addText(OpensearchUtil.removeInvalidChars(getChannelTitle(requestWrapper)));
 
         String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
         String url = null;
@@ -336,7 +336,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             addItemTitle(item, hit, requestWrapper, ibusConnected);
             addItemLink(item, hit, requestWrapper, ibusConnected);
-            item.addElement("description").addText(OpensearchUtil.deNullify(detail.getSummary()));
+            item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(detail.getSummary())));
             item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
             addIngridData(item, hit, requestWrapper, ibusConnected);
             addGeoRssData(item, hit, requestWrapper);
@@ -412,7 +412,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 providerId = detail.getOrganisation();
             }
             item.addElement("ingrid:provider").addText(OpensearchUtil.deNullify(providerId));
-            item.addElement("ingrid:provider-name").addText(OpensearchUtil.deNullify(providerName));
+            item.addElement("ingrid:provider-name").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(providerName)));
 
             String partnerId = OpensearchUtil.getDetailValue(detail, "partner");
             String partnerName = iBusHelper.getPartnerName(partnerId, detail.getOrganisation());
@@ -420,8 +420,8 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 partnerId = detail.getOrganisation();
             }
             item.addElement("ingrid:partner").addText(OpensearchUtil.deNullify(partnerId));
-            item.addElement("ingrid:partner-name").addText(OpensearchUtil.deNullify(partnerName));
-            item.addElement("ingrid:source").addText(OpensearchUtil.deNullify(detail.getDataSourceName()));
+            item.addElement("ingrid:partner-name").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(partnerName)));
+            item.addElement("ingrid:source").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(detail.getDataSourceName())));
             
 
             // handle udk class
@@ -486,7 +486,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
                                     String columnName = columns[i].getTargetName();
                                     detailElement.addElement("ingrid:detail-key").addText(columnName);
-                                    detailElement.addElement("ingrid:detail-value").addText(OpensearchUtil.xmlEscape(record.getValueAsString(columns[i]).trim()).replaceAll("\n", "<br />"));
+                                    detailElement.addElement("ingrid:detail-value").addText(OpensearchUtil.removeInvalidChars(record.getValueAsString(columns[i]).trim().replaceAll("\n", "<br />")));
                                 }
                             }
                             addSubRecords(record, details);
@@ -511,7 +511,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     Element detail = subElement.addElement("ingrid:detail");
                     String columnName = columns[j].getTargetName();
                     detail.addElement("ingrid:detail-key").addText(columnName);
-                    detail.addElement("ingrid:detail-value").addText(subRecords[i].getValueAsString(columns[j]).trim().replaceAll("\n", "<br />"));
+                    detail.addElement("ingrid:detail-value").addText(OpensearchUtil.removeInvalidChars(subRecords[i].getValueAsString(columns[j]).trim().replaceAll("\n", "<br />")));
                 }
             }
 
@@ -600,9 +600,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             String title = OpensearchUtil.getDetailValue(detail, "T02_address.title");
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "T02_address.firstname")).concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "T02_address.lastname"));
-            item.addElement("title").addText(title.trim());
+            item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title.trim()));
         } else {
-            item.addElement("title").addText(detail.getTitle());
+            item.addElement("title").addText(OpensearchUtil.removeInvalidChars(detail.getTitle()));
         }
 
     }
@@ -616,4 +616,5 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     public String getPathSpec() {
         return "/opensearch/query";
     }
+    
 }
