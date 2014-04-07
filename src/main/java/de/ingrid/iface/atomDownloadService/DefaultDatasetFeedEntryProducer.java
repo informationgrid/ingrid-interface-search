@@ -28,11 +28,12 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
 
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
+    public static final String XPATH_DOWNLOAD_LINK = "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Datendownload']";
+
     private TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
     private Detector detector = tikaConfig.getDetector();
-    
-    private final static Log log = LogFactory.getLog(DefaultDatasetFeedEntryProducer.class);
 
+    private final static Log log = LogFactory.getLog(DefaultDatasetFeedEntryProducer.class);
 
     public List<DatasetFeedEntry> produce(Document doc) throws Exception {
         List<DatasetFeedEntry> results = new ArrayList<DatasetFeedEntry>();
@@ -52,8 +53,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             catList.add(cat);
         }
 
-        NodeList linkages = XPATH.getNodeList(doc,
-                "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']");
+        NodeList linkages = XPATH.getNodeList(doc, XPATH_DOWNLOAD_LINK);
         for (int i = 0; i < linkages.getLength(); i++) {
             DatasetFeedEntry entry = new DatasetFeedEntry();
 

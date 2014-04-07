@@ -71,8 +71,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         String[] coupledOtherUuids = XPATH.getStringArray(idfDoc, "//idf:crossReference[./idf:attachedToField/@entry-id='9990' and ./idf:attachedToField/@list-id='2000']/@uuid");
         String[] coupledUuids = (String[]) ArrayUtils.addAll(coupledDataUuids, coupledOtherUuids);
         coupledUuids = (new HashSet<String>(Arrays.asList(coupledUuids))).toArray(new String[0]);
-        
-        
+
         if (coupledUuids.length == 0) {
             return entryList;
         }
@@ -84,16 +83,16 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                 log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
             }
             idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
-            
+
             // do not process data with identical uuids (filter duplicates)
             String uuid = IdfUtils.getRecordId(idfCoupledResourceDoc).toString();
             if (coupledResourceUuids.contains(uuid)) {
                 continue;
             }
             coupledResourceUuids.add(uuid);
-            
+
             // check for data sets without data download links
-            if (!XPATH.nodeExists(idfCoupledResourceDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download']")) {
+            if (!XPATH.nodeExists(idfCoupledResourceDoc, DefaultDatasetFeedEntryProducer.XPATH_DOWNLOAD_LINK)) {
                 if (log.isDebugEnabled()) {
                     log.debug("No Download Data Links found in coupled resource: " + hit.getHitDetail().getTitle());
                 }
@@ -134,7 +133,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
 
             NodeList resourceConstraints = XPATH.getNodeList(idfCoupledResourceDoc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
             StringBuilder copyRight = new StringBuilder();
-            for (int i=0; i< resourceConstraints.getLength(); i++) {
+            for (int i = 0; i < resourceConstraints.getLength(); i++) {
                 Node resourceConstraint = resourceConstraints.item(i);
                 String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
                 if (copyRight.length() > 0) {
@@ -166,7 +165,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                 Category cat = new Category();
                 cat.setLabel(refSystemCode);
                 if (epsgNumber != null) {
-                    cat.setTerm("EPSG:"+ epsgNumber);
+                    cat.setTerm("EPSG:" + epsgNumber);
                 } else {
                     cat.setTerm(XPATH.getString(nl.item(i), "gmd:codeSpace/gco:CharacterString"));
                 }
