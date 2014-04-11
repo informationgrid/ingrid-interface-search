@@ -1,0 +1,60 @@
+fieldset {
+	margin-top: 10px;
+	padding: inherit;
+	padding-bottom: 0;
+	border: 1px solid #A9A9A9;
+}
+
+fieldset legend {
+	border-bottom: 0;
+	width: auto;
+	margin-bottom: 0;
+}
+
+.jumbotron {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	background-color: #EEE;
+}
+
+.panel-heading {
+	cursor: pointer;
+}
+
+.panel-title .glyphicon {
+	padding-right: 10px;
+}
+
+.glyphicon-download-alt {
+	font-size: 75px;
+}
+
+.loader {
+	background-image: url("../img/ajax-loader.gif");
+	width: 24px;
+	height: 24px;
+}
+
+#templateContainer {
+	padding: 0 20px 20px;
+	clear: both;
+}
+
+.downloadContainer {
+	float: left;
+	width: 250px;
+	margin-right: 10px;
+}
+
+.downloadContainer .well {
+	margin-bottom: 0;
+}
+
+.downloadContainer p {
+    word-wrap: break-word;
+}
+
+#footer {
+	background-color: #eee;
+	padding: 8px;
+}
