@@ -18,7 +18,6 @@ public class SearchInterfaceServletConfigurator {
 
     @Autowired
     List<SearchInterfaceServlet> searchInterfaceServlet;
-    
 
     public void addServlets(ServletHandler handler) {
 
@@ -28,7 +27,6 @@ public class SearchInterfaceServletConfigurator {
                 log.info("Added servlet '" + servlet.getName() + "' at '" + servlet.getPathSpec() + "'.");
             }
         }
-
     }
 
 }

@@ -28,6 +28,7 @@ import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
+import de.ingrid.iface.util.ServiceFeedUtils;
 import de.ingrid.iface.util.StringUtils;
 import de.ingrid.iface.util.UserAgentDetector;
 import de.ingrid.utils.IBus;
@@ -78,8 +79,13 @@ public class ServiceFeedTestRunner {
             String uuid = XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString");
 
             // get the service Feed
+
+            ServiceFeedUtils serviceFeedUtils = new ServiceFeedUtils();
+            serviceFeedUtils.setConfig(SearchInterfaceConfig.getInstance());
+            serviceFeedUtils.init();
+
             ServiceFeedProducer serviceFeedProducer = new ServiceFeedProducer();
-            serviceFeedProducer.setConfig(config);
+            serviceFeedProducer.setServiceFeedUtils(serviceFeedUtils);
             serviceFeedProducer.setiBusHelper(iBusHelper);
 
             IngridQueryProducer ingridQueryProducer = new IngridQueryProducer();
@@ -102,7 +108,6 @@ public class ServiceFeedTestRunner {
             serviceFeedEntryProducer.add(cswGetRecordByIdServiceFeedEntryProducer);
 
             serviceFeedProducer.setServiceFeedEntryProducer(serviceFeedEntryProducer);
-            serviceFeedProducer.init();
 
             ServiceFeedRequest serviceFeedRequest = new ServiceFeedRequest();
             serviceFeedRequest.setUuid(uuid);
@@ -166,7 +171,7 @@ public class ServiceFeedTestRunner {
                     }
                 }
             }
-            
+
         }
         System.out.println("Test finished.");
     }
