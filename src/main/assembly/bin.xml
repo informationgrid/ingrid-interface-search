@@ -15,6 +15,10 @@
       <outputDirectory>${project.artifactId}-${project.version}/</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>src/main/client</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/client</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>src/main/release/ant-installer</directory>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>

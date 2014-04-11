@@ -41,6 +41,8 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String ATOM_DOWNLOAD_SERVICE_URL = "atom.download.service.url";
 
+    public static final String ATOM_DOWNLOAD_SERVICE_CLIENT_PATH = "atom.download.service.client.path";
+
     public static final String ATOM_DOWNLOAD_SERVICE_FEED_EXTENSION = "atom.download.service.feed.extension";
 
     public static final String ATOM_DOWNLOAD_SERVICE_FEEDLIST_EXTENSION = "atom.download.service.feedlist.extension";

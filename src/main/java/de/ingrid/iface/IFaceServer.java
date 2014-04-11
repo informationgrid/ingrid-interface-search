@@ -47,8 +47,9 @@ public class IFaceServer {
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
         resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-        resourceHandler.setResourceBase(System.getProperty("jetty.webapp", "client"));
+        resourceHandler.setResourceBase(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client"));
         context.setHandler(resourceHandler);
+        log.info("Serving resources from '"+SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client")+"' at '/dls'.");
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] { context, handler });
