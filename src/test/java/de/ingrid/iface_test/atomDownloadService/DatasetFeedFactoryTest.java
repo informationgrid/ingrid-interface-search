@@ -23,6 +23,7 @@ import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.SearchInterfaceConfig;
+import de.ingrid.iface.util.ServiceFeedUtils;
 import de.ingrid.iface.util.StringUtils;
 import de.ingrid.iface.util.StringUtilsService;
 import de.ingrid.utils.IBus;
@@ -88,8 +89,12 @@ public class DatasetFeedFactoryTest {
         ingridQueryProducer.setiBusHelper(iBusHelper);
         datasetFeedFactory.setIngridQueryProducer(ingridQueryProducer);
 
+        ServiceFeedUtils serviceFeedUtils = new ServiceFeedUtils();
+        serviceFeedUtils.setConfig(SearchInterfaceConfig.getInstance());
+        serviceFeedUtils.init();
+        
         ServiceFeedProducer serviceFeedProducer = new ServiceFeedProducer();
-        serviceFeedProducer.setConfig(SearchInterfaceConfig.getInstance());
+        serviceFeedProducer.setServiceFeedUtils(serviceFeedUtils);
         serviceFeedProducer.setiBusHelper(iBusHelper);
         serviceFeedProducer.setIngridQueryProducer(ingridQueryProducer);
         List<ServiceFeedEntryProducer> serviceFeedEntryProducers = new ArrayList<ServiceFeedEntryProducer>();

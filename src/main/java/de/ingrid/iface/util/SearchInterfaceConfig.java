@@ -43,6 +43,8 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
 
     public static final String ATOM_DOWNLOAD_SERVICE_FEED_EXTENSION = "atom.download.service.feed.extension";
 
+    public static final String ATOM_DOWNLOAD_SERVICE_FEEDLIST_EXTENSION = "atom.download.service.feedlist.extension";
+    
     public static final String ATOM_DOWNLOAD_DATASET_FEED_EXTENSION = "atom.download.dataset.feed.extension";
 
     public static final String ATOM_DOWNLOAD_OPENSEARCH_DESCRIBE_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.describe.spatial.dataset.template";

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
+import de.ingrid.iface.atomDownloadService.requests.ServiceFeedListRequest;
 import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.IBusQueryResultIterator;
@@ -33,17 +34,34 @@ public class IngridQueryProducer {
 
     }
 
+    /**
+     * Build an InGrid query from ServiceFeedRequest parameter. Takes obj_id and
+     * org_obj_id into account.
+     * 
+     * @param serviceFeedRequest
+     * @return
+     * @throws ParseException
+     */
     public IngridQuery createServiceFeedInGridQuery(ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr = "ranking:score (t01_object.obj_id:\"" + serviceFeedRequest.getUuid() + "\" OR t01_object.org_obj_id:\"" + serviceFeedRequest.getUuid() + "\")";
+        StringBuilder queryStr = new StringBuilder();
+        queryStr.append("ranking:score (t01_object.obj_id:\"").append(serviceFeedRequest.getUuid()).append("\" OR t01_object.org_obj_id:\"").append(serviceFeedRequest.getUuid()).append("\")");
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
-        IngridQuery q = QueryStringParser.parse(queryStr);
+        IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
-
     }
 
+    /**
+     * Build an InGrid query from an UUID array and ServiceFeedRequest query.
+     * Takes obj_id and org_obj_id into account.
+     * 
+     * @param uuids
+     * @param serviceFeedRequest
+     * @return
+     * @throws ParseException
+     */
     public IngridQuery createServiceFeedEntryInGridQuery(String[] uuids, ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
         String queryStr;
@@ -106,6 +124,24 @@ public class IngridQueryProducer {
             }
             throw new Exception("Cannot create InGrid query from dataset feed request: " + datasetFeedRequest);
         }
+    }
+
+    /**
+     * Creates a ingrid query to get all atom download feed services.
+     * 
+     * @param serviceFeedListRequest
+     * @return
+     * @throws ParseException
+     */
+    public IngridQuery createServiceFeedListInGridQuery(ServiceFeedListRequest serviceFeedListRequest) throws ParseException {
+        StringBuilder queryStr = new StringBuilder();
+        queryStr.append("ranking:score t011_obj_serv.has_atom_download:Y");
+        if (serviceFeedListRequest.getQuery() != null && !serviceFeedListRequest.getQuery().isEmpty()) {
+            queryStr.append(" ");
+            queryStr.append(serviceFeedListRequest.getQuery());
+        }
+        IngridQuery q = QueryStringParser.parse(queryStr.toString());
+        return q;
     }
 
     @Autowired

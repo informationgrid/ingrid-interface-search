@@ -5,7 +5,11 @@ package de.ingrid.iface;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -32,13 +36,26 @@ public class IFaceServer {
 
         Server server = new Server(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80));
         ServletHandler handler = new ServletHandler();
-        server.setHandler(handler);
 
         ApplicationContext ctx = new AnnotationConfigApplicationContext("de.ingrid.iface");
         SearchInterfaceServletConfigurator searchInterfaceServletConfigurator = ctx.getBean(SearchInterfaceServletConfigurator.class);
 
         searchInterfaceServletConfigurator.addServlets(handler);
+
+        ContextHandler context = new ContextHandler();
+        context.setContextPath("/dls");
+        ResourceHandler resourceHandler = new ResourceHandler();
+        resourceHandler.setDirectoriesListed(false);
+        resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+        resourceHandler.setResourceBase(System.getProperty("jetty.webapp", "client"));
+        context.setHandler(resourceHandler);
+
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(new Handler[] { context, handler });
+        server.setHandler(handlers);
+
         server.start();
+        server.join();
         log.info(server.getClass().getPackage().getImplementationVersion());
         log.info("Started Search IFaceServer on port " + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80) + " waiting for requests.");
     }
