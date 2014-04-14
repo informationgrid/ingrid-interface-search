@@ -1,4 +1,4 @@
-function AtomCtrl($scope, $http, $routeParams, $route, $timeout, xmlFilter) {
+function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlFilter) {
     a = $scope;
     $scope.oneAtATime = false;
     $scope.entries = [];
@@ -40,7 +40,13 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, xmlFilter) {
         $scope.entries = [];
         $scope.subsetsLoaded = false;
         $scope.message.loading = " Datensätze werden geladen ...";
-        $http.get( $scope.selectedFeed.link ).then(function(response) {
+        var link = $scope.selectedFeed.link;
+        $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
+        $location.search({
+            serviceId: $scope.selectedServiceId,
+            datasetId: $routeParams.datasetId
+        });
+        $http.get( link ).then(function(response) {
             var xml = xmlFilter(response.data);
             var feedId = xml.find("id")[0].textContent;
             var entriesDom = xml.find("entry");
@@ -82,6 +88,11 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, xmlFilter) {
     $scope.loadDownloadsFeed = function(dsEntry, index) {
         if (!$scope.datasetLoaded[index]) {
             console.log("loadDownloadsFeed:", dsEntry);
+            var link = dsEntry.link;
+            $location.search({
+                serviceId: $scope.selectedServiceId,
+                datasetId: link.substring(link.lastIndexOf("/")+1)
+            });
             $http.get( dsEntry.link ).then(function(response) {
                 var xml = xmlFilter(response.data);
                 dsEntry.useConstraints = xml.find("rights")[0].textContent;
@@ -100,7 +111,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, xmlFilter) {
                     });
                 });
                 
-                $scope.datasetLoaded[index] = true;                
+                $scope.datasetLoaded[index] = true;
             });
         }
     };
