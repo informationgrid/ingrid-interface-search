@@ -33,6 +33,7 @@ fieldset legend {
 	background-image: url("../img/ajax-loader.gif");
 	width: 24px;
 	height: 24px;
+	display: inline-block;
 }
 
 #templateContainer {

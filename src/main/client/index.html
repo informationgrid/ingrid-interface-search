@@ -3,8 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>AtomFeed-Client</title>
-    <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.custom.min.css" /> -->
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <!-- Typographie, Forms, Glyphicons, Jumbotron, Panels, Wells, Component Animations, Basic Utilities  -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.custom.min.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="css/frameworks/bootstrap-responsive.min.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="css/ng-grid.min.css" />-->
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
@@ -33,9 +34,9 @@
          
         
         <fieldset>
-            <legend>Datasets</legend>
+            <legend>Datensätze</legend>
             <p ng-hide="selectedFeed">Kein Service ausgewählt</p>
-            <div class="loader" ng-class="{'hidden': feedsLoaded && subsetsLoaded}"></div>
+            <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
             <accordion close-others="oneAtATime">
                 <accordion-group heading="{{entry.title}}" is-open="isopen" ng-click="loadDownloadsFeed(entry, isopen, $index)" ng-repeat="entry in entries">
                     <accordion-heading>
@@ -72,7 +73,9 @@
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript" src="js/angular-route.min.js"></script>
     <script type="text/javascript" src="js/angular-xml.min.js"></script>
+    <!-- Accordion  -->
     <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.10.0.min.js"></script>
+    <!-- <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script> -->
     
     <script type="text/javascript" src="js/controllers.js"></script>
     <script type="text/javascript" src="js/app.js"></script>

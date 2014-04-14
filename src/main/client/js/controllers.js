@@ -3,6 +3,7 @@ function AtomCtrl($scope, $http) {
     $scope.oneAtATime = false;
     $scope.entries = [];
     $scope.feeds = [];
+    $scope.message = { loading: " Dienste werden geladen ..." };
     $scope.datasetLoaded = [];
     $scope.subsetsLoaded = true;
     console.log("AtomCtrl");
@@ -30,6 +31,7 @@ function AtomCtrl($scope, $http) {
         console.log("changed:", $scope.selectedFeed);
         $scope.entries = [];
         $scope.subsetsLoaded = false;
+        $scope.message.loading = " Datensätze werden geladen ...";
         $http.get( $scope.selectedFeed.link ).then(function(response) {
             var feedId = response.xml.find("id")[0].innerHTML;
             var entriesDom = response.xml.find("entry");
