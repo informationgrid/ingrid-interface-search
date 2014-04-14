@@ -68,7 +68,9 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
     
     public SearchInterfaceConfig() throws ConfigurationException {
         super(new OverrideCombiner());
-        this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        try {
+            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        } catch (ConfigurationException e) {}
         this.addConfiguration( new PropertiesConfiguration( "interface-search.properties" ) );
     }
 
@@ -104,7 +106,9 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     private SearchInterfaceConfig(String path) throws Exception {
         super(new OverrideCombiner());
-        this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        try {
+            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        } catch (ConfigurationException e) {}
         this.addConfiguration( new PropertiesConfiguration( path ) );
     }
 }
