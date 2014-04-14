@@ -36,7 +36,7 @@
             <p ng-hide="selectedFeed">Kein Service ausgewählt</p>
             <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
             <accordion close-others="oneAtATime">
-                <accordion-group heading="{{entry.title}}" is-open="isopen" ng-click="loadDownloadsFeed(entry, isopen, $index)" ng-repeat="entry in entries">
+                <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{$index}}" ng-click="loadDownloadsFeed(entry, $index)" ng-repeat="entry in entries">
                     <accordion-heading>
                         <i class="pull-left glyphicon" ng-class="{'glyphicon-minus-sign': isopen, 'glyphicon-plus-sign': !isopen}"></i>
                         {{entry.title}}

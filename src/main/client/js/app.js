@@ -5,13 +5,14 @@ var medelModule = angular.module('atomClient', [ 'ngRoute', 'xml', 'ui.bootstrap
                 
             // define all routes and set the template and controller to show/handle
             // the request
-            $routeProvider.when('/', {
-//                templateUrl : 'partials/search.html',
+            $routeProvider.when('/:serviceId?/:datasetId?', {
                 controller : AtomCtrl
-            }).otherwise({
-                redirectTo : '/',
-                controller: AtomCtrl
             });
+            //.otherwise({
+//                
+//                redirectTo : '/',
+//                controller: AtomCtrl
+//            });
             
             // the interceptor produces an error in combination with accordion and template-cache
             //$httpProvider.interceptors.push('xmlHttpInterceptor');

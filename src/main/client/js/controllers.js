@@ -1,4 +1,4 @@
-function AtomCtrl($scope, $http, xmlFilter) {
+function AtomCtrl($scope, $http, $routeParams, $route, $timeout, xmlFilter) {
     a = $scope;
     $scope.oneAtATime = false;
     $scope.entries = [];
@@ -17,12 +17,19 @@ function AtomCtrl($scope, $http, xmlFilter) {
             var summary = element.find("summary")[0].textContent;
             var date = element.find("updated")[0].textContent;
             var link = feed.querySelector("[rel=alternate]").getAttribute("href");
-            $scope.feeds.push( {
+            var feedObj = {
                 title: title,
                 summary: summary,
                 date: date,
                 link: link
-            });
+            };
+            
+            $scope.feeds.push( feedObj );
+            
+            if (link.indexOf($routeParams.serviceId) !== -1) {
+                $scope.selectedFeed = feedObj;
+                $scope.showDatasetFeeds();
+            }
         });
         $scope.feedsLoaded = true;
     });
@@ -37,19 +44,32 @@ function AtomCtrl($scope, $http, xmlFilter) {
             var xml = xmlFilter(response.data);
             var feedId = xml.find("id")[0].textContent;
             var entriesDom = xml.find("entry");
+            var index = 0;
             angular.forEach(entriesDom, function(entry) {
                 var element = angular.element(entry);
                 var title = element.find("title")[0].textContent;
                 var summary = element.find("summary")[0].textContent;
                 var date = element.find("updated")[0].textContent;
                 var link = entry.querySelector("[rel=alternate]").getAttribute("href");
-                $scope.entries.push( {
+                var entryObj = {
                     title: title,
                     summary: summary,
                     date: date,
                     link: link,
                     useConstraints: "???"
-                });
+                };
+                $scope.entries.push( entryObj );
+                
+                if (link.indexOf($routeParams.datasetId) !== -1) {
+                    $scope.loadDownloadsFeed(entryObj, index);
+                    var i = index;
+                    $timeout(function() {
+                        var panel = angular.element(document.querySelector("accordion .panel_" + i));
+                        panel.scope().isopen = true;
+                        panel.scope().$apply();
+                    }, 100);
+                }
+                index++;
             });
             $scope.subsetsLoaded = true;
             $scope.datasetLoaded = [];
@@ -59,7 +79,7 @@ function AtomCtrl($scope, $http, xmlFilter) {
         });
     };
     
-    $scope.loadDownloadsFeed = function(dsEntry, isopen, index) {
+    $scope.loadDownloadsFeed = function(dsEntry, index) {
         if (!$scope.datasetLoaded[index]) {
             console.log("loadDownloadsFeed:", dsEntry);
             $http.get( dsEntry.link ).then(function(response) {
