@@ -11,10 +11,10 @@ fieldset legend {
 	margin-bottom: 0;
 }
 
-.jumbotron {
-	padding-top: 20px;
+.jumbo {
 	padding-bottom: 20px;
-	background-color: #EEE;
+	background-color: #68A5D2;
+	color: white;
 }
 
 .panel-heading {
@@ -23,6 +23,10 @@ fieldset legend {
 
 .panel-title .glyphicon {
 	padding-right: 10px;
+}
+
+.panel-body {
+	background-color: #F5F5F5;
 }
 
 .glyphicon-download-alt {
@@ -47,8 +51,9 @@ fieldset legend {
 	margin-right: 10px;
 }
 
-.downloadContainer .well {
+.downloadContainer.well {
 	margin-bottom: 0;
+	background-color: #fff;
 }
 
 .downloadContainer p {
@@ -56,6 +61,7 @@ fieldset legend {
 }
 
 #footer {
-	background-color: #eee;
 	padding: 8px;
+	border-top: 1px solid #eee;
+	color: #B0B2B4;
 }

@@ -13,7 +13,8 @@ var medelModule = angular.module('atomClient', [ 'ngRoute', 'xml', 'ui.bootstrap
                 controller: AtomCtrl
             });
             
-            $httpProvider.interceptors.push('xmlHttpInterceptor');
+            // the interceptor produces an error in combination with accordion and template-cache
+            //$httpProvider.interceptors.push('xmlHttpInterceptor');
 
         }
      ]).run(function($http) {

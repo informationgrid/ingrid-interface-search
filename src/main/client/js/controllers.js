@@ -1,4 +1,4 @@
-function AtomCtrl($scope, $http) {
+function AtomCtrl($scope, $http, xmlFilter) {
     a = $scope;
     $scope.oneAtATime = false;
     $scope.entries = [];
@@ -9,12 +9,13 @@ function AtomCtrl($scope, $http) {
     console.log("AtomCtrl");
     
     $http.get( "service-list" ).then(function(response) {
-        var feeds = response.xml.find("entry");
+        var xml = xmlFilter(response.data);
+        var feeds = xml.find("entry");
         angular.forEach(feeds, function(feed) {
             var element = angular.element(feed);
-            var title = element.find("title")[0].innerHTML;
-            var summary = element.find("summary")[0].innerHTML;
-            var date = element.find("updated")[0].innerHTML;
+            var title = element.find("title")[0].textContent;
+            var summary = element.find("summary")[0].textContent;
+            var date = element.find("updated")[0].textContent;
             var link = feed.querySelector("[rel=alternate]").getAttribute("href");
             $scope.feeds.push( {
                 title: title,
@@ -33,13 +34,14 @@ function AtomCtrl($scope, $http) {
         $scope.subsetsLoaded = false;
         $scope.message.loading = " Datensätze werden geladen ...";
         $http.get( $scope.selectedFeed.link ).then(function(response) {
-            var feedId = response.xml.find("id")[0].innerHTML;
-            var entriesDom = response.xml.find("entry");
+            var xml = xmlFilter(response.data);
+            var feedId = xml.find("id")[0].textContent;
+            var entriesDom = xml.find("entry");
             angular.forEach(entriesDom, function(entry) {
                 var element = angular.element(entry);
-                var title = element.find("title")[0].innerHTML;
-                var summary = element.find("summary")[0].innerHTML;
-                var date = element.find("updated")[0].innerHTML;
+                var title = element.find("title")[0].textContent;
+                var summary = element.find("summary")[0].textContent;
+                var date = element.find("updated")[0].textContent;
                 var link = entry.querySelector("[rel=alternate]").getAttribute("href");
                 $scope.entries.push( {
                     title: title,
@@ -61,8 +63,9 @@ function AtomCtrl($scope, $http) {
         if (!$scope.datasetLoaded[index]) {
             console.log("loadDownloadsFeed:", dsEntry);
             $http.get( dsEntry.link ).then(function(response) {
-                dsEntry.useConstraints = response.xml.find("rights")[0].innerHTML;
-                var entriesDom = response.xml.find("entry");
+                var xml = xmlFilter(response.data);
+                dsEntry.useConstraints = xml.find("rights")[0].textContent;
+                var entriesDom = xml.find("entry");
                 dsEntry.downloads = [];
                 angular.forEach(entriesDom, function(entry) {
                     var linkElem = entry.querySelector("[rel=alternate]");
@@ -80,6 +83,6 @@ function AtomCtrl($scope, $http) {
                 $scope.datasetLoaded[index] = true;                
             });
         }
-    }
+    };
     
 }
