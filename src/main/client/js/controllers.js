@@ -33,14 +33,14 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             
             if (link.indexOf($routeParams.serviceId) !== -1) {
                 $scope.selectedFeed = feedObj;
-                $scope.showDatasetFeeds();
+                $scope.showDatasetFeeds($routeParams.datasetId);
             }
         });
         $scope.feedsLoaded = true;
     });
     
     
-    $scope.showDatasetFeeds = function() {
+    $scope.showDatasetFeeds = function(datasetId) {
         console.log("changed:", $scope.selectedFeed);
         if ($scope.selectedFeed === null) return;
 
@@ -52,10 +52,11 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         $scope.message.loading = " Datensätze werden geladen ...";
         var link = $scope.currentFeed.link;
         $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
-        $location.search({
-            serviceId: $scope.selectedServiceId,
-            datasetId: $routeParams.datasetId
-        });
+        var searchObj = {
+            serviceId: $scope.selectedServiceId            
+        };
+        if (datasetId) searchObj.datasetId = datasetId;
+        $location.search(searchObj);
 
         $http.get( link ).then(function(response) {
             var xml = xmlFilter(response.data);
@@ -76,7 +77,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                 };
                 $scope.entries.push( entryObj );
                 
-                if (link.indexOf($routeParams.datasetId) !== -1) {
+                if (link.indexOf(datasetId) !== -1) {
                     $scope.loadDownloadsFeed(entryObj, index);
                     var i = index;
                     $timeout(function() {
