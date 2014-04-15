@@ -7,8 +7,13 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     $scope.datasetLoaded = [];
     $scope.subsetsLoaded = true;
     console.log("AtomCtrl");
+
+    var filter = "";
+    if ($location.search().q) {
+        filter = "?q=" + $location.search().q;
+    }
     
-    $http.get( "service-list" ).then(function(response) {
+    $http.get( "service-list" + filter ).then(function(response) {
         var xml = xmlFilter(response.data);
         var feeds = xml.find("entry");
         angular.forEach(feeds, function(feed) {
@@ -37,18 +42,23 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     
     $scope.showDatasetFeeds = function() {
         console.log("changed:", $scope.selectedFeed);
+        if ($scope.selectedFeed === null) return;
+
+        $scope.currentFeed = $scope.selectedFeed;
+        $scope.selectedFeed = null;
+
         $scope.entries = [];
         $scope.subsetsLoaded = false;
         $scope.message.loading = " Datensätze werden geladen ...";
-        var link = $scope.selectedFeed.link;
+        var link = $scope.currentFeed.link;
         $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
         $location.search({
             serviceId: $scope.selectedServiceId,
             datasetId: $routeParams.datasetId
         });
+
         $http.get( link ).then(function(response) {
             var xml = xmlFilter(response.data);
-            var feedId = xml.find("id")[0].textContent;
             var entriesDom = xml.find("entry");
             var index = 0;
             angular.forEach(entriesDom, function(entry) {
@@ -71,6 +81,8 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                     var i = index;
                     $timeout(function() {
                         var panel = angular.element(document.querySelector("accordion .panel_" + i));
+                        var pos = panel[0].offsetTop;// + panel.parent().scrollTop();
+                        window.scrollTo(0, pos);
                         panel.scope().isopen = true;
                         panel.scope().$apply();
                     }, 100);
@@ -80,8 +92,6 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             $scope.subsetsLoaded = true;
             $scope.datasetLoaded = [];
             
-        }, function(error) {
-            //console.error(error);
         });
     };
     
@@ -106,6 +116,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                     
                     dsEntry.downloads.push({
                         link: link,
+                        filename: link.substr(link.lastIndexOf("/") + 1),
                         fileType: fileType,
                         crs: crs
                     });

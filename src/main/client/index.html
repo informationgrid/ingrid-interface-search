@@ -19,48 +19,49 @@
     <div id="templateContainer" class="view-container" ng-controller="AtomCtrl">
         <!-- <div ng-view id="ng-view"></div> -->
         
-        <h3>Dienstauswahl</h3>
         <div class="container-fluid">
             <div class="row">
-                <select class="form-control" ng-model="selectedFeed" ng-disabled="!feedsLoaded" ng-options="feed.title for feed in feeds" ng-change="showDatasetFeeds()" style="width: 100%;">
+                <select id="serviceSelector" class="form-control" ng-model="selectedFeed" ng-disabled="!feedsLoaded" ng-options="feed.title for feed in feeds" ng-change="showDatasetFeeds()" style="width: 100%;">
+                    <option value="">Dienst auswählen ...</option>
                 </select>
             </div>
         </div>
         
         
-        <p class="well" ng-show="selectedFeed">{{ selectedFeed.summary }} ({{ selectedFeed.date | date: "dd.MM.yyyy" }})</p>
-         
+        <h3>{{ currentFeed.title }}</h3>
+        <div class="well" ng-show="currentFeed">
+            {{ currentFeed.summary }} ({{ currentFeed.date | date: "dd.MM.yyyy" }})
+        </div>
         
-        <fieldset>
-            <legend>Datensätze</legend>
-            <p ng-hide="selectedFeed">Kein Service ausgewählt</p>
-            <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
-            <accordion close-others="oneAtATime">
-                <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{$index}}" ng-click="loadDownloadsFeed(entry, $index)" ng-repeat="entry in entries">
-                    <accordion-heading>
-                        <i class="pull-left glyphicon" ng-class="{'glyphicon-minus-sign': isopen, 'glyphicon-plus-sign': !isopen}"></i>
-                        {{entry.title}}
-                    </accordion-heading>
-                    <div class="loader" ng-class="{'hidden': datasetLoaded[$index]}"></div>
-                    <div ng-class="{'hidden': !datasetLoaded[$index]}">
-                        <h4>Zusammenfassung</h4>
-                        <p>{{entry.summary}}</p>
-                        <h4>Datum</h4>
-                        <p>{{entry.date | date: "dd.MM.yyyy" }}</p>
-                        <h4>Nutzungsbedingungen</h4>
-                        <p>{{entry.useConstraints}}</p>
-                        <h4>Downloads</h4>
-                        <span class="downloadContainer well" ng-repeat="download in entry.downloads">
-                            <a class="pull-right" href="{{download.link}}" title="Download"><i class="glyphicon glyphicon-download-alt"></i></a>
-                            <label>Format:</label>
-                            <p style="width: 130px;">{{download.fileType}}</p>
-                            <label>System:</label>
-                            <p>{{download.crs}}</p>
-                        </span>
-                    </div>
-                </accordion-group>
-            </accordion>
-        </fieldset>
+        <p ng-hide="currentFeed">Kein Service ausgewählt</p>
+        <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
+        <accordion close-others="oneAtATime">
+            <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{$index}}" ng-click="loadDownloadsFeed(entry, $index)" ng-repeat="entry in entries">
+                <accordion-heading>
+                    <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+                    {{entry.title}}
+                </accordion-heading>
+                <div class="loader" ng-class="{'hidden': datasetLoaded[$index]}"></div>
+                <div ng-class="{'hidden': !datasetLoaded[$index]}">
+                    <h4>Zusammenfassung</h4>
+                    <p>{{entry.summary}}</p>
+                    <h4>Datum</h4>
+                    <p>{{entry.date | date: "dd.MM.yyyy" }}</p>
+                    <h4>Nutzungsbedingungen</h4>
+                    <p>{{entry.useConstraints}}</p>
+                    <h4>Downloads</h4>
+                    <span class="downloadContainer well" ng-repeat="download in entry.downloads">
+                        <a class="pull-right" href="{{download.link}}" title="Download"><i class="glyphicon glyphicon-download-alt"></i></a>
+                        <label>Datei:</label>
+                        <p style="width: 130px;">{{download.filename}}</p>
+                        <label>Format:</label>
+                        <p style="width: 130px;">{{download.fileType}}</p>
+                        <label>System:</label>
+                        <p>{{download.crs}}</p>
+                    </span>
+                </div>
+            </accordion-group>
+        </accordion>
     </div>
 
     <div id="footer">

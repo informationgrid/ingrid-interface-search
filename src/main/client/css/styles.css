@@ -49,15 +49,19 @@ fieldset legend {
 	float: left;
 	width: 250px;
 	margin-right: 10px;
+	margin-bottom: 10px;
 }
 
 .downloadContainer.well {
-	margin-bottom: 0;
 	background-color: #fff;
 }
 
 .downloadContainer p {
     word-wrap: break-word;
+}
+
+#serviceSelector {
+	margin-top: 20px;
 }
 
 #footer {
