@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>AtomFeed-Client</title>
-    <!-- Typographie, Forms, Glyphicons, Jumbotron, Panels, Wells, Component Animations, Basic Utilities  -->
+    <!-- Typographie, Forms, Glyphicons, Panels, Wells, Component Animations, Basic Utilities  -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.custom.min.css" />
     <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" /> -->
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
@@ -33,6 +33,7 @@
             {{ currentFeed.summary }} ({{ currentFeed.date | date: "dd.MM.yyyy" }})
         </div>
         
+        <div class="alert alert-danger" ng-class="{'hidden': !message.error}">{{message.error}}</div>
         <p ng-hide="currentFeed">Kein Service ausgewählt</p>
         <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
         <accordion close-others="oneAtATime">

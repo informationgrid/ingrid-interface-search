@@ -13,8 +13,8 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         filter = "?q=" + $location.search().q;
     }
     
-    $http.get( "service-list" + filter ).then(function(response) {
-        var xml = xmlFilter(response.data);
+    $http.get( "service-list" + filter ).success(function(response) {
+        var xml = xmlFilter(response);
         var feeds = xml.find("entry");
         angular.forEach(feeds, function(feed) {
             var element = angular.element(feed);
@@ -37,6 +37,9 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             }
         });
         $scope.feedsLoaded = true;
+    }).error(function(data, status) {
+        $scope.feedsLoaded = true;
+        $scope.message.error = "Keine Dienste gefunden!";
     });
     
     
