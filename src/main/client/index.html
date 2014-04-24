@@ -34,18 +34,21 @@
         </div>
         
         <div class="alert alert-danger" ng-class="{'hidden': !message.error}">{{message.error}}</div>
-        <p ng-hide="currentFeed">Kein Service ausgewählt</p>
+        <!-- <p ng-hide="currentFeed">Kein Service ausgewählt</p> -->
         <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
         <accordion close-others="oneAtATime">
-            <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{$index}}" ng-click="loadDownloadsFeed(entry, $index)" ng-repeat="entry in entries">
+            <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{entry.index}}" ng-click="loadDownloadsFeed(entry, entry.index)" ng-repeat="entry in entries | orderBy:'title'">
                 <accordion-heading>
                     <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
                     {{entry.title}}
                 </accordion-heading>
-                <div class="loader" ng-class="{'hidden': datasetLoaded[$index]}"></div>
-                <div ng-class="{'hidden': !datasetLoaded[$index]}">
+                <div class="loader" ng-class="{'hidden': datasetLoaded[entry.index]}"></div>
+                <div ng-class="{'hidden': !datasetLoaded[entry.index]}">
                     <h4>Zusammenfassung</h4>
-                    <p>{{entry.summary}}</p>
+                    <p>
+                        {{entry.summary}}<br/>
+                        <a href="{{entry.detailLink}}" target="_blank" ng-show="entry.detailLink != null"><span class="glyphicon glyphicon-globe"></span> Zur Detaildarstellung</a>
+                    </p>
                     <h4>Datum</h4>
                     <p>{{entry.date | date: "dd.MM.yyyy" }}</p>
                     <h4>Nutzungsbedingungen</h4>

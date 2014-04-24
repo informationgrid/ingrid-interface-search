@@ -76,7 +76,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                     summary: summary,
                     date: date,
                     link: link,
-                    useConstraints: "???"
+                    index: index
                 };
                 $scope.entries.push( entryObj );
                 
@@ -95,7 +95,6 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             });
             $scope.subsetsLoaded = true;
             $scope.datasetLoaded = [];
-            
         });
     };
     
@@ -107,9 +106,11 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                 serviceId: $scope.selectedServiceId,
                 datasetId: link.substring(link.lastIndexOf("/")+1)
             });
-            $http.get( dsEntry.link ).then(function(response) {
+            $http.get( dsEntry.link + "?detail=true" ).then(function(response) {
                 var xml = xmlFilter(response.data);
                 dsEntry.useConstraints = xml.find("rights")[0].textContent;
+                var detailLinkElem = xml.find("feed")[0].querySelector("[rel=detail]");
+                dsEntry.detailLink = detailLinkElem ? detailLinkElem.getAttribute("href") : null;
                 var entriesDom = xml.find("entry");
                 dsEntry.downloads = [];
                 angular.forEach(entriesDom, function(entry) {

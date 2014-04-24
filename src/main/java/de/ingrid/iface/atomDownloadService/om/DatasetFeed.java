@@ -10,6 +10,7 @@ public class DatasetFeed {
     private List<Link> describedBy;
     private Link selfReferencingLink;
     private Link downloadServiceFeed;
+    private Link detailLink;
     private String identifier;
     private String rights;
     private String updated;
@@ -102,6 +103,14 @@ public class DatasetFeed {
 
     public void setEntries(List<DatasetFeedEntry> entries) {
         this.entries = entries;
+    }
+
+    public void setDetailLink( Link link ) {
+        this.detailLink = link;
+    }
+    
+    public Link getDetailLink() {
+        return this.detailLink;
     }
 
 }
