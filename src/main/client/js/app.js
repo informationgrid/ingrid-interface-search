@@ -19,7 +19,7 @@ var medelModule = angular.module('atomClient', [ 'ngRoute', 'xml', 'ui.bootstrap
 
         }
      ]).run(function($http) {
-         console.log("RUN");
+         // console.log("RUN");
      });
 
 
