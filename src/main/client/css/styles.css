@@ -23,6 +23,7 @@ fieldset legend {
 
 .panel-title .glyphicon {
 	padding-right: 10px;
+	line-height: 20px;
 }
 
 .panel-body {
@@ -38,6 +39,11 @@ fieldset legend {
 	width: 24px;
 	height: 24px;
 	display: inline-block;
+}
+
+.datasetTitle {
+	padding-left: 30px;
+	line-height: 23px;
 }
 
 #templateContainer {

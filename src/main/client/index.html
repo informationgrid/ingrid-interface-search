@@ -48,7 +48,7 @@
             <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{entry.index}}" ng-click="loadDownloadsFeed(entry, entry.index)" ng-repeat="entry in entries | orderBy:'title'">
                 <accordion-heading>
                     <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
-                    {{entry.title}}
+                    <div class="datasetTitle">{{entry.title}}</div>
                 </accordion-heading>
                 <div class="loader" ng-class="{'hidden': datasetLoaded[entry.index]}"></div>
                 <div ng-class="{'hidden': !datasetLoaded[entry.index]}">
