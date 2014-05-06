@@ -129,6 +129,12 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                 });
                 
                 $scope.datasetLoaded[index] = true;
+                
+                // IE8/9 Hack:
+                // Icon only appears after a hover/focus event!
+                setTimeout(function() {
+                    angular.element("accordion .panel_" + index + " .glyphicon-globe").parent().focus();
+                }, 100);
             });
         }
     };
