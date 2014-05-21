@@ -14,6 +14,7 @@ public class DatasetFeedRequest {
     private String spatialDatasetIdentifierNamespace;
     private String language;
     private String crs;
+    private boolean detail;
     
     private EntryType type;
     private String metadataUrl;
@@ -42,6 +43,11 @@ public class DatasetFeedRequest {
         p = req.getParameter("crs");
         if (p != null) {
             crs = p;
+        }
+        
+        p = req.getParameter("detail");
+        if (p != null) {
+            detail = "true".equals( p );
         }
 
         String path = StringUtils.trimLeadingCharacter(req.getPathInfo(), '/');
@@ -127,6 +133,14 @@ public class DatasetFeedRequest {
 
     public void setMetadataUrl(String metadataUrl) {
         this.metadataUrl = metadataUrl;
+    }
+
+    public boolean isDetail() {
+        return detail;
+    }
+
+    public void setDetail( boolean detail ) {
+        this.detail = detail;
     }
 
     

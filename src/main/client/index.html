@@ -1,10 +1,101 @@
-<html>
-<head><title>it works</title></head>
+<!DOCTYPE html>
+<html ng-app="atomClient" id="ng-app">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>AtomFeed-Client</title>
+    <!-- Typographie, Forms, Glyphicons, Panels, Wells, Component Animations, Basic Utilities  -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.custom.min.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
 
-<body>
+    <!--[if lte IE 8]>
+        <script>
+          document.createElement('accordion');
+          document.createElement('accordion-group');
+          document.createElement('accordion-heading');
+        </script>
+    <![endif]-->
+</head>
+<body ng-cloak>
 
-it works!
+    <header id="overview" class="jumbo">
+        <img alt="logo" src="img/logo-ingrid-s.gif">
+        <h1 style="display:inline; padding-left:20px; vertical-align: middle;">ATOM-Feed Client</h1>
+    </header>
 
+    <!-- show all the different pages of the app here -->
+    <div id="templateContainer" class="view-container" ng-controller="AtomCtrl">
+        <!-- <div ng-view id="ng-view"></div> -->
+        
+        <div class="container-fluid">
+            <div class="row">
+                <select id="serviceSelector" class="form-control" ng-model="selectedFeed" ng-disabled="!feedsLoaded" ng-options="feed.title for feed in feeds" ng-change="showDatasetFeeds()" style="width: 100%;">
+                    <option value="">Dienst auswählen ...</option>
+                </select>
+            </div>
+        </div>
+        
+        
+        <h3>{{ currentFeed.title }}</h3>
+        <div class="well" ng-show="currentFeed">
+            {{ currentFeed.summary }} ({{ currentFeed.date | date: "dd.MM.yyyy" }})
+        </div>
+        
+        <div class="alert alert-danger" ng-class="{'hidden': !message.error}">{{message.error}}</div>
+        <!-- <p ng-hide="currentFeed">Kein Service ausgewählt</p> -->
+        <span ng-class="{'hidden': feedsLoaded && subsetsLoaded}"><span class="loader"></span>{{message.loading}}</span>
+        <accordion close-others="oneAtATime">
+            <accordion-group heading="{{entry.title}}" is-open="isopen" class="panel_{{entry.index}}" ng-click="loadDownloadsFeed(entry, entry.index)" ng-repeat="entry in entries | orderBy:'title'">
+                <accordion-heading>
+                    <i class="pull-left glyphicon" ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></i>
+                    <div class="datasetTitle">{{entry.title}}</div>
+                </accordion-heading>
+                <div class="loader" ng-class="{'hidden': datasetLoaded[entry.index]}"></div>
+                <div ng-class="{'hidden': !datasetLoaded[entry.index]}">
+                    <h4>Zusammenfassung</h4>
+                    <p>
+                        {{entry.summary}}<br/>
+                        <a href="{{entry.detailLink}}" target="_blank" ng-show="entry.detailLink != null"><span class="glyphicon glyphicon-globe"></span> Weitere Informationen</a>
+                    </p>
+                    <h4>Datum</h4>
+                    <p>{{entry.date | date: "dd.MM.yyyy" }}</p>
+                    <h4>Nutzungsbedingungen</h4>
+                    <p>{{entry.useConstraints}}</p>
+                    <h4>Downloads</h4>
+                    <span class="downloadContainer well" ng-repeat="download in entry.downloads">
+                        <a class="pull-right" href="{{download.link}}" title="Download"><i class="glyphicon glyphicon-download-alt"></i></a>
+                        <label>Datei:</label>
+                        <p style="width: 130px;">{{download.filename}}</p>
+                        <div ng-show="download.fileType">
+                            <label>Format:</label>
+                            <p style="width: 130px;">{{download.fileType}}</p>
+                        </div>
+                        <label>System:</label>
+                        <p>{{download.crs}}</p>
+                    </span>
+                </div>
+            </accordion-group>
+        </accordion>
+    </div>
+
+    <div id="footer">
+        <span>© 2014 wemove GmbH</span>
+    </div>
+
+    <!-- DEBUGGING ON MOBILE DEVICES -->
+    <!-- <script type="text/javascript" src="http://fbug.googlecode.com/svn/lite/branches/firebug1.4/content/firebug-lite-dev.js"></script> -->
+
+    <script type="text/javascript" src="js/jquery.custom.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <!-- <script type="text/javascript" src="bower_components/angular/angular.js"></script> -->
+    <script type="text/javascript" src="js/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/angular-xml.min.js"></script>
+    <!-- <script type="text/javascript" src="bower_components/angular-xml/angular-xml.js"></script> -->
+    <!-- Accordion  -->
+    <script type="text/javascript" src="js/ui-bootstrap-custom-tpls-0.10.0.min.js"></script>
+    <!-- <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script> -->
+    
+    <script type="text/javascript" src="js/controllers.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
 </body>
-
 </html>

@@ -37,6 +37,11 @@ public class DatasetFeedAtomBuilder {
         result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getHref()) + "\" rel=\"" + datasetFeed.getDownloadServiceFeed().getRel() + "\" type=\""
                 + datasetFeed.getDownloadServiceFeed().getType() + "\" hreflang=\"" + datasetFeed.getDownloadServiceFeed().getHrefLang() + "\""
                 + (datasetFeed.getDownloadServiceFeed().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDownloadServiceFeed().getTitle()) + "\"") + "/>\n");
+        if (datasetFeed.getDetailLink() != null) {
+            result.append("<!-- detail-link to portal -->\n");
+            result.append("<link href=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDetailLink().getHref()) + "\" rel=\"" + datasetFeed.getDetailLink().getRel() + "\" type=\"html\""
+                    + (datasetFeed.getDetailLink().getTitle() == null ? "" : " title=\"" + StringEscapeUtils.escapeXml(datasetFeed.getDetailLink().getTitle() + "\"")) + "/>\n");
+        }
         result.append("<!-- identifier -->\n");
         result.append("<id>" + StringEscapeUtils.escapeXml(datasetFeed.getSelfReferencingLink().getHref()) + "</id>\n");
         result.append("<!-- rights, access restrictions  -->\n");

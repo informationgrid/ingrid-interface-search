@@ -96,22 +96,33 @@ public class DatasetFeedProducer {
             link.setTitle("The parent service feed document.");
             datasetFeed.setDownloadServiceFeed(link);
 
-            NodeList resourceConstraints = XPATH.getNodeList(doc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
+            // Only use useLimitations and ignore other restrictions!
+            // -> REDMINE-348
+            //NodeList resourceConstraints = XPATH.getNodeList(doc, "//gmd:identificationInfo/*/gmd:resourceConstraints[*/gmd:accessConstraints]");
+            NodeList resourceConstraints = XPATH.getNodeList(doc, "//gmd:identificationInfo/*/gmd:resourceConstraints");
             StringBuilder copyRight = new StringBuilder();
             for (int i=0; i< resourceConstraints.getLength(); i++) {
                 Node resourceConstraint = resourceConstraints.item(i);
-                String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
-                if (copyRight.length() > 0) {
-                    copyRight.append("; ");
-                }
-                if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
-                    String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
-                    if (otherRestrictions != null && otherRestrictions.length() > 0) {
-                        copyRight.append(otherRestrictions);
+                
+                String useLimitations = XPATH.getString(resourceConstraint, "*/gmd:useLimitation/gco:CharacterString");
+                if (useLimitations != null && useLimitations.length() > 0) {
+                    if (copyRight.length() > 0) {
+                        copyRight.append("; ");
                     }
-                } else {
-                    copyRight.append(restrictionCode);
+                    copyRight.append(useLimitations);
                 }
+                // String restrictionCode = XPATH.getString(resourceConstraint, "*/gmd:accessConstraints/*/@codeListValue");
+                // if (copyRight.length() > 0) {
+                //     copyRight.append("; ");
+                // }
+                // if (restrictionCode.equalsIgnoreCase("otherRestrictions")) {
+                //     String otherRestrictions = XPATH.getString(resourceConstraint, "*/gmd:otherConstraints/gco:CharacterString");
+                //     if (otherRestrictions != null && otherRestrictions.length() > 0) {
+                //         copyRight.append(otherRestrictions);
+                //     }
+                // } else {
+                //     copyRight.append(restrictionCode);
+                // }
             }
             datasetFeed.setRights(copyRight.toString());
             datasetFeed.setUpdated(XPATH.getString(doc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
@@ -124,6 +135,15 @@ public class DatasetFeedProducer {
             List<DatasetFeedEntry> entryList = new ArrayList<DatasetFeedEntry>();
             for (DatasetFeedEntryProducer producer : datasetFeedEntryProducer) {
                 entryList.addAll(producer.produce(doc));
+            }
+            
+            // add link to portal detail page if requested
+            if (datasetFeedRequest.isDetail()) {
+                String detailUrl = SearchInterfaceConfig.getInstance().getString( SearchInterfaceConfig.METADATA_DETAILS_URL );
+                Link detailLink = new Link();
+                detailLink.setRel( "detail" );
+                detailLink.setHref( detailUrl + "?docuuid=" + datasetFeed.getUuid() );
+                datasetFeed.setDetailLink(detailLink);
             }
 
             datasetFeed.setEntries(entryList);

@@ -3,9 +3,10 @@
  */
 package de.ingrid.iface.util;
 
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
+import org.apache.commons.configuration.tree.OverrideCombiner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
  * @author joachim@wemove.com
  */
 @Service
-public class SearchInterfaceConfig extends PropertiesConfiguration {
+public class SearchInterfaceConfig extends CombinedConfiguration {
 
     // private stuff
     private static SearchInterfaceConfig instance = null;
@@ -62,14 +63,26 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
     public static final String ATOM_URL_CONNECTION_TIMEOUT = "atom.url.connect.timeout";
     
     public static final String ATOM_URL_READ_TIMEOUT = "atom.url.read.timeout";
+
+    public static final String WEBAPP_DIR = "jetty.webapp";
     
     public SearchInterfaceConfig() throws ConfigurationException {
-        super("interface-search.properties");
-
-        // reload File when changed
-        this.setReloadingStrategy(new FileChangedReloadingStrategy());
+        super(new OverrideCombiner());
+        try {
+            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        } catch (ConfigurationException e) {}
+        this.addConfiguration( new PropertiesConfiguration( "interface-search.properties" ) );
     }
 
+    /**
+     * This creates an instance of SearchInterfaceConfig initialized by a given
+     * property file if given or a default file "interface-search.properties". This
+     * was introduced especially for tests where a different configuration file is
+     * loaded.
+     * 
+     * @param filePath is the path to the property file to be loaded
+     * @return the instance of the configuration object
+     */
     public static synchronized SearchInterfaceConfig getInstance(String filePath) {
         if (instance == null || filePath != null) {
             try {
@@ -79,12 +92,10 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
                     instance = new SearchInterfaceConfig("interface-search.properties");
             } catch (Exception e) {
                 if (log.isFatalEnabled()) {
-                    log.fatal("Error loading the portal config application config file. (ingrid-opensearch.properties)", e);
+                    log.fatal("Error loading the portal config application config file. (ingrid-search.properties)", e);
                 }
             }
         }
-        // reload File when changed
-        instance.setReloadingStrategy(new FileChangedReloadingStrategy());
 
         return instance;
     }
@@ -94,6 +105,10 @@ public class SearchInterfaceConfig extends PropertiesConfiguration {
     }
 
     private SearchInterfaceConfig(String path) throws Exception {
-        super(path);
+        super(new OverrideCombiner());
+        try {
+            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
+        } catch (ConfigurationException e) {}
+        this.addConfiguration( new PropertiesConfiguration( path ) );
     }
 }
