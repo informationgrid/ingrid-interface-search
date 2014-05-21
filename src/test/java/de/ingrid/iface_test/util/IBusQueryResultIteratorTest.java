@@ -107,5 +107,33 @@ public class IBusQueryResultIteratorTest extends TestCase {
             assertTrue(false);
         }
     }
+    
+    public void testMultipleHasNextStability() throws Exception {
+        Bus mockedIBus = mock(Bus.class);
+        IngridQuery q = QueryStringParser.parse("datatype:idf t01_object.obj_uuid:1");
+
+        IngridHitDetail[] details = new IngridHitDetail[10];
+        for (int i = 0; i < 10; i++) {
+            details[i] = new IngridHitDetail("plugid", i, 0, 1.0f, "title" + i, "summary" + i);
+        }
+        IngridHits hits_1_10 = new IngridHits(10, details);
+
+        when(mockedIBus.searchAndDetail(q, 10, 1, 0, SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000), new String[] { "" })).thenReturn(hits_1_10);
+
+        IBusQueryResultIterator it = new IBusQueryResultIterator(q, new String[] { "" }, mockedIBus);
+        try {
+            int cnt = 0;
+            for (int i=0; i<100; i++) {
+                assertTrue(it.hasNext());
+            }
+            
+            while (it.hasNext()) {
+                assertEquals(cnt, it.next().getDocumentId());
+                cnt++;
+            }
+        } catch (NoSuchElementException e) {
+            assertTrue(false);
+        }
+    }
 
 }
