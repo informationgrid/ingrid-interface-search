@@ -12,7 +12,7 @@
         />
     
     <cache name="ingrid-cache"
-        maxElementsInMemory="5000"
+        maxElementsInMemory="500"
         eternal="false"
         timeToIdleSeconds="100"
         timeToLiveSeconds="300"

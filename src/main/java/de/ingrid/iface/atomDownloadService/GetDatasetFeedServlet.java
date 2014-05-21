@@ -40,7 +40,7 @@ public class GetDatasetFeedServlet extends HttpServlet implements SearchInterfac
             // handle method, create response
             DatasetFeed datasetFeed = datasetFeedProducer.produce(datasetFeedRequest);
             if (datasetFeed == null) {
-                throw (HttpException) new HttpException(404, "Dataset Feed not found.");
+                throw (HttpException) new HttpException(404, "Dataset Feed not found: " + req.getPathInfo());
             }
             String body = datasetFeedAtomBuilder.build(datasetFeed, req.getHeader("user-agent"));
             resp.setCharacterEncoding("UTF-8");
@@ -48,7 +48,7 @@ public class GetDatasetFeedServlet extends HttpServlet implements SearchInterfac
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
         } catch (Exception e) {
-            log.error("Error executing get dataset feed.", e);
+            log.error("Error executing get dataset feed: " + req.getPathInfo(), e);
         }
     }
 

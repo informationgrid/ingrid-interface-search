@@ -100,6 +100,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         PrintWriter pout = null;
         IBusQueryResultIterator hitIterator = null;
         int hitCounter = 0;
+        boolean outputStreamWritten = false;
         try {
 
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
@@ -109,6 +110,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             Document doc = DocumentHelper.createDocument();
             while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
                 if (hitCounter == 0) {
+                    outputStreamWritten = true;
                     pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
                     pout.write("<channel>");
@@ -155,12 +157,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 }
                 hitCounter++;
             }
-            doc.clearContent();
             doc = null;
-            pout.write("</channel></rss>");
-
-            pout.close();
-            request.getInputStream().close();
 
             if (log.isDebugEnabled()) {
                 log.debug("Time for complete search: " + (System.currentTimeMillis() - overallStartTime) + " ms");
@@ -169,14 +166,18 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         } catch (TooManyRunningThreads e) {
             log.error("Too many threads!", e);
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
-        } catch (Exception e) {
-            log.error("Error serving request", e);
-            throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
+        } catch (Throwable t) {
+            if (!outputStreamWritten) {
+                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString() + " Outputstream not written, send 500 Error", t);
+                throw (HttpException) new HttpException(500, "Internal error!").initCause(t);
+            } else {
+                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString(), t);
+            }
         } finally {
             hitIterator.cleanup();
             hitIterator = null;
             if (pout != null) {
-                if (hitCounter > 0) {
+                if (outputStreamWritten) {
                     pout.write("</channel></rss>");
                 }
             }
@@ -422,7 +423,6 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             item.addElement("ingrid:partner").addText(OpensearchUtil.deNullify(partnerId));
             item.addElement("ingrid:partner-name").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(partnerName)));
             item.addElement("ingrid:source").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(detail.getDataSourceName())));
-            
 
             // handle udk class
             if (udkClass != null && udkClass.length() > 0) {
@@ -437,7 +437,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 item.addElement("ingrid:wms-url").addText(wmsUrl);
             }
             // handle xml csw url
-            String metadatatXmlUrl =  SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL);
+            String metadatatXmlUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL);
             if (docUuid != null && docUuid.length() > 0 && metadatatXmlUrl != null && metadatatXmlUrl.length() > 0) {
                 metadatatXmlUrl = metadatatXmlUrl.replace("{uuid}", docUuid);
                 item.addElement("ingrid:iso-xml-url").addText(metadatatXmlUrl);
@@ -493,7 +493,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                         }
                     }
                 } catch (Exception e) {
-                    log.error("Error retrieving detail data from hit.", e);
+                    log.error("Error retrieving detail data from hit {" + hit.getPlugId() + ", " + hit.getDocumentId() + "} serving request " + requestWrapper.getRequest().getQueryString() + ".", e);
                 }
             }
         }
@@ -616,5 +616,5 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     public String getPathSpec() {
         return "/opensearch/query";
     }
-    
+
 }
