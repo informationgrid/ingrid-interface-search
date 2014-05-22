@@ -5,9 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.4.2" date="2014-05-21" description="Release InGrid 3.4.2">
+    <release version="3.4.2" date="2014-05-22" description="Release InGrid 3.4.2">
       <action type="add" dev="wemove">
         Introduce new HTML Atom Download Service Client accessible under url /dls/. 
+      </action>
+      <action type="fix" dev="wemove" issue="INGRID-2351">
+        Fix opensearch description link pattern in configuration. 
       </action>
       <action type="fix" dev="wemove">
         Fix cache management to reduce memory usage. 
