@@ -1,0 +1,28 @@
+Index: src/main/release/conf/interface-search.properties
+===================================================================
+--- src/main/release/conf/interface-search.properties	(revision 23948)
++++ src/main/release/conf/interface-search.properties	(working copy)
+@@ -33,11 +33,14 @@
+ # atom download service feed access url extension pattern
+ atom.download.service.feed.extension=/service/{servicefeed-uuid}
+ 
++# atom download service feed list access url extension pattern
++atom.download.service.feedlist.extension=/service-list?q={searchTerms}
++
+ # atom download dataset feed access url extension pattern
+ atom.download.dataset.feed.extension=/dataset/{servicefeed-uuid}/{datasetfeed-uuid}
+ 
+ # atom download opensearch definition url extension pattern
+-atom.download.opensearch.definition.extension=/opensearch-definition/{servicefeed-uuid}
++atom.download.opensearch.definition.extension=/opensearch-description/{servicefeed-uuid}
+ 
+ # atom download service: opensearch get result url template
+ atom.download.opensearch.get.results.template=/service/{servicefeed-uuid}?q={searchTerms}
+@@ -56,3 +59,7 @@
+ 
+ # atom download service: read timeout for external http calls
+ atom.url.read.timeout=1000
++
++# atom download service client source directory
++atom.download.service.client.path=client
++

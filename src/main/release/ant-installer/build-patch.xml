@@ -12,8 +12,20 @@
             </then>
         </if>
     </target>
+    <target name="patchFromVersion3.4.1">
+        <compareVersion value1="${oldVersion}" value2="3.4.1" prop="compResult"/>
+        <if>
+            <not>
+                <equals arg1="${compResult}" arg2="1" />
+            </not>
+            <then>
+                <echo>Patching interface-search.properties file in basedir: </echo>
+                <patchFile patchFile="patches/3.4.2/interface-search.properties.patch" originalFile="${installDir}/conf/interface-search.properties" />
+            </then>
+        </if>
+    </target>
 	
-    <target name="patchFiles" depends="patchFromVersion3.3.2">
+    <target name="patchFiles" depends="patchFromVersion3.3.2,patchFromVersion3.4.1">
         <!-- patch order determined through depends-order -->
     </target>
 </project>
