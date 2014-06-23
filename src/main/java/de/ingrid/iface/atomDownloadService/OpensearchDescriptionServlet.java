@@ -39,6 +39,7 @@ public class OpensearchDescriptionServlet extends HttpServlet implements SearchI
             // handle method, create response
             OpensearchDescription opensearchDescription = opensearchDescriptionProducer.produce(opensearchDescriptionRequest);
             String body = opensearchDescriptionBuilder.build(opensearchDescription);
+            resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/opensearchdescription+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
