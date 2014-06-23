@@ -88,7 +88,8 @@ public class OpensearchDescriptionProducer {
                 log.debug("Found valid service: " + hit.getHitDetail().getTitle());
             }
             Document idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
-            result.setShortName(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
+            // make sure the shortname is no longer than 16 chars, see INGRID-2351
+            result.setShortName("ATOM Download");
             result.setDescription(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             OpensearchDescriptionUrl tpl = new OpensearchDescriptionUrl();
@@ -99,7 +100,7 @@ public class OpensearchDescriptionProducer {
 
             tpl = new OpensearchDescriptionUrl();
             tpl.setTemplate(atomDownloadOpensearchGetResultsTemplate.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
-            tpl.setType("application/atom+xml");
+            tpl.setType("text/html");
             tpl.setRel("results");
             result.setResultsUrlTemplate(tpl);
 
@@ -118,7 +119,7 @@ public class OpensearchDescriptionProducer {
             Author author = new Author();
             author.setName(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
             author.setEmail(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
-            result.setContact(author.getName() + "(" + author.getEmail() + ")");
+            result.setContact(author.getName() + ((author.getName() != null && author.getName().length() > 0) ? " " : "") + "<" + author.getEmail() + ">");
 
             result.setLongName(result.getShortName());
 
