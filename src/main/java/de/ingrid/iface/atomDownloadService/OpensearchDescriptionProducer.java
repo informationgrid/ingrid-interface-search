@@ -119,7 +119,7 @@ public class OpensearchDescriptionProducer {
             Author author = new Author();
             author.setName(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:organisationName/gco:CharacterString"));
             author.setEmail(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:pointOfContact//gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString"));
-            result.setContact(author.getName() + ((author.getName() != null && author.getName().length() > 0) ? " " : "") + "<" + author.getEmail() + ">");
+            result.setContact(author.getEmail());
 
             result.setLongName(result.getShortName());
 
