@@ -52,7 +52,8 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
         List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
 
-        NodeList linkages = XPATH.getNodeList(idfDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
+        // should be normally idf:idfOnlineResource but also can be gmd:CI_OnlineResource (probably if same UUID in two iPlugs)
+        NodeList linkages = XPATH.getNodeList(idfDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine//gmd:linkage/gmd:URL");
         for (int i = 0; i < linkages.getLength(); i++) {
             String linkage = XPATH.getString(linkages.item(i), ".");
             if (linkage.toLowerCase().contains("request=getrecordbyid")) {
