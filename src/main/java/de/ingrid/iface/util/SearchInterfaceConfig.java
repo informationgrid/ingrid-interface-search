@@ -65,6 +65,8 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
     public static final String ATOM_URL_READ_TIMEOUT = "atom.url.read.timeout";
 
     public static final String WEBAPP_DIR = "jetty.webapp";
+
+    public static final String ATOM_DOWNLOAD_QUERY_EXTENSION = "atom.download.service.search.extension";
     
     public SearchInterfaceConfig() throws ConfigurationException {
         super(new OverrideCombiner());

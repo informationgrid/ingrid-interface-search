@@ -27,9 +27,14 @@ public class IngridQueryProducer {
 
     private final static Log log = LogFactory.getLog(IngridQueryProducer.class);
 
+    String queryExtension = null;
+
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
 
-        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
+        StringBuilder queryStr = new StringBuilder();
+        queryStr.append("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
+        addQueryExtension(queryStr);
+        IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
 
     }
@@ -46,6 +51,7 @@ public class IngridQueryProducer {
 
         StringBuilder queryStr = new StringBuilder();
         queryStr.append("ranking:score (t01_object.obj_id:\"").append(serviceFeedRequest.getUuid()).append("\" OR t01_object.org_obj_id:\"").append(serviceFeedRequest.getUuid()).append("\")");
+        addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
@@ -64,62 +70,72 @@ public class IngridQueryProducer {
      */
     public IngridQuery createServiceFeedEntryInGridQuery(String[] uuids, ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
-        String queryStr;
+        StringBuilder queryStr = new StringBuilder();
         if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
-            queryStr = "ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\")) OR (("
-                    + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:\"") + "\"))";
+            queryStr.append("ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\")) OR (("
+                    + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:\"") + "\"))");
         } else {
-            queryStr = "ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\") OR (" + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")";
+            queryStr.append("ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\") OR (" + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")");
         }
+        addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
-        IngridQuery q = QueryStringParser.parse(queryStr);
+        IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
 
     }
 
     public IngridQuery createDatasetFeedInGridQuery(String uuid) throws ParseException {
 
-        String queryStr = "ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")";
+        StringBuilder queryStr = new StringBuilder();
+        queryStr.append("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
+        addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
         }
-        IngridQuery q = QueryStringParser.parse(queryStr);
+        IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
     }
 
     public IngridQuery createDatasetFeedInGridQuery(DatasetFeedRequest datasetFeedRequest) throws Exception {
 
+        StringBuilder queryStr = new StringBuilder();
         if (datasetFeedRequest.getDatasetFeedUuid() != null && datasetFeedRequest.getDatasetFeedUuid().length() > 0) {
-            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\")");
+            queryStr.append("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\")");
+            addQueryExtension(queryStr);
+            IngridQuery q = QueryStringParser.parse(queryStr.toString());
             return q;
         } else {
-            IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\")");
+            queryStr.append("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\")");
+            addQueryExtension(queryStr);
+            IngridQuery q = QueryStringParser.parse(queryStr.toString());
             IBus iBus = iBusHelper.getIBus();
             IBusQueryResultIterator queryIterator = new IBusQueryResultIterator(q, new String[] {}, iBus);
             IngridHit hit = null;
             if (queryIterator.hasNext()) {
                 hit = queryIterator.next();
                 String plugId = hit.getPlugId();
-                String qStr = "ranking:score iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
-                        + datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "#" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\")";
+                queryStr.setLength(0);
+                queryStr.append("ranking:score iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
+                        + datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "#" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\")");
                 if (datasetFeedRequest.getCrs() != null && datasetFeedRequest.getCrs().length() > 0) {
-                    qStr = qStr + " t011_obj_geo.referencesystem_id:" + (datasetFeedRequest.getCrs().contains(":") ? "\"" + datasetFeedRequest.getCrs() + "\"" : datasetFeedRequest.getCrs());
+                    queryStr.append(" t011_obj_geo.referencesystem_id:" + (datasetFeedRequest.getCrs().contains(":") ? "\"" + datasetFeedRequest.getCrs() + "\"" : datasetFeedRequest.getCrs()));
                 }
                 if (datasetFeedRequest.getLanguage() != null && datasetFeedRequest.getLanguage().length() > 0) {
                     String[] supportedLanguages = config.getStringArray(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_SUPPORTED_LANGUAGES);
                     for (String supportedLanguage : supportedLanguages) {
                         if (supportedLanguage.equals(datasetFeedRequest.getLanguage())) {
-                            qStr = qStr + " lang:" + datasetFeedRequest.getLanguage();
+                            queryStr.append(" lang:" + datasetFeedRequest.getLanguage());
                             break;
                         }
                     }
                 }
+                addQueryExtension(queryStr);
                 if (log.isDebugEnabled()) {
-                    log.debug("Query string: " + qStr);
+                    log.debug("Query string: " + queryStr);
                 }
-                q = QueryStringParser.parse(qStr);
+                q = QueryStringParser.parse(queryStr.toString());
                 return q;
             }
             throw new Exception("Cannot create InGrid query from dataset feed request: " + datasetFeedRequest);
@@ -140,6 +156,7 @@ public class IngridQueryProducer {
             queryStr.append(" ");
             queryStr.append(serviceFeedListRequest.getQuery());
         }
+        addQueryExtension(queryStr);
         IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
     }
@@ -152,6 +169,27 @@ public class IngridQueryProducer {
     @Autowired
     public void setConfig(SearchInterfaceConfig config) {
         this.config = config;
+    }
+    
+    /**
+     * Lazy load query extension from config file. Apply if exists.
+     * 
+     * @param qryStr
+     */
+    private void addQueryExtension(StringBuilder qryStr) {
+        
+        if (queryExtension == null) {
+            String s = config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_QUERY_EXTENSION, null);
+            if (s != null && s.length() > 0) {
+                queryExtension = s;
+            } else {
+                queryExtension = "";
+            }
+        }
+        
+        if (queryExtension.length() > 0) {
+            qryStr.append(" " + queryExtension);
+        }
     }
 
 }

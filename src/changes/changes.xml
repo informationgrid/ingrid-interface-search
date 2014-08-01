@@ -5,6 +5,11 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.5.0-SNAPSHOT" date="2014-xx-xx" description="Release InGrid 3.5.0">
+      <action type="fix" dev="wemove" issue="REDMINE-434">
+        Add new configuration property 'atom.download.service.search.extension' for ATOM service feed query extension. 
+      </action>
+    </release>
     <release version="3.4.2.2" date="2014-07-08" description="Release InGrid 3.4.2.2">
       <action type="fix" dev="wemove" issue="INGRID-2351">
         Fix GDI-DE test suite compatibility issues. 
