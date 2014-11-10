@@ -39,7 +39,7 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Use old iPlug SE, just needed for instanceof. New iPlug SE does not 
+			<!-- Use old iPlug SE, just needed for instanceof. New iPlug SE does not
 				have a jar file! -->
 			<dependency>
 				<groupId>de.ingrid</groupId>
@@ -96,7 +96,7 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.4</version>
 		</dependency>
-		<!-- <dependency> <groupId>org.apache.tika</groupId> <artifactId>tika-parsers</artifactId> 
+		<!-- <dependency> <groupId>org.apache.tika</groupId> <artifactId>tika-parsers</artifactId>
 			<version>1.4</version> </dependency> -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -647,6 +647,18 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/client/js/angular**</exclude>
+                        <exclude>**/client/js/jquery**</exclude>
+                        <exclude>**/client/js/ui-bootstrap**</exclude>
+                        <exclude>**/client/css/bootstrap**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>
