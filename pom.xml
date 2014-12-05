@@ -13,14 +13,14 @@
 	<packaging>jar</packaging>
 	<name>ingrid-interface-search</name>
 	<scm>
-		<connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-interface-search/trunk</connection>
-		<developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-interface-search/trunk</developerConnection>
+		<connection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</connection>
+		<developerConnection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</developerConnection>
 	</scm>
 	<repositories>
 		<repository>
 			<id>de.ingrid.all</id>
 			<name>Maven Repo InGrid</name>
-			<url>http://harrison.its-technidata.de/archiva/repository/ingrid-all</url>
+			<url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
 		</repository>
 		<repository>
 			<id>repo</id>
