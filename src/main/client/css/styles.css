@@ -1,0 +1,99 @@
+/*
+ * **************************************************-
+ * ingrid-interface-search
+ * ==================================================
+ * Copyright (C) 2014 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ * 
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl5
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ * **************************************************#
+ */
+fieldset {
+	margin-top: 10px;
+	padding: inherit;
+	padding-bottom: 0;
+	border: 1px solid #A9A9A9;
+}
+
+fieldset legend {
+	border-bottom: 0;
+	width: auto;
+	margin-bottom: 0;
+}
+
+.jumbo {
+	padding-bottom: 20px;
+	background-color: #68A5D2;
+	color: white;
+}
+
+.panel-heading {
+	cursor: pointer;
+}
+
+.panel-title .glyphicon {
+	padding-right: 10px;
+	line-height: 20px;
+}
+
+.panel-body {
+	background-color: #F5F5F5;
+}
+
+.glyphicon-download-alt {
+	font-size: 75px;
+}
+
+.loader {
+	background-image: url("../img/ajax-loader.gif");
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+}
+
+.datasetTitle {
+	padding-left: 30px;
+	line-height: 23px;
+}
+
+#templateContainer {
+	padding: 0 20px 20px;
+	clear: both;
+}
+
+.downloadContainer {
+	float: left;
+	width: 250px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+}
+
+.downloadContainer.well {
+	background-color: #fff;
+}
+
+.downloadContainer p {
+    word-wrap: break-word;
+}
+
+#serviceSelector {
+	margin-top: 20px;
+}
+
+#footer {
+	padding: 8px;
+	border-top: 1px solid #eee;
+	color: #B0B2B4;
+}

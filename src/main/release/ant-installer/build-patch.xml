@@ -1,0 +1,53 @@
+<!--
+  **************************************************-
+  ingrid-interface-search
+  ==================================================
+  Copyright (C) 2014 wemove digital solutions GmbH
+  ==================================================
+  Licensed under the EUPL, Version 1.1 or – as soon they will be
+  approved by the European Commission - subsequent versions of the
+  EUPL (the "Licence");
+  
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  http://ec.europa.eu/idabc/eupl5
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the Licence is distributed on an "AS IS" basis,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and
+  limitations under the Licence.
+  **************************************************#
+  -->
+<project name="search-interface patches">
+	
+    <target name="patchFromVersion3.3.2">
+        <compareVersion value1="${oldVersion}" value2="3.3.2" prop="compResult"/>
+        <if>
+            <not>
+                <equals arg1="${compResult}" arg2="1" />
+            </not>
+            <then>
+                <echo>Patching interface-search.properties file in basedir: </echo>
+                <patchFile patchFile="patches/3.3.2.1/interface-search.properties.patch" originalFile="${installDir}/conf/interface-search.properties" />
+            </then>
+        </if>
+    </target>
+    <target name="patchFromVersion3.4.1">
+        <compareVersion value1="${oldVersion}" value2="3.4.1" prop="compResult"/>
+        <if>
+            <not>
+                <equals arg1="${compResult}" arg2="1" />
+            </not>
+            <then>
+                <echo>Patching interface-search.properties file in basedir: </echo>
+                <patchFile patchFile="patches/3.4.2/interface-search.properties.patch" originalFile="${installDir}/conf/interface-search.properties" />
+            </then>
+        </if>
+    </target>
+	
+    <target name="patchFiles" depends="patchFromVersion3.3.2,patchFromVersion3.4.1">
+        <!-- patch order determined through depends-order -->
+    </target>
+</project>

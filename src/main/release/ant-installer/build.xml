@@ -1,0 +1,124 @@
+<!--
+  **************************************************-
+  ingrid-interface-search
+  ==================================================
+  Copyright (C) 2014 wemove digital solutions GmbH
+  ==================================================
+  Licensed under the EUPL, Version 1.1 or – as soon they will be
+  approved by the European Commission - subsequent versions of the
+  EUPL (the "Licence");
+  
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  http://ec.europa.eu/idabc/eupl5
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the Licence is distributed on an "AS IS" basis,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and
+  limitations under the Licence.
+  **************************************************#
+  -->
+<project name="PortalU Installation" basedir=".">
+    <description>
+        Search Interface Installation Script
+    </description>
+	<!-- set global properties for this build -->
+	<property name="componentName" 			value="${project.build.finalName}"/>
+	<property name="xml-communication" 	value="${installDir}/conf/communication.xml"/>
+	<property name="search-properties" 	value="${installDir}/conf/interface-search.properties"/>
+	<property name="xml-descriptor" 	      value="${installDir}/conf/descriptor.xml"/>
+	
+    <!-- THESE PORPERTIES ARE NECESSARY FOR UPDATES -->
+    <property name="libraryDir"         value="lib" />
+    <property name="libraryIdent"       value="ingrid-interface-search-" />
+    <property name="versionsWithConfigurations"  value="" />
+    <property name="minSupportedVersion" value="3.3.2" />
+	
+    <import file="build-installer-utils.xml"  as="utils" />
+    <import file="build-patch.xml"            as="patch" />
+	
+    <target name="setUpdateProperty" depends="checkPreconditionsForUpdate, extractUpdate">
+        <property name="installType" value="update" />
+        <property name="updateProcedure" value="true" />
+    </target>
+
+    <target name="setInstallProperty" depends="extract">
+        <property name="installProcedure" value="true" />
+    </target>
+
+	
+	<target name="extract" description="Extract all files to the installation directory.">
+		<unzip src="${antinstaller.jar}" dest="${installDir}">
+			<patternset>
+				<include name="${componentName}/**/*.*"/>
+			</patternset>
+		</unzip>
+		
+		<move toDir="${installDir}">
+			<fileset dir="${installDir}/${componentName}"/>
+		</move>
+	</target>
+	
+    <target name="extractUpdate">
+        <unzip src="${antinstaller.jar}" dest=".">
+            <patternset>
+                <include name="**/*.*"/>
+                <exclude name="${componentName}/conf/interface-search.properties" />
+                <exclude name="${componentName}/conf/communication.xml" />
+                <exclude name="${componentName}/start.sh" />
+            </patternset>
+        </unzip>
+        
+        <delete>
+            <fileset dir="${installDir}/lib" includes="**/*"/>
+        </delete>
+        
+        <move toDir="${installDir}">
+            <fileset dir="./${componentName}"/>
+        </move>
+    </target>
+	
+	
+	<target name="ibus" description="Set configuration correctly for the iBus.">
+		<echo>Schreibe iBus Konfiguration in communication.xml</echo>
+		<xmlproperty file="${xml-communication}" prefix="plugXML"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}" 			value="${serverName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}" 		value="${serverIp}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
+	</target>
+
+	<target name="config" description="Set search interface properties.">
+		<echo>Schreibe Konfiguration in interface-search.properties</echo>
+		<replace file="${search-properties}" token="@LOCAL_SERVER_PORT@"          value="${localServerPort}"/>
+		<replace file="${search-properties}" token="@MAX_REQUESTED_HITS@"         value="${maxRequestedHits}"/>
+		<replace file="${search-properties}" token="@PROXY_URL@"                  value="${opensearchInterfaceUrl}"/>
+		<replace file="${search-properties}" token="@METADATA_DETAILS_URL@"       value="${metadataDetailsUrl}"/>
+		<replace file="${search-properties}" token="@ENABLE_CACHING@"             value="${enableCaching}"/>
+        <replace file="${search-properties}" token="@METADATA_ASSESS_URL@"        value="${metadataAccessUrl}"/>
+        <replace file="${search-properties}" token="@ATOM_DOWNLOAD_SERVICE_URL@"  value="${atomDownloadServiceUrl}"/>
+	    <echo>Schreibe Deskriptor-Server</echo>
+		<replace file="${xml-descriptor}" token="@PROXY_URL@" value="${externalInterfaceHost}:${externalInterfacePort}/${externalInterfacePath}"/>
+	</target>
+	
+	<target name="startComponent">
+		<echo>
+=================
+Weiteres Vorgehen
+=================
+
+		</echo>
+		<echo>
+Gehen Sie ins Verzeichnis: ${installDir} und
+rufen sie von der Kommandozeile folgendes auf
+"sh start.sh start", um die Schnittstelle zu starten.
+
+Weitere Informationen entnehmen Sie bitte dem
+Online-Handbuch unter 
+http://kst.portalu.de/foswiki/bin/view/InGrid/SearchSchnittstelle
+		</echo>
+	</target>
+	
+</project>
