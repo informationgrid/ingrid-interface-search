@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.ingrid</groupId>
         <artifactId>ingrid-releases-pom</artifactId>
-        <version>3.5.0-SNAPSHOT-R304</version>
+        <version>3.5.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.ingrid</groupId>
@@ -459,6 +459,10 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/*.sql</exclude>
+                        <exclude>**/*.xml</exclude>
                         <exclude>**/client/js/angular**</exclude>
                         <exclude>**/client/js/jquery**</exclude>
                         <exclude>**/client/js/ui-bootstrap**</exclude>
