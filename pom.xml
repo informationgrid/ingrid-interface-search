@@ -341,6 +341,7 @@
         <dependency>
             <groupId>de.ingrid</groupId>
             <artifactId>ingrid-iplug-dsc</artifactId>
+            <version>3.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>de.ingrid</groupId>
