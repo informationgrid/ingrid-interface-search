@@ -336,6 +336,62 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- The DSC iPlug is needed for its DatabaseConnection class!!!
+             This should be moved to the ingrid-utils project -->
+        <dependency>
+            <groupId>de.ingrid</groupId>
+            <artifactId>ingrid-iplug-dsc</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>de.ingrid</groupId>
+                    <artifactId>ingrid-base-webapp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>jetty</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>jsp-2.1</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-httpclient</groupId>
+                    <artifactId>commons-httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-fileupload</groupId>
+                    <artifactId>commons-fileupload</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>lucene</groupId>
+                    <artifactId>lucene</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ojdbc</groupId>
+                    <artifactId>ojdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>de.ingrid</groupId>
+                    <artifactId>ingrid-utils-geo</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
