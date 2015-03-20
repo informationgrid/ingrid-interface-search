@@ -23,6 +23,7 @@
 package de.ingrid.iface.atomDownloadService;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -82,7 +83,19 @@ public class ServiceFeedProducer {
             for (ServiceFeedEntryProducer producer : serviceFeedEntryProducer) {
                 entryList.addAll(producer.produce(idfDoc, serviceFeed, serviceFeedRequest));
             }
-
+            
+            // filter duplicate entries (coming from possibly external references (coupled resources) that link to local)
+            List<String> uuids = new ArrayList<String>();
+            for (Iterator<ServiceFeedEntry> iterator = entryList.iterator(); iterator.hasNext();) {
+                ServiceFeedEntry entry = iterator.next();
+                if (uuids.contains( entry.getUuid() )) {
+                    // Remove the current element from the iterator and the list.
+                    iterator.remove();
+                } else {
+                    uuids.add( entry.getUuid() );
+                }
+            }
+            
             serviceFeed.setEntries(entryList);
         }
 
