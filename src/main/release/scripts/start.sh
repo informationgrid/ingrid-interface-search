@@ -157,13 +157,6 @@ startIplug()
   fi
   
   JAVA=$JAVA_HOME/bin/java
-  JAVA_HEAP_MAX=-Xmx256m
-  
-  # check envvars which might override default args
-  if [ "$INGRID_HEAPSIZE" != "" ]; then
-    JAVA_HEAP_MAX="-Xmx""$INGRID_HEAPSIZE""m"
-    echo "run with heapsize $JAVA_HEAP_MAX"
-  fi
 
   # CLASSPATH initially contains $INGRID_CONF_DIR, or defaults to $INGRID_HOME/conf
   CLASSPATH=${CLASSPATH}:${INGRID_CONF_DIR:=$INGRID_HOME/conf}
@@ -192,10 +185,10 @@ startIplug()
   fi  
 
   export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME"
+  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME -XX:+UseG1GC -XX:+UseStringDeduplication -XX:NewRatio=3"
 	
   # run it
-  exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS $CLASS > console.log &
+  exec "$JAVA" $INGRID_OPTS $CLASS > console.log &
   
   echo "ingrid component ($INGRID_HOME) started."
   echo $! > $PID
