@@ -22,7 +22,6 @@
  */
 package de.ingrid.iface.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -110,11 +109,13 @@ public class IBusHelper {
             hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
 
             if (hits.length() > 0) {
-                final ArrayList<Map<String, String>> partners = hits.getHits()[0].getArrayList("partner");
-                for (final Map<String, String> partner : partners) {
-                    final String partnerId = partner.get("partnerid");
+                final List<Object> partners = hits.getHits()[0].getArrayList("partner");
+                for (final Object partner : partners) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> partnerMap = (Map<String, String>) partner;
+                    final String partnerId = partnerMap.get("partnerid");
                     if (partnerId.equals(id)) {
-                        result = partner.get("name");
+                        result = partnerMap.get("name");
                         break;
                     }
                 }
@@ -141,11 +142,13 @@ public class IBusHelper {
 
             hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
             if (hits.length() > 0) {
-                final ArrayList<Map<String, String>> providerss = hits.getHits()[0].getArrayList("provider");
-                for (final Map<String, String> provider : providerss) {
-                    final String providerId = provider.get("providerid");
+                final List<Object> providerss = hits.getHits()[0].getArrayList("provider");
+                for (final Object provider : providerss) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> providerMap = (Map<String, String>) provider;
+                    final String providerId = providerMap.get("providerid");
                     if (providerId.equals(id)) {
-                        result = provider.get("name");
+                        result = providerMap.get("name");
                         break;
                     }
                 }
