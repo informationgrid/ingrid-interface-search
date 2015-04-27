@@ -56,7 +56,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
         try {
             int cnt = 0;
             while (it.hasNext()) {
-                assertEquals(cnt, it.next().getDocumentId());
+                assertEquals(String.valueOf( cnt ), it.next().getDocumentId());
                 cnt++;
             }
         } catch (NoSuchElementException e) {
@@ -94,7 +94,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
         try {
             int cnt = 0;
             while (it.hasNext()) {
-                assertEquals(cnt, it.next().getDocumentId());
+                assertEquals(String.valueOf( cnt ), it.next().getDocumentId());
                 cnt++;
             }
             assertEquals(19, cnt);
@@ -121,7 +121,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
         try {
             int cnt = 0;
             while (it.hasNext()) {
-                assertEquals(startPage * 10 + cnt, it.next().getDocumentId());
+                assertEquals(String.valueOf( startPage * 10 + cnt ), it.next().getDocumentId());
                 cnt++;
             }
             assertEquals(9, cnt);
@@ -150,7 +150,7 @@ public class IBusQueryResultIteratorTest extends TestCase {
             }
             
             while (it.hasNext()) {
-                assertEquals(cnt, it.next().getDocumentId());
+                assertEquals(String.valueOf( cnt ), it.next().getDocumentId());
                 cnt++;
             }
         } catch (NoSuchElementException e) {
