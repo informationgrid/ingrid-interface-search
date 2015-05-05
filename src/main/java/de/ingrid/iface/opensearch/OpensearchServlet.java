@@ -278,13 +278,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
             }
             if (requestWrapper.withIngridData()) {
-                String[] additional = new String[] { "T01_object.obj_class", "T011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
+                String[] additional = new String[] { "t01_object.obj_class", "t011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
                 requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
             }
         } else {
-            requestedMetadata = new String[] { "T02_address.firstname", "T02_address.lastname", "T02_address.title", "T02_address.address", "T02_address.adr_id" };
+            requestedMetadata = new String[] { "t02_address.firstname", "t02_address.lastname", "t02_address.title", "t02_address.address", "t02_address.adr_id" };
             if (requestWrapper.withIngridData()) {
-                String[] additional = new String[] { "T02_address.typ", "T011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
+                String[] additional = new String[] { "t02_address.typ", "t011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
                 requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
             }
         }
@@ -405,10 +405,10 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             String plugId = hit.getPlugId();
             String docId = String.valueOf(hit.getDocumentId());
             String altDocId = (String) hit.get("alt_document_id");
-            String udkClass = OpensearchUtil.getDetailValue(detail, "T01_object.obj_class");
-            String udkAddrClass = OpensearchUtil.getDetailValue(detail, "T02_address.typ");
+            String udkClass = OpensearchUtil.getDetailValue(detail, "t01_object.obj_class");
+            String udkAddrClass = OpensearchUtil.getDetailValue(detail, "t02_address.typ");
             String wmsUrl = null;
-            Object obj = detail.get("T011_obj_serv_op_connpoint.connect_point");
+            Object obj = detail.get("t011_obj_serv_op_connpoint.connect_point");
             if (obj != null && obj instanceof String[] && ((String[]) obj).length > 0) {
                 // get first entry from the array, ignore empty entries
                 for (String value : ((String[]) obj)) {
@@ -418,7 +418,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     }
                 }
             } else {
-                wmsUrl = OpensearchUtil.getDetailValue(detail, "T011_obj_serv_op_connpoint.connect_point");
+                wmsUrl = OpensearchUtil.getDetailValue(detail, "t011_obj_serv_op_connpoint.connect_point");
             }
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
 
@@ -619,9 +619,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
         PlugDescription plugDescription = ibusConnected ? bus.getIPlug(plugId) : null;
         if ((plugDescription != null) && (OpensearchUtil.hasDataType(plugDescription, "dsc_ecs_address"))) {
-            String title = OpensearchUtil.getDetailValue(detail, "T02_address.title");
-            title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "T02_address.firstname")).concat(" ");
-            title = title.concat(OpensearchUtil.getDetailValue(detail, "T02_address.lastname"));
+            String title = OpensearchUtil.getDetailValue(detail, "t02_address.title");
+            title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "t02_address.firstname")).concat(" ");
+            title = title.concat(OpensearchUtil.getDetailValue(detail, "t02_address.lastname"));
             item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title.trim()));
         } else {
             item.addElement("title").addText(OpensearchUtil.removeInvalidChars(detail.getTitle()));

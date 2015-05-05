@@ -41,8 +41,8 @@ import de.ingrid.utils.PlugDescription;
  */
 public class IPlugHelper {
 
-	public final static String HIT_KEY_OBJ_ID = "T01_object.obj_id";
-	public static final String HIT_KEY_ADDRESS_ADDRID = "T02_address.adr_id";
+	public final static String HIT_KEY_OBJ_ID = "t01_object.obj_id";
+	public static final String HIT_KEY_ADDRESS_ADDRID = "t02_address.adr_id";
 	
 	/**
      * Return true if the given iPlug has a specific data type.
