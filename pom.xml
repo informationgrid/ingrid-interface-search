@@ -3,7 +3,7 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>3.6.0-SNAPSHOT</version>
+    <version>3.6.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -41,7 +41,7 @@
       <dependency>
         <groupId>de.ingrid</groupId>
         <artifactId>ingrid-version-management-pom</artifactId>
-        <version>3.6.0-SNAPSHOT</version>
+        <version>3.6.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -120,6 +120,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
+      <version>3.6.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -130,7 +131,6 @@
           <artifactId>spring-core</artifactId>
         </exclusion>
       </exclusions>
-      <version>3.6.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -173,7 +173,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus</artifactId>
-      <version>3.6.0-SNAPSHOT</version>
+      <version>3.6.0</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
