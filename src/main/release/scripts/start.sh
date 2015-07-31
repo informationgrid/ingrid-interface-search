@@ -184,7 +184,7 @@ startIplug()
   fi  
 
   export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME"
+  INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS"
 
   # run it
   exec "$JAVA" $INGRID_OPTS $CLASS > console.log &
