@@ -27,7 +27,7 @@
   <ShortName>InGrid Opensearch</ShortName>
   <Description>Here you can search inside the InGrid-Portal.</Description>
   <Tags>ingrid opensearch web</Tags>
-  <Contact>portalu@portalu.de</Contact>
+  <Contact>info@informationgrid.eu</Contact>
   <Url type="application/rss+xml" template="http://@PROXY_URL@/query?q={searchTerms}+datatype:default+ranking:score&amp;bbox={geo:box?}&amp;p={startPage?}&amp;h={count?}&amp;xml={ingridsearch:xml?}&amp;detail={ingridsearch:detail?}&amp;georss={ingridsearch:georss?}&amp;ingrid={ingridsearch:ingrid?}&amp;t={ingridsearch:timeout?}&amp;format=rss" />
   <Query role="example" searchTerms="boden"/>
   <Query role="example" searchTerms="wasser" ingridsearch:georss="1" ingridsearch:ingrid="1" ingridsearch:detail="1"/>

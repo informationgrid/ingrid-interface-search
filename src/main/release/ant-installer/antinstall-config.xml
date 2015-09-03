@@ -113,7 +113,7 @@
             <comment displayText="" explanatoryText="Anzahl der Ergebnisse, die max. pro OpenSearch Anfrage zurückgegeben werden. Diese Eigenschaft begrenzt die Belastung des Systems."/>
             <text property="maxRequestedHits" displayText="max. Ergebnisse pro Anfrage:" defaultValue="10000"/>
 			<comment displayText="" explanatoryText="Um Detaildaten von IGC-Metadaten anzuzeigen, kann hier eine Basis-Url hinterlegt werden. Links für IGC Metadaten Details werden dann über diese URL realisiert."/>
-            <text property="metadataDetailsUrl"   displayText="URL für IGC Detaildaten:"   defaultValue="http://www.portalu.de/trefferanzeige"/>
+            <text property="metadataDetailsUrl"   displayText="URL für IGC Detaildaten:"   defaultValue="http://www.informationgrid.eu/trefferanzeige"/>
 	</page>
 
 	<page
@@ -134,7 +134,7 @@
             target      ="config">
 
             <comment displayText="" explanatoryText="Das URL Muster für den externen Zugriff auf ISO Metadaten. '{uuid}' wird durch den fileIdentifier des Metadatensatzes ersetzt."/>          
-            <text property="metadataAccessUrl"              displayText="Url:"   defaultValue="http://www.portalu.de/csw202?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;id={uuid}&amp;elementSetName=full"/>
+            <text property="metadataAccessUrl"              displayText="Url:"   defaultValue="http://www.informationgrid.eu/csw?REQUEST=GetRecordById&amp;SERVICE=CSW&amp;VERSION=2.0.2&amp;id={uuid}&amp;elementSetName=full"/>
             <comment displayText="" explanatoryText="Die URL für den externen Zugriff auf den ATOM download service. Diese wird in den Ergebnissen verwendet."/>          
             <text property="atomDownloadServiceUrl"     displayText="Externe Schnittstellen-Url:"   defaultValue="http://localhost/dls"/>
     </page>
