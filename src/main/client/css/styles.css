@@ -39,6 +39,12 @@ fieldset legend {
 	color: white;
 }
 
+#overview img {
+	background-color: #fff;
+	padding: 14px 0 14px 14px;
+	border-radius: 0 0 25px 0;
+}
+
 .panel-heading {
 	cursor: pointer;
 }
@@ -85,7 +91,7 @@ fieldset legend {
 }
 
 .downloadContainer p {
-    word-wrap: break-word;
+	word-wrap: break-word;
 }
 
 #serviceSelector {
