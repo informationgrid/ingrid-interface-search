@@ -22,7 +22,7 @@
   **************************************************#
   -->
 
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:georss="http://www.georss.org/georss" xmlns:ingridsearch="http://www.portalu.de/opensearch/extension/1.0"
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:georss="http://www.georss.org/georss" xmlns:ingridsearch="http://www.informationgrid.eu/opensearch/extension/1.0"
     xmlns:geo="http://a9.com/-/opensearch/extensions/geo/1.0/">
   <ShortName>InGrid Opensearch</ShortName>
   <Description>Here you can search inside the InGrid-Portal.</Description>
