@@ -22,6 +22,7 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -104,10 +105,18 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             if (log.isDebugEnabled()) {
                 log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
             }
-            idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+            
+            idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit)); 
 
             // do not process data with identical uuids (filter duplicates)
-            String uuid = IdfUtils.getRecordId(idfCoupledResourceDoc).toString();
+            Serializable recordId = IdfUtils.getRecordId(idfCoupledResourceDoc);
+            // in case an iPlug might be wrong configured, we have to catch this error
+            if (recordId == null) {
+                log.error( "Dataset did not have a record id" );
+                continue;
+            }
+            
+            String uuid = recordId.toString();
             if (coupledResourceUuids.contains(uuid)) {
                 continue;
             }

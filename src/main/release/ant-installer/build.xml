@@ -20,7 +20,7 @@
   limitations under the Licence.
   **************************************************#
   -->
-<project name="PortalU Installation" basedir=".">
+<project name="InGrid-Portal Installation" basedir=".">
     <description>
         Search Interface Installation Script
     </description>
@@ -117,7 +117,7 @@ rufen sie von der Kommandozeile folgendes auf
 
 Weitere Informationen entnehmen Sie bitte dem
 Online-Handbuch unter 
-http://kst.portalu.de/foswiki/bin/view/InGrid/SearchSchnittstelle
+"http://www.ingrid-oss.eu"
 		</echo>
 	</target>
 	

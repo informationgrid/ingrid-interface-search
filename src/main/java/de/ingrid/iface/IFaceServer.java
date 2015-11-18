@@ -33,8 +33,8 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletHandler;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.SearchInterfaceServletConfigurator;
@@ -53,16 +53,21 @@ public class IFaceServer {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        int serverPort = SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80);
         // Create the server
-        log.info("starting search server...");
+        log.info("starting search server ...");
 
-        Server server = new Server(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80));
+        Server server = new Server(serverPort);
         ServletHandler handler = new ServletHandler();
 
-        ApplicationContext ctx = new AnnotationConfigApplicationContext("de.ingrid.iface");
+        AbstractApplicationContext ctx = new AnnotationConfigApplicationContext("de.ingrid.iface");
         SearchInterfaceServletConfigurator searchInterfaceServletConfigurator = ctx.getBean(SearchInterfaceServletConfigurator.class);
+        
+        // add a shutdown hook for the above context... 
+        ctx.registerShutdownHook();
 
         searchInterfaceServletConfigurator.addServlets(handler);
+        ctx.close();
 
         ContextHandler context = new ContextHandler();
         context.setContextPath("/dls");
@@ -71,16 +76,19 @@ public class IFaceServer {
         resourceHandler.setWelcomeFiles(new String[] { "index.html" });
         resourceHandler.setResourceBase(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client"));
         context.setHandler(resourceHandler);
+        log.info("==================================================");
+        log.info("Server port: " + serverPort);
         log.info("Serving resources from '"+SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client")+"' at '/dls'.");
-
+        log.info("Implementation Version: " + server.getClass().getPackage().getImplementationVersion());
+        log.info("==================================================");
+        
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] { context, handler });
         server.setHandler(handlers);
 
+
         server.start();
         server.join();
-        log.info(server.getClass().getPackage().getImplementationVersion());
-        log.info("Started Search IFaceServer on port " + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80) + " waiting for requests.");
     }
 
 }
