@@ -56,7 +56,6 @@ public class IdfUtils {
     public static Document getIdfDocument(Record record) throws Exception {
         String content = IdfTool.getIdfDataFromRecord(record);
         if (content != null) {
-        	System.out.println( content );
             try {
                 return StringUtils.stringToDocument(content);
             } catch (Throwable t) {
