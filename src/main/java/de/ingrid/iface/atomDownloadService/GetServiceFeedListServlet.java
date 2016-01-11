@@ -53,8 +53,11 @@ public class GetServiceFeedListServlet extends HttpServlet implements SearchInte
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Long startTimer = 0L;
         if (log.isDebugEnabled()) {
+            log.debug("#### Build service list feed.");
             log.debug("Incoming request: " + req.getPathInfo());
+            startTimer = System.currentTimeMillis();
         }
         try {
             // extract method from path
@@ -69,6 +72,9 @@ public class GetServiceFeedListServlet extends HttpServlet implements SearchInte
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
+            if (log.isDebugEnabled()) {
+                log.debug("Finished request within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
 
         } catch (HttpException e) {
             throw (e);

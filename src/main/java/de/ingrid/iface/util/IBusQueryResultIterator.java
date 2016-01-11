@@ -163,7 +163,7 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
             if (log.isDebugEnabled()) {
                 log.debug("Executed InGrid Query (pageSize:" + pageSize + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"
                         + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000) + ") within " + (System.currentTimeMillis() - startTimer) + "ms returning "
-                        + (result.getHits() == null ? 0 : result.getHits().length) + " hits");
+                        + (result.getHits() == null ? 0 : result.getHits().length) + " hits out of max " + result.length() + " hits.");
             }
         } catch (Exception e) {
             log.error("Error querying ibus.", e);

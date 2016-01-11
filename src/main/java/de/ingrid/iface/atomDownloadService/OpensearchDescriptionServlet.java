@@ -53,6 +53,7 @@ public class OpensearchDescriptionServlet extends HttpServlet implements SearchI
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (log.isDebugEnabled()) {
+            log.debug("#### Build open search description.");
             log.debug("Incoming request: " + req.getPathInfo());
         }
         try {
