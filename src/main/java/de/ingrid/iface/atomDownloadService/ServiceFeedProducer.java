@@ -72,11 +72,16 @@ public class ServiceFeedProducer {
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest), REQUESTED_FIELDS, iBus);
         if (serviceIterator.hasNext()) {
             IngridHit hit = serviceIterator.next();
+            Long startTimer = 0L;
             if (log.isDebugEnabled()) {
-                log.debug("Found valid service: " + hit.getHitDetail().getTitle());
+                log.debug("Found valid service: '" + hit.getHitDetail().getTitle() + "' from iPlug '" + hit.getPlugId() + "'");
+                startTimer = System.currentTimeMillis();
             }
 
             Document idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+            if (log.isDebugEnabled()) {
+                log.debug("Fetched IDF record within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
             serviceFeed = serviceFeedUtils.createFromIdf(idfDoc);
 
             List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();

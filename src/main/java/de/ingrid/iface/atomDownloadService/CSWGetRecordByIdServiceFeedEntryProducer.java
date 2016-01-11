@@ -88,7 +88,14 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
                 Document isoDoc = null;
                 try {
+                    Long startTimer = 0L;
+                    if (log.isDebugEnabled()) {
+                        startTimer = System.currentTimeMillis();
+                    }
                     isoDoc = StringUtils.urlToDocument(linkage, connectionTimeout, readTimeout);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Fetched ISO record from '" + linkage + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                    }
                 } catch (Exception e) {
                     log.error("Unable to obtain XML document from " + linkage, e);
                     continue;

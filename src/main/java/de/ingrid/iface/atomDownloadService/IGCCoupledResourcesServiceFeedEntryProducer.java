@@ -94,6 +94,11 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         String[] coupledUuids = (String[]) ArrayUtils.addAll(coupledDataUuids, coupledOtherUuids);
         coupledUuids = (new HashSet<String>(Arrays.asList(coupledUuids))).toArray(new String[0]);
 
+        if (log.isDebugEnabled()) {
+            log.debug("Coupled ressources found: " + coupledUuids.length);
+        }
+        
+        
         if (coupledUuids.length == 0) {
             return entryList;
         }
@@ -101,15 +106,22 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         List<String> coupledResourceUuids = new ArrayList<String>();
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
+            Long startTimer = 0L;
             if (log.isDebugEnabled()) {
-                log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
+                startTimer = System.currentTimeMillis();
             }
             idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
 
-            // do not process data with identical uuids (filter duplicates)
             String uuid = IdfUtils.getRecordId(idfCoupledResourceDoc).toString();
+            if (log.isDebugEnabled()) {
+                log.debug("Fetched IDF coupled resource '" + hit.getHitDetail().getTitle() + "' ('" + uuid + "') from iPlug '" + hit.getPlugId() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
+            // do not process data with identical uuids (filter duplicates)
             if (coupledResourceUuids.contains(uuid)) {
-                continue;
+                if (log.isDebugEnabled()) {
+                    log.debug("Found duplicate Record. Duplicate ID: '" + uuid + "'.");
+                }
+        	continue;
             }
             coupledResourceUuids.add(uuid);
 

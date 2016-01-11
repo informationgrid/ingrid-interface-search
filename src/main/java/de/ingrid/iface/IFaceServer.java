@@ -54,7 +54,7 @@ public class IFaceServer {
      */
     public static void main(String[] args) throws Exception {
         // Create the server
-        log.info("starting search server...");
+        log.info("starting search server at port " + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80) + " ...");
 
         Server server = new Server(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80));
         ServletHandler handler = new ServletHandler();
