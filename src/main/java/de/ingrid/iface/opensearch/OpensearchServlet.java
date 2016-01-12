@@ -128,10 +128,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/rss+xml");
-            pout = response.getWriter();
             Document doc = DocumentHelper.createDocument();
             while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
-                if (hitCounter == 0) {
+        	if (hitCounter == 0) {
+                    if (pout == null) {
+                	pout = response.getWriter();
+                    }
                     outputStreamWritten = true;
                     pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
                     pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
@@ -202,8 +204,8 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 if (outputStreamWritten) {
                     pout.write("</channel></rss>");
                 }
+                pout.close();
             }
-            pout.close();
         }
 
     }
