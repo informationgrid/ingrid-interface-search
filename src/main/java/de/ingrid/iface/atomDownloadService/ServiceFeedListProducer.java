@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -92,11 +92,16 @@ public class ServiceFeedListProducer {
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedListInGridQuery(serviceFeedListRequest), REQUESTED_FIELDS, iBus);
         while (serviceIterator.hasNext()) {
             IngridHit hit = serviceIterator.next();
+            Long startTimer = 0L;
             if (log.isDebugEnabled()) {
-                log.debug("Found valid service: " + hit.getHitDetail().getTitle());
+                log.debug("Found valid service '" + hit.getHitDetail().getTitle() + "' from iPlug '" + hit.getPlugId() + "'");
+                startTimer = System.currentTimeMillis();
             }
-
             Document idfDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+            if (log.isDebugEnabled()) {
+                log.debug("Fetched IDF record within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
+            
 
             ServiceFeed feed = serviceFeedUtils.createFromIdf(idfDoc);
 

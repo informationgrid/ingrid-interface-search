@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -88,7 +88,14 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
 
                 Document isoDoc = null;
                 try {
+                    Long startTimer = 0L;
+                    if (log.isDebugEnabled()) {
+                        startTimer = System.currentTimeMillis();
+                    }
                     isoDoc = StringUtils.urlToDocument(linkage, connectionTimeout, readTimeout);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Fetched ISO record from '" + linkage + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                    }
                 } catch (Exception e) {
                     log.error("Unable to obtain XML document from " + linkage, e);
                     continue;

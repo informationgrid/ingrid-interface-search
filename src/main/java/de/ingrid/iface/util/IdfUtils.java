@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -56,7 +56,6 @@ public class IdfUtils {
     public static Document getIdfDocument(Record record) throws Exception {
         String content = IdfTool.getIdfDataFromRecord(record);
         if (content != null) {
-        	System.out.println( content );
             try {
                 return StringUtils.stringToDocument(content);
             } catch (Throwable t) {

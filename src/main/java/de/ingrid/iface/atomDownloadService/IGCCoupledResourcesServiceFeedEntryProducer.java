@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -95,6 +95,11 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         String[] coupledUuids = (String[]) ArrayUtils.addAll(coupledDataUuids, coupledOtherUuids);
         coupledUuids = (new HashSet<String>(Arrays.asList(coupledUuids))).toArray(new String[0]);
 
+        if (log.isDebugEnabled()) {
+            log.debug("Coupled ressources found: " + coupledUuids.length);
+        }
+        
+        
         if (coupledUuids.length == 0) {
             return entryList;
         }
@@ -102,8 +107,9 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         List<String> coupledResourceUuids = new ArrayList<String>();
         while (serviceEntryIterator.hasNext()) {
             IngridHit hit = serviceEntryIterator.next();
+            Long startTimer = 0L;
             if (log.isDebugEnabled()) {
-                log.debug("Found coupled resource: " + hit.getHitDetail().getTitle());
+                startTimer = System.currentTimeMillis();
             }
             
             idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit)); 
@@ -117,8 +123,17 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             }
             
             String uuid = recordId.toString();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Fetched IDF coupled resource '" + hit.getHitDetail().getTitle() + "' ('" + uuid + "') from iPlug '" + hit.getPlugId() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
+            
+            // do not process data with identical uuids (filter duplicates)
             if (coupledResourceUuids.contains(uuid)) {
-                continue;
+                if (log.isDebugEnabled()) {
+                    log.debug("Found duplicate Record. Duplicate ID: '" + uuid + "'.");
+                }
+        	continue;
             }
             coupledResourceUuids.add(uuid);
 

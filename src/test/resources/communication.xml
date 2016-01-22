@@ -40,19 +40,19 @@
 <!--
 -->
 <!-- 
+-->
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="communication.xsd">
     <client name="/ingrid-group:ingrid-interface-opensearch-test-jm">
         <connections>
-            <server name="/torwald-group:torwald-ibus">
-                <socket port="9900" timeout="10" ip="213.144.28.209" />
+            <server name="/ingrid-group:ibus-test">
+                <socket port="9900" timeout="10" ip="136.243.6.81" />
                 <messages maximumSize="1048576" threadCount="100" />
             </server>
         </connections>
     </client>
     <messages queueSize="2000" handleTimeout="10"/>
 </communication>
--->
 <!-- joachim dev -->
 <!--
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -69,7 +69,7 @@
 </communication>
 -->
 
-<!-- wemove dev test -->
+<!-- wemove dev test 
 
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="communication.xsd">
@@ -83,4 +83,4 @@
     </client>
     <messages queueSize="2000" handleTimeout="10"/>
 </communication>
-
+-->

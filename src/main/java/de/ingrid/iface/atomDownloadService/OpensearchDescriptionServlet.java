@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -53,6 +53,7 @@ public class OpensearchDescriptionServlet extends HttpServlet implements SearchI
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (log.isDebugEnabled()) {
+            log.debug("#### Build open search description.");
             log.debug("Incoming request: " + req.getPathInfo());
         }
         try {

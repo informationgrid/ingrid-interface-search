@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -61,6 +61,10 @@ public class DatasetFeedFactory {
     private static final String[] REQUESTED_FIELDS = new String[] {};
 
     public Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
+        
+	if (log.isDebugEnabled()) {
+            log.debug("Get single dataset feed document from dataset feed request.");
+        }
 
         Document doc = null;
         
@@ -74,13 +78,23 @@ public class DatasetFeedFactory {
             }
             // ISO Metadaten
             try {
+                Long startTimer = 0L;
+                if (log.isDebugEnabled()) {
+                    startTimer = System.currentTimeMillis();
+                }
                 doc = stringUtilsService.urlToDocument(datasetFeedRequest.getDatasetFeedUuid(), connectionTimeout, readTimeout);
+                if (log.isDebugEnabled()) {
+                    log.debug("Fetched ISO record from '" + datasetFeedRequest.getDatasetFeedUuid() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                }
             } catch (Exception e) {
                 log.warn("Unable to obtain XML document from " + datasetFeedRequest.getDatasetFeedUuid(), e);
             }
             // TODO: not nice to alter the request, change this 
             datasetFeedRequest.setType(EntryType.CSW);
         } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Found IGC dataset UUID: " + datasetFeedRequest.getDatasetFeedUuid());
+            }
             // igc Metadaten
             IBus iBus = iBusHelper.getIBus();
 
@@ -88,13 +102,22 @@ public class DatasetFeedFactory {
             IngridHit hit = null;
             if (datasetIterator.hasNext()) {
                 hit = datasetIterator.next();
+                Long startTimer = 0L;
                 if (log.isDebugEnabled()) {
-                    log.debug("Found IGC dataset: " + hit.getHitDetail().getTitle());
+                    log.debug("Found IGC dataset: " + hit.getHitDetail().getTitle() + "' from iPlug '" + hit.getPlugId() + "'");
+                    startTimer = System.currentTimeMillis();
                 }
                 doc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
+                if (log.isDebugEnabled()) {
+                    log.debug("Fetched IDF record within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                }
+                
                 datasetFeedRequest.setType(EntryType.IGC);
             } else {
                 // no hit found, try all datasets related to the service
+        	if (log.isDebugEnabled()) {
+                    log.debug("No IGC found from UUID. Try to get ISO document from related CSW GetRecordById Links referenced from the service.");
+                }
                 ServiceFeedRequest sr = new ServiceFeedRequest();
                 sr.setUuid(datasetFeedRequest.getServiceFeedUuid());
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
@@ -103,7 +126,14 @@ public class DatasetFeedFactory {
                         if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())
                                 && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
                             try {
+                                Long startTimer = 0L;
+                                if (log.isDebugEnabled()) {
+                                    startTimer = System.currentTimeMillis();
+                                }
                                 doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Fetched ISO record from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                                }
                             } catch (Exception e) {
                                 log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
                             }

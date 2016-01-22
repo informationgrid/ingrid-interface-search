@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -163,7 +163,7 @@ public class IBusQueryResultIterator implements Iterator<IngridHit> {
             if (log.isDebugEnabled()) {
                 log.debug("Executed InGrid Query (pageSize:" + pageSize + ", startHit:" + ((currentPage - 1) * pageSize + startHit) + ", timeout:"
                         + SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000) + ") within " + (System.currentTimeMillis() - startTimer) + "ms returning "
-                        + (result.getHits() == null ? 0 : result.getHits().length) + " hits");
+                        + (result.getHits() == null ? 0 : result.getHits().length) + " hits out of max " + result.length() + " hits.");
             }
         } catch (Exception e) {
             log.error("Error querying ibus.", e);

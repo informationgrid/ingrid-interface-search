@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -94,10 +94,10 @@ public class IngridQueryProducer {
 
         StringBuilder queryStr = new StringBuilder();
         if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
-            queryStr.append("ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\")) OR (("
+            queryStr.append("ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\") OR ("
                     + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:\"") + "\"))");
         } else {
-            queryStr.append("ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\") OR (" + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")");
+            queryStr.append("ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\" OR " + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")");
         }
         addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {

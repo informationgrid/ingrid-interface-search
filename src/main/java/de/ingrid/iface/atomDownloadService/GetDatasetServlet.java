@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -56,8 +56,11 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Long startTimer = 0L;
         if (log.isDebugEnabled()) {
+            log.debug("#### Build dataset.");
             log.debug("Incoming request: " + req.getPathInfo());
+            startTimer = System.currentTimeMillis();
         }
         try {
             // extract method from path
@@ -88,6 +91,9 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
             ((Request) req).setHandled(true);
+            if (log.isDebugEnabled()) {
+                log.debug("Finished request within " + (System.currentTimeMillis() - startTimer) + " ms.");
+            }
         } catch (Exception e) {
             log.error("Error executing get dataset feed.", e);
         }
