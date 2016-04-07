@@ -35,9 +35,10 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.dsc.Record;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Service
 public class IBusHelper {
@@ -79,23 +80,11 @@ public class IBusHelper {
         }
     }
 
-    public List<IngridHit> getAllResults(IngridQuery q) throws Exception {
-
-        List<IngridHit> results = null;
-
-        long cnt = 0;
-        IngridHits hits;
-        do {
-            hits = bus.search(q, 10, 1, 10, 30000);
-            cnt += hits.getHits().length;
-            results.addAll(Arrays.asList(hits.getHits()));
-        } while (cnt <= hits.length());
-
-        return results;
-
-    }
-
     public String getPartnerName(String id, String defaultValue) {
+        long start = 0;
+        if (log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+        }
 
         String result = defaultValue;
 
@@ -104,7 +93,6 @@ public class IBusHelper {
             final IngridQuery ingridQuery = new IngridQuery();
             ingridQuery.addField(new FieldQuery(false, false, "datatype", "management"));
             ingridQuery.addField(new FieldQuery(false, false, "management_request_type", "1"));
-            ingridQuery.addField(new FieldQuery(false, false, "cache", "off"));
 
             hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
 
@@ -125,11 +113,18 @@ public class IBusHelper {
             log.info("Error obtaining partner name for id: " + id, e);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug( "Got partner name from id '" + id + "' within " + (System.currentTimeMillis() - start) + " ms.");
+        }
         return result;
 
     }
 
     public String getProviderName(String id, String defaultValue) {
+        long start = 0;
+        if (log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+        }
 
         String result = defaultValue;
 
@@ -138,7 +133,6 @@ public class IBusHelper {
             final IngridQuery ingridQuery = new IngridQuery();
             ingridQuery.addField(new FieldQuery(false, false, "datatype", "management"));
             ingridQuery.addField(new FieldQuery(false, false, "management_request_type", "2"));
-            ingridQuery.addField(new FieldQuery(false, false, "cache", "off"));
 
             hits = this.getIBus().search(ingridQuery, 1000, 0, 0, 120000);
             if (hits.length() > 0) {
@@ -157,8 +151,36 @@ public class IBusHelper {
             log.info("Error obtaining provider name for id: " + id, e);
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug( "Got provider name from id '" + id + "' within " + (System.currentTimeMillis() - start) + " ms.");
+        }
         return result;
 
     }
+    
+    public PlugDescription getPlugdescription(String plugId) throws Exception {
+        long start = 0;
+        if (log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+        }
+        PlugDescription result = this.getIBus().getIPlug(plugId);
+        if (log.isDebugEnabled()) {
+            log.debug( "Got plugdescription from iplug '" + plugId + "' within " + (System.currentTimeMillis() - start) + " ms.");
+        }
+        return result;
+    }
+    
+    public Record getRecord(IngridHit hit) throws Exception {
+        long start = 0;
+        if (log.isDebugEnabled()) {
+            start = System.currentTimeMillis();
+        }
+        Record result = this.getIBus().getRecord(hit);
+        if (log.isDebugEnabled()) {
+            log.debug( "Got record from iplug '" + hit.getPlugId() + "' within " + (System.currentTimeMillis() - start) + " ms.");
+        }
+        return result;
+    }
+    
 
 }
