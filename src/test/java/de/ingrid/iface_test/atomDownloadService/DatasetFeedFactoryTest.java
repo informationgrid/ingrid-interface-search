@@ -139,8 +139,8 @@ public class DatasetFeedFactoryTest {
 
         IngridHit[] hits = new IngridHit[2];
         for (int i = 0; i < hits.length; i++) {
-            hits[i] = new IngridHit("plugid", i, 0, 1.0f);
-            hits[i].setHitDetail(new IngridHitDetail("plugid", i, 0, 1.0f, "title" + i, "summary" + i));
+            hits[i] = new IngridHit("plugid", i+"", 0, 1.0f);
+            hits[i].setHitDetail(new IngridHitDetail("plugid", i+"", 0, 1.0f, "title" + i, "summary" + i));
             Record record = new Record();
             String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_" + (i + 1) + ".xml"));
             record.put("compressed", "false");
@@ -157,8 +157,8 @@ public class DatasetFeedFactoryTest {
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
-            hits[i] = new IngridHit("plugid", i, 0, 1.0f);
-            hits[i].setHitDetail(new IngridHitDetail("plugid", i, 0, 1.0f, "service feed " + i, "summary service feed " + i));
+            hits[i] = new IngridHit("plugid", (i+2)+"", 0, 1.0f);
+            hits[i].setHitDetail(new IngridHitDetail("plugid", (i+2)+"", 0, 1.0f, "service feed " + i, "summary service feed " + i));
             Record record = new Record();
             String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_service_" + (i + 1) + ".xml"));
             record.put("compressed", "false");
@@ -175,8 +175,8 @@ public class DatasetFeedFactoryTest {
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
-            hits[i] = new IngridHit("plugid", i, 0, 1.0f);
-            hits[i].setHitDetail(new IngridHitDetail("plugid", i, 0, 1.0f, "service feed " + i, "summary service feed " + i));
+            hits[i] = new IngridHit("plugid", (i+3)+"", 0, 1.0f);
+            hits[i].setHitDetail(new IngridHitDetail("plugid", (i+3)+"", 0, 1.0f, "service feed " + i, "summary service feed " + i));
             Record record = new Record();
             String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml"));
             record.put("compressed", "false");

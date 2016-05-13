@@ -28,6 +28,13 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+
+    <release version="3.6.2" date="2016-05-13" description="Release 3.6.2">
+      <action type="update" dev="wemove" issue="">
+        Improve performance by caching partner and provider names.
+      </action>
+    </release>
+
     <release version="3.6.1.2" date="2016-01-22" description="Release 3.6.1.2">
       <action type="fix" dev="wemove" issue="REDMINE-253">
         Fixed error: "Committed before 500 Internal error".
