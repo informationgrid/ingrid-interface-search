@@ -29,6 +29,12 @@
   </properties>
   <body>
 
+    <release version="3.6.2.1" date="2016-07-07" description="Release 3.6.2.1">
+      <action type="fix" dev="wemove" issue="REDMINE-329">
+        Fix problem: All results from IGE iplug are treated as address results. Object results have no title.
+      </action>
+    </release>
+
     <release version="3.6.2" date="2016-05-13" description="Release 3.6.2">
       <action type="update" dev="wemove" issue="">
         Improve performance by caching partner and provider names.

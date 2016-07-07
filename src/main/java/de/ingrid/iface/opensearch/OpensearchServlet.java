@@ -552,17 +552,19 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             log.debug( "Add title..." );
         }
         String plugId = hit.getPlugId();
+        String title = null;
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
         PlugDescription plugDescription = ibusConnected ? iBusHelper.getPlugdescription(plugId) : null;
         if ((plugDescription != null) && (OpensearchUtil.hasDataType(plugDescription, "dsc_ecs_address"))) {
-            String title = OpensearchUtil.getDetailValue(detail, "t02_address.title");
+            title = OpensearchUtil.getDetailValue(detail, "t02_address.title");
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "t02_address.firstname")).concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "t02_address.lastname"));
-            item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title.trim()));
-        } else {
-            item.addElement("title").addText(OpensearchUtil.removeInvalidChars(detail.getTitle()));
-        }
-
+            title = title.trim(); // remove whitespace
+        } 
+        if (!OpensearchUtil.hasValue( title )) {
+            title = OpensearchUtil.removeInvalidChars(detail.getTitle());
+        } 
+        item.addElement("title").addText(OpensearchUtil.removeInvalidChars(detail.getTitle()));
     }
     
 
