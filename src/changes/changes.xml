@@ -32,6 +32,9 @@
       <action type="fix" dev="wemove" issue="REDMINE-465">
         Fixed wrong path to save data when using cygwin.
       </action>
+      <action type="fix" dev="wemove" issue="REDMINE-468">
+        Fixed detail link generation.
+      </action>
     </release>
     
     <release version="3.6.2.1" date="2016-07-07" description="Release 3.6.2.1">

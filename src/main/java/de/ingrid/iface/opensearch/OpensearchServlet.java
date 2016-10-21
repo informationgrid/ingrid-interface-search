@@ -534,13 +534,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         PlugDescription plugDescription = ibusConnected ? iBusHelper.getPlugdescription(plugId) : null;
         String iPlugVersion = ibusConnected ? IPlugVersionInspector.getIPlugVersion(plugDescription) : "";
         if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UDK_5_0_DSC_ADDRESS)) {
-            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score";
         } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_IDC_1_0_2_DSC_ADDRESS)) {
-            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_ADDRESS_ADDRID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score";
         } else if (iPlugVersion.equals(IPlugVersionInspector.VERSION_UNKNOWN)) {
-            qStr = docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score";
         } else {
-            qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score datatype:any";
+            qStr = IPlugHelper.HIT_KEY_OBJ_ID + ":" + docUuid.trim() + " iplugs:\"" + plugId + "\" ranking:score";
         }
 
         return qStr;
