@@ -276,7 +276,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-sns</artifactId>
-      <version>4.0.1-SNAPSHOT</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
@@ -341,7 +341,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-dsc</artifactId>
-      <version>4.0.1-SNAPSHOT</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
