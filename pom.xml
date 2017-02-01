@@ -3,13 +3,14 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>3.6.2</version>
+    <version>4.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>3.6.2.1</version>
+  <version>4.0.1</version>
   <packaging>jar</packaging>
   <name>ingrid-interface-search</name>
+  <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.</description>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</connection>
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</developerConnection>
@@ -112,7 +113,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
-      <version>3.6.2</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -166,7 +167,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus</artifactId>
-      <version>3.6.2</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
@@ -275,7 +276,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-sns</artifactId>
-      <version>3.6.1</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
@@ -340,7 +341,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-dsc</artifactId>
-      <version>3.6.1</version>
+      <version>4.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>de.ingrid</groupId>
