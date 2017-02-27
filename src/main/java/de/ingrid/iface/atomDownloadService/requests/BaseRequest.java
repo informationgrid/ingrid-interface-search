@@ -12,10 +12,20 @@ public class BaseRequest {
     String protocol = null;
 
     protected void extractProtocol(HttpServletRequest req) {
-        if (log.isDebugEnabled()) {
-            log.debug( "extract protocl from request: " + req.getScheme() );
+        String proto = null;
+
+        String xfp = req.getHeader( "X-Forwarded-Proto" );
+        if (xfp != null && xfp.length() > 0) {
+            proto = xfp;
+        } else {
+            proto = req.getScheme();
         }
-        this.protocol = req.getScheme();
+
+        if (log.isDebugEnabled()) {
+            log.debug( "extract protocol from request: " + proto + "; request: " + req.toString() + "; " + req.getServerName() + "; " + req.getServerPort() + "; "
+                    + req.getScheme() + "; X-Forwarded-Proto:" + req.getHeader( "X-Forwarded-Proto" ) );
+        }
+        this.protocol = proto;
     }
 
     public String getProtocol() {
