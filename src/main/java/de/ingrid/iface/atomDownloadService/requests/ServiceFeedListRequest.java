@@ -24,7 +24,7 @@ package de.ingrid.iface.atomDownloadService.requests;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ServiceFeedListRequest {
+public class ServiceFeedListRequest extends BaseRequest {
 
     private String query;
 
@@ -33,6 +33,8 @@ public class ServiceFeedListRequest {
     }
 
     public ServiceFeedListRequest(HttpServletRequest req) {
+
+        this.extractProtocol( req );
 
         query = req.getParameter("q");
     }

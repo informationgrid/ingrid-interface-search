@@ -33,6 +33,7 @@ import org.w3c.dom.NodeList;
 import de.ingrid.iface.atomDownloadService.om.Author;
 import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
+import de.ingrid.iface.atomDownloadService.requests.BaseRequest;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
 
@@ -56,7 +57,7 @@ public class ServiceFeedUtils {
         atomDownloadOpensearchDefinitionUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION);
     }
 
-    public ServiceFeed createFromIdf(Document idfDoc) {
+    public ServiceFeed createFromIdf(Document idfDoc, BaseRequest request) {
         ServiceFeed feed = new ServiceFeed();
         feed.setUuid(XPATH.getString(idfDoc, "//gmd:fileIdentifier/gco:CharacterString"));
         feed.setTitle(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"));
@@ -88,7 +89,8 @@ public class ServiceFeedUtils {
         feed.setMetadataAccessUrl(link);
 
         link = new Link();
-        link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
+        String urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedUrlPattern, request.getProtocol() );
+        link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");
         link.setRel("self");
@@ -97,7 +99,8 @@ public class ServiceFeedUtils {
         feed.setIdentifier(link.getHref());
 
         link = new Link();
-        link.setHref(atomDownloadOpensearchDefinitionUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
+        urlPattern = URLUtil.updateProtocol( atomDownloadOpensearchDefinitionUrlPattern, request.getProtocol() );
+        link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
         link.setHrefLang("de");
         link.setType("application/opensearchdescription+xml");
         link.setTitle("Open Search Description");

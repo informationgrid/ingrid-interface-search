@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
 
-public class DatasetFeedRequest {
+public class DatasetFeedRequest extends BaseRequest {
 
     private String datasetFeedUuid;
     private String serviceFeedUuid;
@@ -47,6 +47,9 @@ public class DatasetFeedRequest {
 
     public DatasetFeedRequest(HttpServletRequest req) throws Exception {
 
+        
+        this.extractProtocol( req );
+        
         String p = req.getParameter("spatial_dataset_identifier_code");
         if (p != null) {
             spatialDatasetIdentifierCode = p;

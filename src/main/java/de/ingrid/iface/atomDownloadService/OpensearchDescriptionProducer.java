@@ -48,6 +48,7 @@ import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.URLUtil;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.xml.IDFNamespaceContext;
@@ -120,25 +121,29 @@ public class OpensearchDescriptionProducer {
             result.setDescription(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             OpensearchDescriptionUrl tpl = new OpensearchDescriptionUrl();
-            tpl.setTemplate(atomDownloadServiceOpensearchDescriptionUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
+            String urlPattern = URLUtil.updateProtocol( atomDownloadServiceOpensearchDescriptionUrlPattern, opensearchDescriptionRequest.getProtocol() );
+            tpl.setTemplate(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
             tpl.setType("application/opensearchdescription+xml");
             tpl.setRel("self");
             result.setSelfReferencingUrlTemplate(tpl);
 
             tpl = new OpensearchDescriptionUrl();
-            tpl.setTemplate(atomDownloadOpensearchGetResultsTemplate.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
+            urlPattern = URLUtil.updateProtocol( atomDownloadOpensearchGetResultsTemplate, opensearchDescriptionRequest.getProtocol() );
+            tpl.setTemplate(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
             tpl.setType("text/html");
             tpl.setRel("results");
             result.setResultsUrlTemplate(tpl);
 
             tpl = new OpensearchDescriptionUrl();
-            tpl.setTemplate(atomDownloadOpensearchDescribeSpatialDatasetUrlTemplate.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
+            urlPattern = URLUtil.updateProtocol( atomDownloadOpensearchDescribeSpatialDatasetUrlTemplate, opensearchDescriptionRequest.getProtocol() );
+            tpl.setTemplate(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
             tpl.setType("application/atom+xml");
             tpl.setRel("describedby");
             result.setDescribeSpatialDatasetOperationUrlTemplate(tpl);
 
             tpl = new OpensearchDescriptionUrl();
-            tpl.setTemplate(atomDownloadOpensearchGetSpatialDatasetUrlTemplate.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
+            urlPattern = URLUtil.updateProtocol( atomDownloadOpensearchGetSpatialDatasetUrlTemplate, opensearchDescriptionRequest.getProtocol() );
+            tpl.setTemplate(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(opensearchDescriptionRequest.getUuid())));
             tpl.setType("application/atom+xml");
             tpl.setRel("results");
             result.setGetSpatialDatasetOperationUrlTemplate(tpl);

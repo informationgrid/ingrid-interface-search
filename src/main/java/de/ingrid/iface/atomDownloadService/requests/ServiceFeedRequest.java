@@ -24,7 +24,7 @@ package de.ingrid.iface.atomDownloadService.requests;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ServiceFeedRequest {
+public class ServiceFeedRequest extends BaseRequest {
 
     private String uuid;
 
@@ -35,6 +35,8 @@ public class ServiceFeedRequest {
     }
     
     public ServiceFeedRequest(HttpServletRequest req) {
+        
+        this.extractProtocol( req );
 
         uuid = req.getPathInfo().substring(1);
         query = req.getParameter("q");

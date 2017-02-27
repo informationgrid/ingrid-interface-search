@@ -45,6 +45,7 @@ import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.URLUtil;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
 
@@ -123,7 +124,8 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 entry.setDatasetMetadataRecord(link);
 
                 link = new Link();
-                link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(linkage)).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
+                String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, serviceFeedRequest.getProtocol() );
+                link.setHref(urlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(linkage)).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
                 link.setHrefLang("de");
                 link.setType("application/atom+xml");
                 link.setRel("alternate");

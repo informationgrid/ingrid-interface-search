@@ -24,12 +24,12 @@ package de.ingrid.iface.atomDownloadService.requests;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class OpensearchDescriptionRequest {
+public class OpensearchDescriptionRequest extends BaseRequest {
 
     private String uuid;
 
     public OpensearchDescriptionRequest(HttpServletRequest req) throws Exception {
-
+        this.extractProtocol( req );
         uuid = req.getPathInfo().substring(1);
     }
 
