@@ -82,7 +82,7 @@ public class ServiceFeedProducer {
             if (log.isDebugEnabled()) {
                 log.debug("Fetched IDF record within " + (System.currentTimeMillis() - startTimer) + " ms.");
             }
-            serviceFeed = serviceFeedUtils.createFromIdf(idfDoc);
+            serviceFeed = serviceFeedUtils.createFromIdf(idfDoc, serviceFeedRequest);
 
             List<ServiceFeedEntry> entryList = new ArrayList<ServiceFeedEntry>();
             for (ServiceFeedEntryProducer producer : serviceFeedEntryProducer) {

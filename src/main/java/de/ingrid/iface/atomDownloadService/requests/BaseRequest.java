@@ -1,4 +1,4 @@
-/*
+/*-
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
@@ -24,38 +24,34 @@ package de.ingrid.iface.atomDownloadService.requests;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class ServiceFeedRequest extends BaseRequest {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-    private String uuid;
+public class BaseRequest {
 
-    private String query;
+    private final static Log log = LogFactory.getLog( BaseRequest.class );
 
-    public ServiceFeedRequest() {
-        
-    }
-    
-    public ServiceFeedRequest(HttpServletRequest req) {
-        
-        this.extractProtocol( req );
+    String protocol = null;
 
-        uuid = req.getPathInfo().substring(1);
-        query = req.getParameter("q");
-    }
+    protected void extractProtocol(HttpServletRequest req) {
+        String proto = null;
 
-    public String getUuid() {
-        return uuid;
-    }
+        String xfp = req.getHeader( "X-Forwarded-Proto" );
+        if (xfp != null && xfp.length() > 0) {
+            proto = xfp;
+        } else {
+            proto = req.getScheme();
+        }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getQuery() {
-        return query;
+        if (log.isDebugEnabled()) {
+            log.debug( "extract protocol from request: " + proto + "; request: " + req.toString() + "; " + req.getServerName() + "; " + req.getServerPort() + "; "
+                    + req.getScheme() + "; X-Forwarded-Proto:" + req.getHeader( "X-Forwarded-Proto" ) );
+        }
+        this.protocol = proto;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
+    public String getProtocol() {
+        return protocol;
     }
 
 }

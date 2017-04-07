@@ -44,6 +44,7 @@ import de.ingrid.iface.util.IdfUtils;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.ServiceFeedUtils;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.URLUtil;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.queryparser.ParseException;
@@ -81,7 +82,8 @@ public class ServiceFeedListProducer {
         IBus iBus = iBusHelper.getIBus();
 
         Link link = new Link();
-        link.setHref(atomDownloadServiceFeedlistUrlPattern.replace("{searchTerms}", StringUtils.encodeForPath(serviceFeedListRequest.getQuery())));
+        String urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedlistUrlPattern, serviceFeedListRequest.getProtocol() );
+        link.setHref(urlPattern.replace("{searchTerms}", StringUtils.encodeForPath(serviceFeedListRequest.getQuery())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");
         link.setRel("self");
@@ -103,7 +105,7 @@ public class ServiceFeedListProducer {
             }
             
 
-            ServiceFeed feed = serviceFeedUtils.createFromIdf(idfDoc);
+            ServiceFeed feed = serviceFeedUtils.createFromIdf(idfDoc, serviceFeedListRequest);
 
             entryList.add(feed);
         }

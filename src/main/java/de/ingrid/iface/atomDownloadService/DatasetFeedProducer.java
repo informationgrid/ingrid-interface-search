@@ -43,6 +43,7 @@ import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.URLUtil;
 import de.ingrid.utils.queryparser.ParseException;
 import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
@@ -92,7 +93,8 @@ public class DatasetFeedProducer {
             datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             Link link = new Link();
-            link.setHref(atomDownloadDatasetFeedUrlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getDatasetFeedUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
+            String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, datasetFeedRequest.getProtocol() );
+            link.setHref(urlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getDatasetFeedUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
             link.setRel("self");
@@ -111,7 +113,8 @@ public class DatasetFeedProducer {
             datasetFeed.getDescribedBy().add(link);
             
             link = new Link();
-            link.setHref(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
+            urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedUrlPattern, datasetFeedRequest.getProtocol() );
+            link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
             link.setRel("up");
