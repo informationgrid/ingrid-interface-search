@@ -52,7 +52,7 @@ public class IBusHelper {
 
     private boolean cache = false;
 
-    public IBus getIBus() throws Exception {
+    public synchronized IBus getIBus() throws Exception {
         BusClient client;
 
         if (bus == null) {
