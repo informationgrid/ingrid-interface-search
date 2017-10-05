@@ -29,7 +29,7 @@
   </properties>
   <body>
 
-    <release version="4.1.0" date="2017-xx-xx" description="Release 4.1.0">
+    <release version="4.1.0" date="2017-10-05" description="Release 4.1.0">
       <action type="fix" dev="wemove" issue="REDMINE-811">
         Synchronize access to get the iBus-Client to prevent duplicate instances.
       </action>
