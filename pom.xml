@@ -245,36 +245,6 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-se</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>de.ingrid</groupId>
-          <artifactId>ingrid-base-webapp</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>de.ingrid</groupId>
-          <artifactId>ingrid-iplug-admin-step1-se</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>lucene</groupId>
-          <artifactId>lucene-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>lucene</groupId>
-          <artifactId>lucene-misc</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>nutch</groupId>
-          <artifactId>nutch</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>nutch</groupId>
-          <artifactId>hadoop</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-sns</artifactId>
       <version>4.0.2</version>
       <exclusions>
@@ -497,6 +467,17 @@
       <artifactId>mockito-all</artifactId>
       <version>1.9.5</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-iplug-se-iplug</artifactId>
+      <version>4.1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-base-webapp</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>
