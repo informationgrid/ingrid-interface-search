@@ -2,7 +2,7 @@
 # **************************************************-
 # ingrid-interface-search
 # ==================================================
-# Copyright (C) 2014 - 2017 wemove digital solutions GmbH
+# Copyright (C) 2014 - 2018 wemove digital solutions GmbH
 # ==================================================
 # Licensed under the EUPL, Version 1.1 or – as soon they will be
 # approved by the European Commission - subsequent versions of the
@@ -177,19 +177,24 @@ startIplug()
   fi
 
   CLASS=de.ingrid.iface.IFaceServer
-  
+
   DM=`date +"%Y%m%d_%H%M%S"`
   if [ -f "$INGRID_HOME/console.log" ]
   then
     mv "$INGRID_HOME/console.log" "$INGRID_HOME/console.log.${DM}"
-  fi  
+  fi
 
   export CLASSPATH="$CLASSPATH"
   INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS"
 
   # run it
-  exec "$JAVA" $INGRID_OPTS $CLASS > console.log &
-  
+  if [ "$RUN_DIRECTLY" ]; then
+    exec "$JAVA" $INGRID_OPTS $CLASS
+  else
+    exec "$JAVA" $INGRID_OPTS $CLASS > console.log &
+  fi
+
+
   echo "ingrid component ($INGRID_HOME) started."
   echo $! > $PID
 }
