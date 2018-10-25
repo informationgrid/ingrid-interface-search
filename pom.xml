@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>4.3.0-SNAPSHOT</version>
+  <version>5.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>ingrid-interface-search</name>
-  <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.</description>
+  <name>InGrid Interface Search</name>
+  <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.
+  </description>
+
+  <!-- ==================== Source Code Management ==================== -->
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</connection>
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-interface-search.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <!-- ==================== REPOSITORIES ==================== -->
   <repositories>
     <repository>
       <id>nexus</id>
@@ -32,6 +38,13 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <!-- ==================== PROPERTIES ==================== -->
+  <properties>
+    <iplug.type>INTERFACE_SEARCH</iplug.type>
+  </properties>
+
+  <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
   <dependencyManagement>
     <dependencies>
       <!-- Use old iPlug SE, just needed for instanceof. New iPlug SE does not
@@ -43,6 +56,8 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <!-- ==================== DEPENDENCIES ==================== -->
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -476,6 +491,8 @@
       </exclusions>
     </dependency>
   </dependencies>
+
+  <!-- ==================== Build Configuration ==================== -->
   <build>
     <plugins>
       <plugin>
@@ -489,25 +506,10 @@
           </includes>
         </configuration>
       </plugin>
+
+      <!-- Activate maven-assembly-plugin from release pom to build installer -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <!-- Add Type of Component to Manifest of Installer for Upgrade Server -->
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <ingridComponentType>INTERFACE_SEARCH</ingridComponentType>
-            </manifestEntries>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-installer</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -525,6 +527,9 @@
           </excludes>
         </configuration>
       </plugin>
+      <!--
+        This plugin configures the git-flow for this project
+      -->
       <plugin>
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
