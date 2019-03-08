@@ -135,7 +135,7 @@ public class DatasetFeedFactoryTest {
 
         datasetFeedFactory.setStringUtilsService(stringUtilsService);
 
-        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:DATASET_FEED_UUID_1 OR t01_object.org_obj_id:DATASET_FEED_UUID_1) datatype:dsc_ecs");
+        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:DATASET_FEED_UUID_1 OR t01_object.org_obj_id:DATASET_FEED_UUID_1) dataType:dsc_ecs");
 
         IngridHit[] hits = new IngridHit[2];
         for (int i = 0; i < hits.length; i++) {
@@ -153,7 +153,7 @@ public class DatasetFeedFactoryTest {
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
 
-        q = QueryStringParser.parse("ranking:score (t01_object.obj_id:SERVICE_FEED_UUID_1 OR t01_object.org_obj_id:SERVICE_FEED_UUID_1) datatype:dsc_ecs");
+        q = QueryStringParser.parse("ranking:score (t01_object.obj_id:SERVICE_FEED_UUID_1 OR t01_object.org_obj_id:SERVICE_FEED_UUID_1) dataType:dsc_ecs");
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
@@ -171,7 +171,7 @@ public class DatasetFeedFactoryTest {
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
         
-        q = QueryStringParser.parse("ranking:score iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\") datatype:dsc_ecs");
+        q = QueryStringParser.parse("ranking:score iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\") dataType:dsc_ecs");
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
