@@ -54,7 +54,7 @@ public class IngridQueryProducer {
     public IngridQuery createServiceFeedInGridQuery(String uuid) throws ParseException {
 
         StringBuilder queryStr = new StringBuilder();
-        queryStr.append("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
+        queryStr.append("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
         addQueryExtension(queryStr);
         IngridQuery q = QueryStringParser.parse(queryStr.toString());
         return q;
@@ -72,7 +72,13 @@ public class IngridQueryProducer {
     public IngridQuery createServiceFeedInGridQuery(ServiceFeedRequest serviceFeedRequest) throws ParseException {
 
         StringBuilder queryStr = new StringBuilder();
-        queryStr.append("ranking:score (t01_object.obj_id:\"").append(serviceFeedRequest.getUuid()).append("\" OR t01_object.org_obj_id:\"").append(serviceFeedRequest.getUuid()).append("\")");
+        queryStr
+                .append("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"")
+                .append(serviceFeedRequest.getUuid())
+                .append("\" OR t01_object.org_obj_id:\"")
+                .append(serviceFeedRequest.getUuid())
+                .append("\")");
+
         addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
@@ -94,10 +100,10 @@ public class IngridQueryProducer {
 
         StringBuilder queryStr = new StringBuilder();
         if (serviceFeedRequest.getQuery() != null && serviceFeedRequest.getQuery().length() > 0) {
-            queryStr.append("ranking:score ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\") OR ("
+            queryStr.append("ranking:score dataType:dsc_ecs ((" + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.obj_id:\"") + "\") OR ("
                     + StringUtils.join(uuids, "\") OR (", serviceFeedRequest.getQuery() + " t01_object.org_obj_id:\"") + "\"))");
         } else {
-            queryStr.append("ranking:score (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\" OR " + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")");
+            queryStr.append("ranking:score dataType:dsc_ecs (" + StringUtils.join(uuids, "\" OR ", "t01_object.obj_id:\"") + "\" OR " + StringUtils.join(uuids, "\" OR ", "t01_object.org_obj_id:\"") + "\")");
         }
         addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
@@ -111,7 +117,7 @@ public class IngridQueryProducer {
     public IngridQuery createDatasetFeedInGridQuery(String uuid) throws ParseException {
 
         StringBuilder queryStr = new StringBuilder();
-        queryStr.append("ranking:score (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
+        queryStr.append("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"" + uuid + "\" OR t01_object.org_obj_id:\"" + uuid + "\")");
         addQueryExtension(queryStr);
         if (log.isDebugEnabled()) {
             log.debug("Query string: " + queryStr);
@@ -124,12 +130,12 @@ public class IngridQueryProducer {
 
         StringBuilder queryStr = new StringBuilder();
         if (datasetFeedRequest.getDatasetFeedUuid() != null && datasetFeedRequest.getDatasetFeedUuid().length() > 0) {
-            queryStr.append("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\")");
+            queryStr.append("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getDatasetFeedUuid() + "\")");
             addQueryExtension(queryStr);
             IngridQuery q = QueryStringParser.parse(queryStr.toString());
             return q;
         } else {
-            queryStr.append("ranking:score (t01_object.obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\")");
+            queryStr.append("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\" OR t01_object.org_obj_id:\"" + datasetFeedRequest.getServiceFeedUuid() + "\")");
             addQueryExtension(queryStr);
             IngridQuery q = QueryStringParser.parse(queryStr.toString());
             IBus iBus = iBusHelper.getIBus();
@@ -139,7 +145,7 @@ public class IngridQueryProducer {
                 hit = queryIterator.next();
                 String plugId = hit.getPlugId();
                 queryStr.setLength(0);
-                queryStr.append("ranking:score iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
+                queryStr.append("ranking:score dataType:dsc_ecs iplugs:\"" + plugId + "\" (t011_obj_geo.datasource_uuid:\"" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\" OR t011_obj_geo.datasource_uuid:\""
                         + datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "#" + datasetFeedRequest.getSpatialDatasetIdentifierCode() + "\")");
                 if (datasetFeedRequest.getCrs() != null && datasetFeedRequest.getCrs().length() > 0) {
                     queryStr.append(" t011_obj_geo.referencesystem_id:" + (datasetFeedRequest.getCrs().contains(":") ? "\"" + datasetFeedRequest.getCrs() + "\"" : datasetFeedRequest.getCrs()));
@@ -173,7 +179,7 @@ public class IngridQueryProducer {
      */
     public IngridQuery createServiceFeedListInGridQuery(ServiceFeedListRequest serviceFeedListRequest) throws ParseException {
         StringBuilder queryStr = new StringBuilder();
-        queryStr.append("ranking:score t011_obj_serv.has_atom_download:Y");
+        queryStr.append("ranking:score dataType:dsc_ecs t011_obj_serv.has_atom_download:Y");
         if (serviceFeedListRequest.getQuery() != null && !serviceFeedListRequest.getQuery().isEmpty()) {
             queryStr.append(" ");
             queryStr.append(serviceFeedListRequest.getQuery());
