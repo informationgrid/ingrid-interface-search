@@ -70,6 +70,9 @@ public class ServiceFeedProducer {
 
         // create response header
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest), REQUESTED_FIELDS, iBus);
+
+        // TODO: what happens if more than one result (e.g. from IGE and CSW-DSC?) or does it just happen in test environments?
+        //       also see test: "Add a remote coupled resource and check if it's available in the interface search"
         if (serviceIterator.hasNext()) {
             IngridHit hit = serviceIterator.next();
             Long startTimer = 0L;
