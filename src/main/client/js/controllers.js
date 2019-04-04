@@ -34,6 +34,21 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     if ($location.search().q) {
         filter = "?q=" + $location.search().q;
     }
+    if ($location.search().partner) {
+    	if (filter.length === 0) {
+            filter = "?q=partner:" + $location.search().partner;
+    	} else {
+            filter = filter + "+partner:" + $location.search().partner;
+    	}
+    }
+    if ($location.search().serviceOnly) {
+        $scope.serviceOnly = true;
+    	if (filter.length === 0) {
+            filter = "?q=" + $location.search().serviceId;
+    	} else {
+            filter = filter + "+" + $location.search().serviceId;
+    	}
+    }
     
     $http.get( "service-list" + filter ).success(function(response) {
         // console.log("services loaded");
@@ -52,7 +67,9 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                 link: link
             };
             
-            $scope.feeds.push( feedObj );
+            if (!$scope.serviceOnly) {
+                $scope.feeds.push( feedObj );
+            }
             
             if (link.indexOf($routeParams.serviceId) !== -1) {
                 $scope.selectedFeed = feedObj;
@@ -77,9 +94,20 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         $scope.message.loading = " Datensätze werden geladen ...";
         var link = $scope.currentFeed.link;
         $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
-        var searchObj = {
-            serviceId: $scope.selectedServiceId            
+        var searchObj;
+        searchObj =  {
+            serviceId: $scope.selectedServiceId        
         };
+        if ($scope.serviceOnly) {
+            searchObj =  {
+                    serviceId: $scope.selectedServiceId,
+                    serviceOnly: $scope.serviceOnly
+                };
+        } else {
+            searchObj =  {
+                    serviceId: $scope.selectedServiceId        
+                };
+        }
         if (datasetId) searchObj.datasetId = datasetId;
         $location.search(searchObj);
 

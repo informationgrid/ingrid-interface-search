@@ -27,7 +27,7 @@ var medelModule = angular.module('atomClient', [ 'ngRoute', 'xml', 'ui.bootstrap
                 
             // define all routes and set the template and controller to show/handle
             // the request
-            $routeProvider.when('/:serviceId?/:datasetId?', {
+            $routeProvider.when('/:serviceId?/:datasetId?/:partner?/:serviceOnly?', {
                 controller : AtomCtrl
             });
             //.otherwise({
