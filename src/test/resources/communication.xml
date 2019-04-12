@@ -43,10 +43,10 @@
 -->
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="communication.xsd">
-    <client name="/ingrid-group:ingrid-interface-opensearch-test-jm">
+    <client name="/ingrid-group:ingrid-interface-opensearch-test">
         <connections>
             <server name="/ingrid-group:ibus-test">
-                <socket port="9900" timeout="10" ip="136.243.6.81" />
+                <socket port="9900" timeout="10" ip="127.0.0.1" />
                 <messages maximumSize="1048576" threadCount="100" />
             </server>
         </connections>

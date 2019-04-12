@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2018 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2019 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -70,6 +70,9 @@ public class ServiceFeedProducer {
 
         // create response header
         IBusQueryResultIterator serviceIterator = new IBusQueryResultIterator(ingridQueryProducer.createServiceFeedInGridQuery(serviceFeedRequest), REQUESTED_FIELDS, iBus);
+
+        // TODO: what happens if more than one result (e.g. from IGE and CSW-DSC?) or does it just happen in test environments?
+        //       also see test: "Add a remote coupled resource and check if it's available in the interface search"
         if (serviceIterator.hasNext()) {
             IngridHit hit = serviceIterator.next();
             Long startTimer = 0L;

@@ -30,8 +30,13 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>src/main/release/conf</directory>
+      <directory>src/main/resources</directory>
       <outputDirectory>${project.artifactId}-${project.version}/conf</outputDirectory>
+      <includes>
+        <include>descriptor.xml</include>
+        <include>interface-search.properties</include>
+        <include>log4j.properties</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>src/main/release/scripts</directory>
@@ -44,12 +49,12 @@
     </fileSet>
     <fileSet>
       <directory>src/main/release/ant-installer</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory/>
       <filtered>true</filtered>
     </fileSet>
     <fileSet>
       <directory>target/installer</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory/>
     </fileSet>
     <fileSet>
       <directory>target/installer/resources/scripts</directory>
