@@ -40,6 +40,24 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     	} else {
             filter = filter + "+partner:" + $location.search().partner;
     	}
+    	let partnerLoc = {"hh":"Hamburg",
+    	    "bb":"Brandenburg",
+    	    "be":"Berlin",
+    	    "bw":"Baden-Württemberg",
+    	    "by":"Bayern",
+    	    "hb": "Bremen",
+    	    "he": "Hessen",
+    	    "mv": "Mecklenburg-Vorpommern",
+    	    "ni": "Niedersachsen",
+    	    "nw": "Nordrhein-Westfalen",
+    	    "rp": "Rheinland-Pfalz",
+    	    "sh": "Schleswig-Holstein",
+    	    "sl": "Saarland",
+    	    "sn": "Sachsen",
+    	    "st": "Sachsen-Anhalt",
+    	    "th": "Thüringen"}
+    	$scope.partner=$location.search().partner;
+    	$scope.partnerLoc=partnerLoc;
     }
     if ($location.search().serviceOnly) {
         $scope.serviceOnly = true;
