@@ -117,14 +117,10 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             serviceId: $scope.selectedServiceId        
         };
         if ($scope.serviceOnly) {
-            searchObj =  {
-                    serviceId: $scope.selectedServiceId,
-                    serviceOnly: $scope.serviceOnly
-                };
-        } else {
-            searchObj =  {
-                    serviceId: $scope.selectedServiceId        
-                };
+            searchObj.serviceOnly = $scope.serviceOnly;
+        }
+        if ($scope.partner) {
+            searchObj.partner = $scope.partner;
         }
         if (datasetId) searchObj.datasetId = datasetId;
         $location.search(searchObj);
@@ -170,10 +166,19 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         if (!$scope.datasetLoaded[index]) {
             // console.log("loadDownloadsFeed:", dsEntry);
             var link = dsEntry.link;
-            $location.search({
+            var searchObj;
+            searchObj =  {
                 serviceId: $scope.selectedServiceId,
                 datasetId: link.substring(link.lastIndexOf("/")+1)
-            });
+            };
+            if ($scope.serviceOnly) {
+                searchObj.serviceOnly = $scope.serviceOnly;
+            }
+            if ($scope.partner) {
+                searchObj.partner = $scope.partner;
+            }
+            $location.search(searchObj);
+
             $http.get( dsEntry.link + "?detail=true" ).then(function(response) {
                 var xml = xmlFilter(response.data);
                 dsEntry.useConstraints = xml.find("rights").text();
