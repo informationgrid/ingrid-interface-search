@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2018 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2019 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -67,7 +67,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             filter = filter + "+" + $location.search().serviceId;
     	}
     }
-    
+
     $http.get( "service-list" + filter ).success(function(response) {
         // console.log("services loaded");
         var xml = xmlFilter(response);
@@ -114,7 +114,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
         var searchObj;
         searchObj =  {
-            serviceId: $scope.selectedServiceId        
+            serviceId: $scope.selectedServiceId
         };
         if ($scope.serviceOnly) {
             searchObj.serviceOnly = $scope.serviceOnly;

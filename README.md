@@ -30,11 +30,11 @@ Requirements
 Installation
 ------------
 
-Download from https://dev.informationgrid.eu/ingrid-distributions/ingrid-interface-search/
+Download from https://distributions.informationgrid.eu/ingrid-interface-search/
  
 or
 
-build from source with `mvn package assembly:single`.
+build from source with `mvn clean package`.
 
 Execute
 
@@ -53,17 +53,22 @@ Contribute
 - Issue Tracker: https://github.com/informationgrid/ingrid-interface-search/issues
 - Source Code: https://github.com/informationgrid/ingrid-interface-search
  
-### Set up eclipse project
+### Setup Eclipse project
 
-```
-mvn eclipse:eclipse
-```
+* import project as Maven-Project
+* right click on project and select Maven -> Select Maven Profiles ... (Ctrl+Alt+P)
+* choose profile "development"
+* run "mvn compile" from Commandline (unpacks base-webapp) 
+* run de.ingrid.iface.IFaceServer as Java Application
+* in browser call "http://localhost:10102" with login "admin/admin"
 
-and import project into eclipse.
+### Setup IntelliJ IDEA project
 
-### Debug under eclipse
+* choose action "Add Maven Projects" and select pom.xml
+* in Maven panel expand "Profiles" and make sure "development" is checked
+* run de.ingrid.iface.IFaceServer
+* in browser call "http://localhost:10102" with login "admin/admin"
 
-- execute `mvn install` to expand the base web application
 - set up a java application Run Configuration with start class `de.ingrid.iface.IFaceServer`
 
 Support
