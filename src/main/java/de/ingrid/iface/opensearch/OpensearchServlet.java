@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -175,7 +177,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
                     addItemTitle(item, hit, requestWrapper, true);
                     addItemLink(item, hit, requestWrapper, true);
-                    item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(detail.getSummary())));
+                    item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(OpensearchUtil.getDetailValue(detail, "summary"))));
                     item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
                     addIngridData(item, hit, requestWrapper, true);
                     addGeoRssData(item, hit, requestWrapper);
@@ -246,28 +248,44 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private String[] getRequestedMetadata(RequestWrapper requestWrapper, IngridQuery query) {
 
-        String[] requestedMetadata = null;
+        List<String> requestedMetadata = new ArrayList();
+        requestedMetadata.add("title");
+        requestedMetadata.add("summary");
 
         if (!OpensearchUtil.hasPositiveDataType(query, "address")) {
-            requestedMetadata = new String[] { "t01_object.obj_id" };
+            requestedMetadata.add("t01_object.obj_id");
             // check if GeoRSS data shall be checked too
             if (requestWrapper.withGeoRSS()) {
-                String[] additional = new String[] { "x1", "x2", "y1", "y2" };
-                requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
+                requestedMetadata.add("x1");
+                requestedMetadata.add("x2");
+                requestedMetadata.add("y1");
+                requestedMetadata.add("y2");
             }
             if (requestWrapper.withIngridData()) {
-                String[] additional = new String[] { "t01_object.obj_class", "t011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
-                requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
+                requestedMetadata.add("t01_object.obj_class");
+                requestedMetadata.add("t011_obj_serv_op_connpoint.connect_point");
+                requestedMetadata.add("partner");
+                requestedMetadata.add("provider");
+                requestedMetadata.add("t1");
+                requestedMetadata.add("t2");
             }
         } else {
-            requestedMetadata = new String[] { "t02_address.firstname", "t02_address.lastname", "t02_address.title", "t02_address.address", "t02_address.adr_id" };
+            requestedMetadata.add("t02_address.firstname");
+            requestedMetadata.add("t02_address.lastname");
+            requestedMetadata.add("t02_address.title");
+            requestedMetadata.add("t02_address.address");
+            requestedMetadata.add("t02_address.adr_id");
             if (requestWrapper.withIngridData()) {
-                String[] additional = new String[] { "t02_address.typ", "t011_obj_serv_op_connpoint.connect_point", "partner", "provider", "t1", "t2" };
-                requestedMetadata = (String[]) ArrayUtils.addAll(requestedMetadata, additional);
+                requestedMetadata.add("t02_address.typ");
+                requestedMetadata.add("t011_obj_serv_op_connpoint.connect_point");
+                requestedMetadata.add("partner");
+                requestedMetadata.add("provider");
+                requestedMetadata.add("t1");
+                requestedMetadata.add("t2");
             }
         }
 
-        return requestedMetadata;
+        return requestedMetadata.toArray(new String[0]);
     }
 
     /**
@@ -508,7 +526,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
 
             if (!requestWrapper.getMetadataDetailAsXMLDoc() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
-                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId).concat("&docuuid=").concat(docUuid);
+                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
             } else if (proxyurl != null && proxyurl.length() > 0) {
                 itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId).concat("&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
             } else {
@@ -563,9 +581,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             title = title.trim(); // remove whitespace
         } 
         if (!OpensearchUtil.hasValue( title )) {
-            title = OpensearchUtil.removeInvalidChars(detail.getTitle());
-        } 
-        item.addElement("title").addText(OpensearchUtil.removeInvalidChars(detail.getTitle()));
+            title = OpensearchUtil.getDetailValue(detail, "title");
+        }
+        item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title));
     }
     
 
