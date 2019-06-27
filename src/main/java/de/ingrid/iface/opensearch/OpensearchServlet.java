@@ -25,22 +25,19 @@
  */
 package de.ingrid.iface.opensearch;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import de.ingrid.iface.opensearch.util.OpensearchUtil;
+import de.ingrid.iface.opensearch.util.RequestWrapper;
+import de.ingrid.iface.util.*;
+import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.IngridHitDetail;
+import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.dsc.Column;
+import de.ingrid.utils.dsc.Record;
+import de.ingrid.utils.idf.IdfTool;
+import de.ingrid.utils.iplug.IPlugVersionInspector;
+import de.ingrid.utils.query.IngridQuery;
+import de.ingrid.utils.udk.UtilsDate;
 import net.weta.components.communication.server.TooManyRunningThreads;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,22 +48,21 @@ import org.eclipse.jetty.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.ingrid.iface.opensearch.util.OpensearchUtil;
-import de.ingrid.iface.opensearch.util.RequestWrapper;
-import de.ingrid.iface.util.IBusHelper;
-import de.ingrid.iface.util.IBusQueryResultIterator;
-import de.ingrid.iface.util.IPlugHelper;
-import de.ingrid.iface.util.SearchInterfaceConfig;
-import de.ingrid.iface.util.SearchInterfaceServlet;
-import de.ingrid.iface.util.URLUtil;
-import de.ingrid.utils.IngridHit;
-import de.ingrid.utils.IngridHitDetail;
-import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.dsc.Column;
-import de.ingrid.utils.dsc.Record;
-import de.ingrid.utils.idf.IdfTool;
-import de.ingrid.utils.iplug.IPlugVersionInspector;
-import de.ingrid.utils.query.IngridQuery;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Servlet handles OpenSearch queries.
@@ -254,6 +250,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
         if (!OpensearchUtil.hasPositiveDataType(query, "address")) {
             requestedMetadata.add("t01_object.obj_id");
+            requestedMetadata.add("t01_object.mod_time");
             // check if GeoRSS data shall be checked too
             if (requestWrapper.withGeoRSS()) {
                 requestedMetadata.add("x1");
@@ -406,6 +403,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             if (docUuid != null && docUuid.length() > 0 && metadatatXmlUrl != null && metadatatXmlUrl.length() > 0) {
                 metadatatXmlUrl = metadatatXmlUrl.replace("{uuid}", docUuid);
                 item.addElement("ingrid:iso-xml-url").addText(metadatatXmlUrl);
+            }
+            // handle last modified time
+            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
+            if (modTime != null && modTime.length() > 0) {
+                Date d = UtilsDate.parseDateString(modTime);
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of( "Europe/Berlin" ));
+                item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
             }
 
             // handle time reference
