@@ -28,6 +28,15 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.1.0" date="2019-07-09" description="Release 5.1.0">
+      <action type="add" dev="wemove" issue="1423">
+        Fix extraction of title and summary from newer ingrid installations.
+      </action>
+      <action type="add" dev="wemove" issue="1310">
+        Add partner specific layout and data display.
+      </action>
+    </release>
+
     <release version="5.0.0" date="2019-04-12" description="Release 5.0.0">
       <action type="update" dev="wemove" issue="1196">
         Update libraries to fix security issues and adapt to log4j2.

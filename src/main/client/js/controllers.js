@@ -34,7 +34,40 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     if ($location.search().q) {
         filter = "?q=" + $location.search().q;
     }
-    
+    if ($location.search().partner) {
+    	if (filter.length === 0) {
+            filter = "?q=partner:" + $location.search().partner;
+    	} else {
+            filter = filter + "+partner:" + $location.search().partner;
+    	}
+    	let partnerLoc = {"hh":"Hamburg",
+    	    "bb":"Brandenburg",
+    	    "be":"Berlin",
+    	    "bw":"Baden-Württemberg",
+    	    "by":"Bayern",
+    	    "hb": "Bremen",
+    	    "he": "Hessen",
+    	    "mv": "Mecklenburg-Vorpommern",
+    	    "ni": "Niedersachsen",
+    	    "nw": "Nordrhein-Westfalen",
+    	    "rp": "Rheinland-Pfalz",
+    	    "sh": "Schleswig-Holstein",
+    	    "sl": "Saarland",
+    	    "sn": "Sachsen",
+    	    "st": "Sachsen-Anhalt",
+    	    "th": "Thüringen"}
+    	$scope.partner=$location.search().partner;
+    	$scope.partnerLoc=partnerLoc;
+    }
+    if ($location.search().serviceOnly) {
+        $scope.serviceOnly = true;
+    	if (filter.length === 0) {
+            filter = "?q=" + $location.search().serviceId;
+    	} else {
+            filter = filter + "+" + $location.search().serviceId;
+    	}
+    }
+
     $http.get( "service-list" + filter ).success(function(response) {
         // console.log("services loaded");
         var xml = xmlFilter(response);
@@ -52,7 +85,9 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
                 link: link
             };
             
-            $scope.feeds.push( feedObj );
+            if (!$scope.serviceOnly) {
+                $scope.feeds.push( feedObj );
+            }
             
             if (link.indexOf($routeParams.serviceId) !== -1) {
                 $scope.selectedFeed = feedObj;
@@ -77,9 +112,16 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         $scope.message.loading = " Datensätze werden geladen ...";
         var link = $scope.currentFeed.link;
         $scope.selectedServiceId = link.substring(link.lastIndexOf("/") + 1);
-        var searchObj = {
-            serviceId: $scope.selectedServiceId            
+        var searchObj;
+        searchObj =  {
+            serviceId: $scope.selectedServiceId
         };
+        if ($scope.serviceOnly) {
+            searchObj.serviceOnly = $scope.serviceOnly;
+        }
+        if ($scope.partner) {
+            searchObj.partner = $scope.partner;
+        }
         if (datasetId) searchObj.datasetId = datasetId;
         $location.search(searchObj);
 
@@ -124,10 +166,19 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
         if (!$scope.datasetLoaded[index]) {
             // console.log("loadDownloadsFeed:", dsEntry);
             var link = dsEntry.link;
-            $location.search({
+            var searchObj;
+            searchObj =  {
                 serviceId: $scope.selectedServiceId,
                 datasetId: link.substring(link.lastIndexOf("/")+1)
-            });
+            };
+            if ($scope.serviceOnly) {
+                searchObj.serviceOnly = $scope.serviceOnly;
+            }
+            if ($scope.partner) {
+                searchObj.partner = $scope.partner;
+            }
+            $location.search(searchObj);
+
             $http.get( dsEntry.link + "?detail=true" ).then(function(response) {
                 var xml = xmlFilter(response.data);
                 dsEntry.useConstraints = xml.find("rights").text();

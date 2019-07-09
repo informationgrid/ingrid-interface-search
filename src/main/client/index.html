@@ -40,16 +40,15 @@
 </head>
 <body ng-cloak>
 
-    <header id="overview" class="jumbo">
-        <img alt="logo" src="img/logo.png">
-        <h1 style="display:inline; padding-left:20px; vertical-align: middle;">ATOM-Feed Client</h1>
+    <header id="overview" ng-controller="AtomCtrl" class="jumbo {{ partner || 'ingrid' }}">
+        <h1>ATOM-Feed Client {{ partnerLoc[partner] }}</h1>
     </header>
 
     <!-- show all the different pages of the app here -->
     <div id="templateContainer" class="view-container" ng-controller="AtomCtrl">
         <!-- <div ng-view id="ng-view"></div> -->
         
-        <div class="container-fluid">
+        <div class="container-fluid" ng-class="{'hidden': serviceOnly}">
             <div class="row">
                 <select id="serviceSelector" class="form-control" ng-model="selectedFeed" ng-disabled="!feedsLoaded" ng-options="feed.title for feed in feeds" ng-change="showDatasetFeeds()" style="width: 100%;">
                     <option value="">Dienst auswählen ...</option>
@@ -98,10 +97,6 @@
                 </div>
             </accordion-group>
         </accordion>
-    </div>
-
-    <div id="footer">
-        <span>© 2014 wemove GmbH</span>
     </div>
 
     <!-- DEBUGGING ON MOBILE DEVICES -->
