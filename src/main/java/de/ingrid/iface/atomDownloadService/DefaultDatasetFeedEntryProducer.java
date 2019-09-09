@@ -92,12 +92,26 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                 metadata.add(Metadata.RESOURCE_NAME_KEY, link.getHref());
                 MediaType mediaType = detector.detect(stream, metadata);
                 link.setType(mediaType.toString());
+
+                // if application profile (Datentyp) is GMD and the file is considered a ZIP then set
+                // link mime-type to application/x-gmz
+                // see https://redmine.informationgrid.eu/issues/1306
+                String applicationProfile = XPATH.getString(linkages.item(i), ".//gmd:applicationProfile/gco:CharacterString");
+                if (applicationProfile != null && applicationProfile.equalsIgnoreCase("gml")) {
+                    if (link.getType() != null &&
+                            (link.getType().equalsIgnoreCase("application/zip") ||
+                            link.getType().equalsIgnoreCase("application/gzip") ||
+                            link.getType().equalsIgnoreCase("application/x-zip-compressed"))) {
+                        link.setType("application/x-gmz");
+                    }
+                }
             } catch (UnknownHostException e) {
                 log.info("Invalid download url: " + link.getHref());
                 continue;
             } catch (Exception e) {
                 link.setType("application/octet-stream");
             }
+
             String name = XPATH.getString(linkages.item(i), ".//gmd:name//gco:CharacterString");
             if (name == null) {
                 name = link.getHref();
