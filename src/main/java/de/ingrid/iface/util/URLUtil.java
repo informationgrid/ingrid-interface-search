@@ -22,8 +22,14 @@
  */
 package de.ingrid.iface.util;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
+import java.net.HttpURLConnection;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,5 +60,55 @@ public class URLUtil {
             return urlStr;
         }
     }
+
+
+    /**
+     * Get the final redirected URL from a valid URL. Takes also HTTP -> HTTPS redirects into account.
+     *
+     * @param url
+     * @return
+     * @throws IOException
+     */
+    public static String getRedirectedUrl(String url) throws IOException {
+
+        URL resourceUrl, base, next;
+        Map<String, Integer> visited = new HashMap<>();
+        HttpURLConnection conn;
+        String location;
+        int times;
+
+        while (true)
+        {
+            times = visited.compute(url, (key, count) -> count == null ? 1 : count + 1);
+
+            if (times > 3) {
+                throw new IOException("Stuck in redirect loop");
+            }
+
+            resourceUrl = new URL(url);
+            conn = (HttpURLConnection) resourceUrl.openConnection();
+
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            conn.setInstanceFollowRedirects(false);   // Make the logic below easier to detect redirections
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0...");
+
+            switch (conn.getResponseCode())
+            {
+                case HttpURLConnection.HTTP_MOVED_PERM:
+                case HttpURLConnection.HTTP_MOVED_TEMP:
+                    location = conn.getHeaderField("Location");
+                    location = URLDecoder.decode(location, "UTF-8");
+                    base     = new URL(url);
+                    next     = new URL(base, location);  // Deal with relative URLs
+                    url      = next.toExternalForm();
+                    continue;
+            }
+
+            break;
+        }
+        return url;
+    }
+
 
 }

@@ -22,11 +22,13 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.ingrid.iface.atomDownloadService.om.Category;
+import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
+import de.ingrid.iface.atomDownloadService.om.Link;
+import de.ingrid.iface.util.StringUtils;
+import de.ingrid.iface.util.URLUtil;
+import de.ingrid.utils.xml.IDFNamespaceContext;
+import de.ingrid.utils.xpath.XPathUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tika.config.TikaConfig;
@@ -38,12 +40,10 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import de.ingrid.iface.atomDownloadService.om.Category;
-import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
-import de.ingrid.iface.atomDownloadService.om.Link;
-import de.ingrid.iface.util.StringUtils;
-import de.ingrid.utils.xml.IDFNamespaceContext;
-import de.ingrid.utils.xpath.XPathUtils;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer {
@@ -86,10 +86,11 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             link.setRel("alternate");
             try {
 
-                TikaInputStream stream = TikaInputStream.get(new URL(link.getHref()));
-
+                // try to catch redirects
+                String redirectedUrl = URLUtil.getRedirectedUrl(link.getHref());
+                TikaInputStream stream = TikaInputStream.get(new URL(redirectedUrl));
                 Metadata metadata = new Metadata();
-                metadata.add(Metadata.RESOURCE_NAME_KEY, link.getHref());
+                metadata.add(Metadata.RESOURCE_NAME_KEY, redirectedUrl);
                 MediaType mediaType = detector.detect(stream, metadata);
                 link.setType(mediaType.toString());
 
