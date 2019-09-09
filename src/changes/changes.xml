@@ -28,6 +28,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.2.0" date="2019-xx-xx" description="Release 5.2.0">
+      <action type="add" dev="wemove" issue="1306">
+        Handling GML download types with link to ZIP ressource as application/x-gmz.
+      </action>
+    </release>
+
     <release version="5.1.0" date="2019-07-09" description="Release 5.1.0">
       <action type="add" dev="wemove" issue="1423">
         Fix extraction of title and summary from newer ingrid installations.
