@@ -29,6 +29,9 @@
   </properties>
   <body>
     <release version="5.2.0" date="2019-xx-xx" description="Release 5.2.0">
+      <action type="add" dev="wemove" issue="1481">
+        Add proper redirect handling in mime-type detection.
+      </action>
       <action type="add" dev="wemove" issue="1306">
         Handling GML download types with link to ZIP ressource as application/x-gmz.
       </action>
