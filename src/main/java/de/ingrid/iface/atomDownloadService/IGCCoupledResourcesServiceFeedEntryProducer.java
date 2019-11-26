@@ -208,7 +208,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             NodeList nl = XPATH.getNodeList(idfCoupledResourceDoc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
             List<Category> catList = new ArrayList<Category>();
             for (int i = 0; i < nl.getLength(); i++) {
-                String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString");
+                String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString|gmd:code/gmx:Anchor");
                 String epsgNumber = StringUtils.extractEpsgCodeNumber(refSystemCode);
                 Category cat = new Category();
                 cat.setLabel(refSystemCode);
