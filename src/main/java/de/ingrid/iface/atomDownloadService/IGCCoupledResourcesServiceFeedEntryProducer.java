@@ -167,7 +167,8 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setDatasetFeed(link);
             entry.setDatasetIdentifier(link.getHref());
 
-            String code = XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/gmd:code/gco:CharacterString");
+            String identifierPath = "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/";
+            String code = XPATH.getString(idfCoupledResourceDoc, identifierPath + "gmd:code/gco:CharacterString|" + identifierPath + "gmd:code/gmx:Anchor");
             if (code != null) {
                 String[] codeParts = code.split("#");
                 if (codeParts.length == 2) {
