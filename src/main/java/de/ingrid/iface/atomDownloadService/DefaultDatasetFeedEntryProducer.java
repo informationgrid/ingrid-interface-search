@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2019 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2020 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -63,7 +63,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
         NodeList nl = XPATH.getNodeList(doc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
         List<Category> catList = new ArrayList<Category>();
         for (int i = 0; i < nl.getLength(); i++) {
-            String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString");
+            String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString|gmd:code/gmx:Anchor");
             String epsgNumber = StringUtils.extractEpsgCodeNumber(refSystemCode);
             Category cat = new Category();
             cat.setLabel(refSystemCode);
