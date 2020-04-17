@@ -36,7 +36,7 @@ import org.mockito.Matchers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import de.ingrid.ibus.Bus;
+import de.ingrid.ibus.comm.Bus;
 import de.ingrid.iface.atomDownloadService.DatasetFeedFactory;
 import de.ingrid.iface.atomDownloadService.IGCCoupledResourcesServiceFeedEntryProducer;
 import de.ingrid.iface.atomDownloadService.ServiceFeedEntryProducer;
