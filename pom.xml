@@ -175,41 +175,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-ibus-backend</artifactId>
-      <version>5.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-sns</artifactId>
-      <version>5.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- The DSC iPlug is needed for its DatabaseConnection class!!!
-             This should be moved to the ingrid-utils project -->
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-dsc</artifactId>
-      <version>5.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
       <version>1.1.1</version>
@@ -272,17 +237,6 @@
       <groupId>backport-util-concurrent</groupId>
       <artifactId>backport-util-concurrent</artifactId>
       <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-se-iplug</artifactId>
-      <version>5.4.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
