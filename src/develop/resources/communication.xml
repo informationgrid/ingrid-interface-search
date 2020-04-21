@@ -24,10 +24,10 @@
 
 <communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="communication.xsd">
-        <client name="/kug-group:ingrid-opensearch">
+        <client name="/ingrid-group:ingrid-opensearch">
                 <connections>
-                        <server name="/kug-group:kug-ibus">
-                                <socket port="9901" timeout="10" ip="88.99.192.223" />
+                        <server name="/ingrid-group:ibus">
+                                <socket port="9900" timeout="10" ip="localhost" />
                                 <messages maximumSize="1048576" threadCount="100" />
                         </server>
                 </connections>
