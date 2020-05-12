@@ -248,7 +248,12 @@
       <artifactId>ehcache</artifactId>
       <version>1.4.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.11.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <!-- ==================== Build Configuration ==================== -->
