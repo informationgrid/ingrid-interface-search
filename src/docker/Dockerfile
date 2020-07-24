@@ -1,20 +1,22 @@
-FROM openjdk:8-jre-alpine
-ENV INGRID_USER=root
-ENV RUN_DIRECTLY=true
+FROM alpine AS builder
 
 ADD ingrid-interface-*-installer.jar /
+RUN unzip ingrid-interface-*-installer.jar -d /tmp
 
-RUN unzip ingrid-interface-*-installer.jar -d /tmp \
-    && mkdir -p /opt/ingrid/ingrid-interface-search \
-    && cp -R /tmp/ingrid-interface-search-*/* /opt/ingrid/ingrid-interface-search/ \
-    && rm -Rf /tmp/* \
-    && rm ingrid-*.jar
+
+FROM docker-registry.wemove.com/ingrid-java:jre-8-alpine
+ENV INGRID_USER=ingrid
+ENV RUN_DIRECTLY=true
+
+# user, group ingrid (1000:1000) is created in base image
+COPY --chown=1000:1000 --from=builder /tmp/ingrid-interface-search-* /opt/ingrid/ingrid-interface-search
+
+USER ingrid
 
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /opt/ingrid/ingrid-interface-search/log.log
-  # && ln -sf /dev/stderr /var/log/nginx/error.log
 
 WORKDIR /opt/ingrid/ingrid-interface-search
-EXPOSE 80
+EXPOSE 8080/tcp
 
 CMD /bin/sh start.sh start

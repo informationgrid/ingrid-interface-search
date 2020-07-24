@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>5.4.0</version>
+  <version>5.5.0</version>
   <packaging>jar</packaging>
   <name>InGrid Interface Search</name>
   <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.
@@ -248,7 +248,12 @@
       <artifactId>ehcache</artifactId>
       <version>1.4.1</version>
     </dependency>
-
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.11.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <!-- ==================== Build Configuration ==================== -->
