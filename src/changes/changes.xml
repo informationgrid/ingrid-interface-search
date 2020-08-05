@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="5.4.5-SNAPSHOT" date="2020-xx-xx" description="Release 5.4.5">
+    <release version="5.4.5" date="2020-08-05" description="Release 5.4.5">
       <action type="add" dev="wemove" issue="2032">
         Interface-Opensearch: Take new metadata for property ingrid:last-modified into account introduced in #1084.
       </action>
