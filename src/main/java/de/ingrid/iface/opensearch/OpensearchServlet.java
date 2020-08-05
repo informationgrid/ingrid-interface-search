@@ -251,6 +251,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         if (!OpensearchUtil.hasPositiveDataType(query, "address")) {
             requestedMetadata.add("t01_object.obj_id");
             requestedMetadata.add("t01_object.mod_time");
+            requestedMetadata.add("t01_object.metadata_time");
             // check if GeoRSS data shall be checked too
             if (requestWrapper.withGeoRSS()) {
                 requestedMetadata.add("x1");
@@ -405,7 +406,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 item.addElement("ingrid:iso-xml-url").addText(metadatatXmlUrl);
             }
             // handle last modified time
-            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
+            // first try the metadata time introduced in ticket #1084
+            // see #2032 and #1084 for details
+            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.metadata_time");
+            if (modTime == null || modTime.length() == 0) {
+                modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
+            }
             if (modTime != null && modTime.length() > 0) {
                 Date d = UtilsDate.parseDateString(modTime);
                 ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of( "Europe/Berlin" ));
