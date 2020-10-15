@@ -5,6 +5,15 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.6.0" date="2020-10-15" description="Release 5.6.0">
+      <action type="add" dev="wemove" issue="2032">
+        Interface-Opensearch: Take new metadata for property ingrid:last-modified into account introduced in #1084.
+      </action>
+      <action type="update" dev="wemove" issue="2083">
+        Interface-Opensearch: Change display of date to last modified on #2083.
+      </action>
+    </release>
+
     <release version="5.5.0" date="2020-07-24" description="Release 5.5.0">
       <action type="add" dev="wemove" issue="1898">
         Change the container’s privilege to a non-root user.

@@ -33,6 +33,7 @@
       <directory>src/main/resources</directory>
       <outputDirectory>${project.artifactId}-${project.version}/conf</outputDirectory>
       <includes>
+        <include>communication.xml</include>
         <include>descriptor.xml</include>
         <include>interface-search.properties</include>
         <include>log4j.properties</include>
