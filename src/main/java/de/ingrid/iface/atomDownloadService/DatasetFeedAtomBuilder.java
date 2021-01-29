@@ -90,7 +90,7 @@ public class DatasetFeedAtomBuilder {
                 }
 
             }
-            result.append("<id>" + entry.getId() + "</id>\n");
+            result.append("<id>" + StringEscapeUtils.escapeXml(entry.getId()) + "</id>\n");
             result.append("<!-- date/time this feed was last updated -->\n");
             result.append("<updated>" + StringUtils.assureDateTime(datasetFeed.getUpdated()) + "</updated>\n");
             if (entry.getCrs() != null && entry.getCrs().size() > 0) {

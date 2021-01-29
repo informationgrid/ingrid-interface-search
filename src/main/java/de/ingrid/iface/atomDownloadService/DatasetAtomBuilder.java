@@ -56,7 +56,7 @@ public class DatasetAtomBuilder {
         for (DatasetFeedEntry entry : datasetFeed.getEntries()) {
             result.append("<entry>\n");
             result.append("<title>" + StringEscapeUtils.escapeXml(entry.getTitle()) + "</title>\n");
-            result.append("<id>" + entry.getId() + "</id>\n");
+            result.append("<id>" + StringEscapeUtils.escapeXml(entry.getId())+ "</id>\n");
             result.append("<!-- file download link -->\n");
             for (Link link : entry.getLinks()) {
                 if (isBrowserIE) {
