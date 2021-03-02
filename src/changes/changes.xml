@@ -9,6 +9,9 @@
       <action type="fix" dev="wemove" issue="2340">
         Fix xml parsing error for ids.
       </action>
+      <action type="fix" dev="wemove" issue="2366">
+        Fix getting information about external coupled resources.
+      </action>
     </release>
 
     <release version="5.7.0" date="2021-01-18" description="Release 5.7.0">
