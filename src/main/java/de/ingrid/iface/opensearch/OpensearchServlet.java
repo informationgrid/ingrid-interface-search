@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ import java.util.List;
 
 /**
  * Servlet handles OpenSearch queries.
- * 
+ *
  * @author joachim@wemove.com
  */
 @Service
@@ -76,7 +76,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
 
-    private final static String[] UVP_PHASES =  new String[]{
+    private final static String[] UVP_PHASES = new String[]{
             "Öffentliche Auslegung",
             "Erörterungstermin",
             "Entscheidung über die Zulassung"
@@ -89,7 +89,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
+     * javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         long overallStartTime = 0;
@@ -131,12 +131,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             response.setContentType("application/rss+xml");
             Document doc = DocumentHelper.createDocument();
             while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
-        	if (hitCounter == 0) {
-        	    if (log.isDebugEnabled()) {
-        	        log.debug( "No result written yet, add opensearch response header..." );
-        	    }
+                if (hitCounter == 0) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No result written yet, add opensearch response header...");
+                    }
                     if (pout == null) {
-                	pout = response.getWriter();
+                        pout = response.getWriter();
                     }
                     outputStreamWritten = true;
                     pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -148,7 +148,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     if (queryString == null)
                         queryString = "";
                     queryString.replace("+", "%2B");
-                    String proxyurl = URLUtil.updateProtocol( SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
+                    String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
                     if (proxyurl != null && proxyurl.trim().length() > 0) {
                         url = proxyurl.concat("/query").concat("?").concat(queryString);
                     } else {
@@ -163,12 +163,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 }
                 if (hitIterator.hasNext()) {
                     if (log.isDebugEnabled()) {
-                        log.debug( "Add item..." );
+                        log.debug("Add item...");
                     }
                     IngridHit hit = hitIterator.next();
                     Element item = doc.addElement("item");
                     item.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
-                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail()) {
+                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail() | requestWrapper.withUVPData()) {
                         item.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
                     }
                     if (requestWrapper.withGeoRSS()) {
@@ -223,7 +223,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     /**
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
+     * javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
@@ -292,7 +292,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 requestedMetadata.add("t2");
             }
         }
-        if (requestWrapper.withUVPData()){
+        if (requestWrapper.withUVPData()) {
             requestedMetadata.add("uvp_steps");
         }
 
@@ -302,7 +302,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     /**
      * Get the title for the channel from the request url or, if not defined,
      * set a default title containing the search terms (query)
-     * 
+     *
      * @param requestWrapper
      * @return
      */
@@ -318,7 +318,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     private void addGeoRssData(Element item, IngridHit hit, RequestWrapper requestWrapper) {
         if (requestWrapper.withGeoRSS()) {
             if (log.isDebugEnabled()) {
-                log.debug( "Add Geo RSS data..." );
+                log.debug("Add Geo RSS data...");
             }
             IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
             if (detail.get("x1") != null && detail.get("x1") instanceof String[]) {
@@ -353,7 +353,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     private void addUVPData(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
         if (requestWrapper.withUVPData()) {
             if (log.isDebugEnabled()) {
-                log.debug( "Add UVP data..." );
+                log.debug("Add UVP data...");
             }
             IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
             String docId = String.valueOf(hit.getDocumentId());
@@ -368,7 +368,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
             if (modTime != null && modTime.length() > 0) {
                 Date d = UtilsDate.parseDateString(modTime);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of( "Europe/Berlin" ));
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
                 item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
             }
 
@@ -376,14 +376,14 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             if (phases != null && phases.length() > 0) {
                 try {
                     // get last phaseX String
-                    String latestPhaseType = phases.split(", ")[phases.split(", ").length-1];
-                    // extract number from phase tyoe
-                    int latestPhaseIndex = Integer.valueOf(latestPhaseType.substring(latestPhaseType.length()-1)) - 1;
+                    String latestPhaseType = phases.split(", ")[phases.split(", ").length - 1];
+                    // extract number from phase type
+                    int latestPhaseIndex = Integer.valueOf(latestPhaseType.substring(latestPhaseType.length() - 1)) - 1;
                     // map to phase name
                     String latestPhaseName = UVP_PHASES[latestPhaseIndex];
                     item.addElement("uvp:latest-phase").addText(latestPhaseName);
-                } catch (IndexOutOfBoundsException e){
-                    log.error("Could not extract UVP Phase from '"+phases+"'", e);
+                } catch (IndexOutOfBoundsException e) {
+                    log.error("Could not extract UVP Phase from '" + phases + "'", e);
                 }
             }
         }
@@ -392,7 +392,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     private void addIngridData(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
         if (requestWrapper.withIngridData()) {
             if (log.isDebugEnabled()) {
-                log.debug( "Add ingrid data..." );
+                log.debug("Add ingrid data...");
             }
             IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
             String plugId = hit.getPlugId();
@@ -466,7 +466,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
             if (modTime != null && modTime.length() > 0) {
                 Date d = UtilsDate.parseDateString(modTime);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of( "Europe/Berlin" ));
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
                 item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
             }
 
@@ -483,7 +483,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 Element idfDataNode = null;
                 try {
                     if (log.isDebugEnabled()) {
-                        log.debug( "Add detail data from IDF..." );
+                        log.debug("Add detail data from IDF...");
                     }
                     PlugDescription plugDescription = iBusHelper.getPlugdescription(plugId);
                     if (IPlugVersionInspector.getIPlugVersion(plugDescription).equals(IPlugVersionInspector.VERSION_IDF_1_0_DSC_OBJECT)) {
@@ -501,7 +501,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                         }
                     } else {
                         if (log.isDebugEnabled()) {
-                            log.debug( "Add detail data from record..." );
+                            log.debug("Add detail data from record...");
                         }
                         // generic record data
                         Record record = iBusHelper.getRecord(hit);
@@ -554,7 +554,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private void addItemLink(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug( "Add link..." );
+            log.debug("Add link...");
         }
 
         IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
@@ -577,7 +577,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             String metadataDetailsUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_DETAILS_URL, null);
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
-            String proxyurl = URLUtil.updateProtocol( SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), requestWrapper.getRequest().getScheme());
+            String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), requestWrapper.getRequest().getScheme());
 
             String qStr;
             try {
@@ -630,7 +630,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private void addItemTitle(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug( "Add title..." );
+            log.debug("Add title...");
         }
         String plugId = hit.getPlugId();
         String title = null;
@@ -642,7 +642,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             title = title.concat(OpensearchUtil.getDetailValue(detail, "t02_address.lastname"));
             title = title.trim(); // remove whitespace
         }
-        if (!OpensearchUtil.hasValue( title )) {
+        if (!OpensearchUtil.hasValue(title)) {
             title = OpensearchUtil.getDetailValue(detail, "title");
         }
         item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title));
