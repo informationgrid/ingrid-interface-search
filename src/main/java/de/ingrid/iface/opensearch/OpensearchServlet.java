@@ -76,6 +76,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
 
+    private final static String[] UVP_PHASES =  new String[]{
+            "Öffentliche Auslegung",
+            "Erörterungstermin",
+            "Entscheidung über die Zulassung"
+    };
+
     @Autowired
     private IBusHelper iBusHelper;
 
@@ -168,6 +174,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     if (requestWrapper.withGeoRSS()) {
                         item.addNamespace("georss", "http://www.georss.org/georss");
                     }
+                    if (requestWrapper.withUVPData()) {
+                        item.addNamespace("uvp", "http://www.uvp-verbund.de/opensearch/extension/1.0");
+                    }
 
                     IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
 
@@ -176,6 +185,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(OpensearchUtil.getDetailValue(detail, "summary"))));
                     item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
                     addIngridData(item, hit, requestWrapper, true);
+                    addUVPData(item, hit, requestWrapper, true);
                     addGeoRssData(item, hit, requestWrapper);
                     pout.write(doc.getRootElement().asXML());
                     doc.clearContent();
@@ -282,6 +292,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 requestedMetadata.add("t2");
             }
         }
+        if (requestWrapper.withUVPData()){
+            requestedMetadata.add("uvp_steps");
+        }
 
         return requestedMetadata.toArray(new String[0]);
     }
@@ -332,6 +345,45 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     // empty
                 } catch (Exception e) {
                     log.debug("Exception when getting geo data: " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    private void addUVPData(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
+        if (requestWrapper.withUVPData()) {
+            if (log.isDebugEnabled()) {
+                log.debug( "Add UVP data..." );
+            }
+            IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
+            String docId = String.valueOf(hit.getDocumentId());
+            item.addElement("ingrid:docid").addText(OpensearchUtil.deNullify(docId));
+
+            // handle last modified time
+            // first try the metadata time introduced in ticket #1084
+            // see #2032 and #1084 for details
+            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.metadata_time");
+            if (modTime == null || modTime.length() == 0) {
+                modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
+            }
+            if (modTime != null && modTime.length() > 0) {
+                Date d = UtilsDate.parseDateString(modTime);
+                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of( "Europe/Berlin" ));
+                item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
+            }
+
+            String phases = OpensearchUtil.getDetailValue(detail, "uvp_steps");
+            if (phases != null && phases.length() > 0) {
+                try {
+                    // get last phaseX String
+                    String latestPhaseType = phases.split(", ")[phases.split(", ").length-1];
+                    // extract number from phase tyoe
+                    int latestPhaseIndex = Integer.valueOf(latestPhaseType.substring(latestPhaseType.length()-1)) - 1;
+                    // map to phase name
+                    String latestPhaseName = UVP_PHASES[latestPhaseIndex];
+                    item.addElement("uvp:latest-phase").addText(latestPhaseName);
+                } catch (IndexOutOfBoundsException e){
+                    log.error("Could not extract UVP Phase from '"+phases+"'", e);
                 }
             }
         }
@@ -589,13 +641,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             title = title.concat(" ").concat(OpensearchUtil.getDetailValue(detail, "t02_address.firstname")).concat(" ");
             title = title.concat(OpensearchUtil.getDetailValue(detail, "t02_address.lastname"));
             title = title.trim(); // remove whitespace
-        } 
+        }
         if (!OpensearchUtil.hasValue( title )) {
             title = OpensearchUtil.getDetailValue(detail, "title");
         }
         item.addElement("title").addText(OpensearchUtil.removeInvalidChars(title));
     }
-    
+
 
     @Override
     public String getName() {
