@@ -89,6 +89,15 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
     public static final String WEBAPP_DIR = "jetty.webapp";
 
     public static final String ATOM_DOWNLOAD_QUERY_EXTENSION = "atom.download.service.search.extension";
+
+    public static final String  OPENSEARCH_CHANNEL_TITLE = "opensearch.channel.title";
+
+    public static final String  OPENSEARCH_CHANNEL_DESCRIPTION = "opensearch.channel.description";
+
+    public static final String  OPENSEARCH_CHANNEL_LANGUAGE = "opensearch.channel.language";
+
+    public static final String  OPENSEARCH_CHANNEL_COPYRIGHT = "opensearch.channel.copyright";
+
     
     public SearchInterfaceConfig() throws ConfigurationException {
         super(new OverrideCombiner());

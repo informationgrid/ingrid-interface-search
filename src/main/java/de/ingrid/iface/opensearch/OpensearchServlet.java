@@ -155,20 +155,38 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                         url = requestWrapper.getRequest().getRequestURL().toString().concat("?").concat(queryString);
                     }
                     pout.write("<link>" + StringEscapeUtils.escapeXml(url) + "</link>");
-                    pout.write("<description>Search results</description>");
-                    pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
-                    pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
-                    pout.write("<opensearch:itemsPerPage>" + String.valueOf(requestWrapper.getHitsPerPage()) + "</opensearch:itemsPerPage>");
-                    pout.write("<opensearch:Query role=\"request\" searchTerms=\"" + StringEscapeUtils.escapeXml(requestWrapper.getQueryString()) + "\"/>");
+                    String description = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_DESCRIPTION, "Search results");
+                    if (!description.isEmpty())
+                        pout.write("<description>" + description + "</description>");
+                    else
+                        pout.write("<description>Search results</description>");
+                    if (!requestWrapper.withUVPData()) {
+                        pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
+                        pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
+                        pout.write("<opensearch:itemsPerPage>" + String.valueOf(requestWrapper.getHitsPerPage()) + "</opensearch:itemsPerPage>");
+                        pout.write("<opensearch:Query role=\"request\" searchTerms=\"" + StringEscapeUtils.escapeXml(requestWrapper.getQueryString()) + "\"/>");
+                    } else {
+                        String language = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LANGUAGE, "");
+                        if (!language.isEmpty()) pout.write("<language>" + language + "</language>");
+                        String copyright = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_COPYRIGHT, "");
+                        if (!copyright.isEmpty()) pout.write("<copyright>" + copyright + "</copyright>");
+                    }
                 }
+                boolean isFirstHit = true;
                 if (hitIterator.hasNext()) {
                     if (log.isDebugEnabled()) {
                         log.debug("Add item...");
                     }
                     IngridHit hit = hitIterator.next();
+
+                    if (isFirstHit && requestWrapper.withUVPData()) {
+                        // set channel pubDate to first (most recent) hit
+                        String modTime = getModTimeString(hit);
+                        if (!modTime.isEmpty()) pout.write("<pubDate>" + modTime + "</pubDate>");
+                    }
+
                     Element item = doc.addElement("item");
-                    item.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
-                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail() | requestWrapper.withUVPData()) {
+                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail()) {
                         item.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
                     }
                     if (requestWrapper.withGeoRSS()) {
@@ -176,6 +194,8 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     }
                     if (requestWrapper.withUVPData()) {
                         item.addNamespace("uvp", "http://www.uvp-verbund.de/opensearch/extension/1.0");
+                    } else {
+                        item.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
                     }
 
                     IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
@@ -183,12 +203,14 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     addItemTitle(item, hit, requestWrapper, true);
                     addItemLink(item, hit, requestWrapper, true);
                     item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(OpensearchUtil.getDetailValue(detail, "summary"))));
-                    item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
+                    if (!requestWrapper.withUVPData())
+                        item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
                     addIngridData(item, hit, requestWrapper, true);
                     addUVPData(item, hit, requestWrapper, true);
                     addGeoRssData(item, hit, requestWrapper);
                     pout.write(doc.getRootElement().asXML());
                     doc.clearContent();
+                    isFirstHit = false;
                 }
                 hitCounter++;
             }
@@ -294,6 +316,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         }
         if (requestWrapper.withUVPData()) {
             requestedMetadata.add("uvp_steps");
+            requestedMetadata.add("uvp_address");
         }
 
         return requestedMetadata.toArray(new String[0]);
@@ -309,7 +332,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     private String getChannelTitle(RequestWrapper requestWrapper) {
         String title = (String) requestWrapper.get(RequestWrapper.CHANNEL_TITLE);
         if (title.isEmpty()) {
-            title = "ingrid OpenSearch: " + requestWrapper.getQueryString();
+            title = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_TITLE, "ingrid OpenSearch: " + requestWrapper.getQueryString());
         }
 
         return title;
@@ -350,6 +373,23 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         }
     }
 
+    private String getModTimeString(IngridHit hit) {
+        IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
+        // handle last modified time
+        // first try the metadata time introduced in ticket #1084
+        // see #2032 and #1084 for details
+        String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.metadata_time");
+        if (modTime == null || modTime.length() == 0) {
+            modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
+        }
+        if (modTime != null && modTime.length() > 0) {
+            Date d = UtilsDate.parseDateString(modTime);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
+            return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt);
+        }
+        return "";
+    }
+
     private void addUVPData(Element item, IngridHit hit, RequestWrapper requestWrapper, boolean ibusConnected) {
         if (requestWrapper.withUVPData()) {
             if (log.isDebugEnabled()) {
@@ -357,20 +397,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
             IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
             String docId = String.valueOf(hit.getDocumentId());
-            item.addElement("ingrid:docid").addText(OpensearchUtil.deNullify(docId));
+            item.addElement("guid").addText(OpensearchUtil.deNullify(docId));
 
-            // handle last modified time
-            // first try the metadata time introduced in ticket #1084
-            // see #2032 and #1084 for details
-            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.metadata_time");
-            if (modTime == null || modTime.length() == 0) {
-                modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
-            }
-            if (modTime != null && modTime.length() > 0) {
-                Date d = UtilsDate.parseDateString(modTime);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
-                item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
-            }
+            item.addElement("author").addText(OpensearchUtil.getDetailValue(detail, "uvp_address"));
+
+            String modTime = getModTimeString(hit);
+            if (!modTime.isEmpty()) item.addElement("pubDate").addText(modTime);
 
             String phases = OpensearchUtil.getDetailValue(detail, "uvp_steps");
             if (phases != null && phases.length() > 0) {
@@ -457,18 +489,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 metadatatXmlUrl = metadatatXmlUrl.replace("{uuid}", docUuid);
                 item.addElement("ingrid:iso-xml-url").addText(metadatatXmlUrl);
             }
-            // handle last modified time
-            // first try the metadata time introduced in ticket #1084
-            // see #2032 and #1084 for details
-            String modTime = OpensearchUtil.getDetailValue(detail, "t01_object.metadata_time");
-            if (modTime == null || modTime.length() == 0) {
-                modTime = OpensearchUtil.getDetailValue(detail, "t01_object.mod_time");
-            }
-            if (modTime != null && modTime.length() > 0) {
-                Date d = UtilsDate.parseDateString(modTime);
-                ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
-                item.addElement("ingrid:last-modified").addText(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt));
-            }
+
+            String modTime = getModTimeString(hit);
+            if (!modTime.isEmpty()) item.addElement("ingrid:last-modified").addText(modTime);
 
             // handle time reference
             if (detail.containsKey("t1") || detail.containsKey("t2")) {
