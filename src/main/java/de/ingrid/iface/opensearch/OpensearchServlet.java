@@ -154,12 +154,20 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     } else {
                         url = requestWrapper.getRequest().getRequestURL().toString().concat("?").concat(queryString);
                     }
-                    pout.write("<link>" + StringEscapeUtils.escapeXml(url) + "</link>");
+
+                    String link = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LINK, StringEscapeUtils.escapeXml(url));
+                    if (!link.isEmpty())
+                        pout.write("<link>" + link + "</link>");
+                    else
+                        pout.write("<description>"+StringEscapeUtils.escapeXml(url)+"</description>");
+
+
                     String description = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_DESCRIPTION, "Search results");
                     if (!description.isEmpty())
                         pout.write("<description>" + description + "</description>");
                     else
                         pout.write("<description>Search results</description>");
+
                     if (!requestWrapper.withUVPData()) {
                         pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
                         pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
@@ -172,14 +180,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                         if (!copyright.isEmpty()) pout.write("<copyright>" + copyright + "</copyright>");
                     }
                 }
-                boolean isFirstHit = true;
                 if (hitIterator.hasNext()) {
                     if (log.isDebugEnabled()) {
                         log.debug("Add item...");
                     }
                     IngridHit hit = hitIterator.next();
 
-                    if (isFirstHit && requestWrapper.withUVPData()) {
+                    if ((hitCounter == 0) && requestWrapper.withUVPData()) {
                         // set channel pubDate to first (most recent) hit
                         String modTime = getModTimeString(hit);
                         if (!modTime.isEmpty()) pout.write("<pubDate>" + modTime + "</pubDate>");
@@ -210,7 +217,6 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     addGeoRssData(item, hit, requestWrapper);
                     pout.write(doc.getRootElement().asXML());
                     doc.clearContent();
-                    isFirstHit = false;
                 }
                 hitCounter++;
             }

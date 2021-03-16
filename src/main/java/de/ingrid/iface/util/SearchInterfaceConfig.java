@@ -94,6 +94,8 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     public static final String  OPENSEARCH_CHANNEL_DESCRIPTION = "opensearch.channel.description";
 
+    public static final String  OPENSEARCH_CHANNEL_LINK = "opensearch.channel.link";
+
     public static final String  OPENSEARCH_CHANNEL_LANGUAGE = "opensearch.channel.language";
 
     public static final String  OPENSEARCH_CHANNEL_COPYRIGHT = "opensearch.channel.copyright";
