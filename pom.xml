@@ -122,7 +122,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-communication</artifactId>
-      <version>5.6.1</version>
+      <version>5.8.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

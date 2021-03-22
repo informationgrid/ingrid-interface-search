@@ -15,6 +15,9 @@
       <action type="add" dev="wemove" issue="582">
         Add 'uvp' query parameter for an uvp style feed
       </action>
+      <action type="fix" dev="wemove">
+        Catch all errors in Communication
+      </action>
     </release>
 
     <release version="5.7.0" date="2021-01-18" description="Release 5.7.0">
