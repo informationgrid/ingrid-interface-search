@@ -299,7 +299,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
             if (requestWrapper.withIngridData()) {
                 requestedMetadata.add("t01_object.obj_class");
-                requestedMetadata.add("t011_obj_serv_op_connpoint.connect_point");
+                requestedMetadata.add("capabilities_url");
                 requestedMetadata.add("partner");
                 requestedMetadata.add("provider");
                 requestedMetadata.add("t1");
@@ -313,7 +313,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             requestedMetadata.add("t02_address.adr_id");
             if (requestWrapper.withIngridData()) {
                 requestedMetadata.add("t02_address.typ");
-                requestedMetadata.add("t011_obj_serv_op_connpoint.connect_point");
+                requestedMetadata.add("capabilities_url");
                 requestedMetadata.add("partner");
                 requestedMetadata.add("provider");
                 requestedMetadata.add("t1");
@@ -439,7 +439,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             String udkClass = OpensearchUtil.getDetailValue(detail, "t01_object.obj_class");
             String udkAddrClass = OpensearchUtil.getDetailValue(detail, "t02_address.typ");
             String wmsUrl = null;
-            Object obj = detail.get("t011_obj_serv_op_connpoint.connect_point");
+            Object obj = detail.get("capabilities_url");
             if (obj != null && obj instanceof String[] && ((String[]) obj).length > 0) {
                 // get first entry from the array, ignore empty entries
                 for (String value : ((String[]) obj)) {
@@ -449,7 +449,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     }
                 }
             } else {
-                wmsUrl = OpensearchUtil.getDetailValue(detail, "t011_obj_serv_op_connpoint.connect_point");
+                wmsUrl = OpensearchUtil.getDetailValue(detail, "capabilities_url");
             }
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
 
