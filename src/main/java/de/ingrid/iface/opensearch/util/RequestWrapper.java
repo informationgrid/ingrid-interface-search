@@ -65,7 +65,9 @@ public class RequestWrapper extends HashMap<String, Object> {
     public static final String GEORSS 					= "georss";
     
     public static final String INGRID_DATA 				= "ingrid";
-    
+
+    public static final String UVP_DATA 				= "uvp";
+
     public static final String SEARCH_TIMEOUT 			= "timeout";
 
     public static final String REQUEST                  = "request";
@@ -145,7 +147,8 @@ public class RequestWrapper extends HashMap<String, Object> {
         mapIntParamToBoolean(request, "detail",    RequestWrapper.METADATA_DETAIL);
         mapIntParamToBoolean(request, "georss", RequestWrapper.GEORSS);
         mapIntParamToBoolean(request, "ingrid", RequestWrapper.INGRID_DATA);
-        
+        mapIntParamToBoolean(request, "uvp", RequestWrapper.UVP_DATA);
+
         // get search timeout
         int searchTimeout = 0;
         try {
@@ -231,6 +234,10 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public boolean withIngridData() {
     	return (Boolean) this.get(INGRID_DATA);
+    }
+
+    public boolean withUVPData() {
+        return (Boolean) this.get(RequestWrapper.UVP_DATA);
     }
     
     public int getSearchTimeout() {

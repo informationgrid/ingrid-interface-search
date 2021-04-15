@@ -75,14 +75,8 @@ public class DatasetFeedRequest extends BaseRequest {
             detail = "true".equals( p );
         }
 
-        String path = StringUtils.trimLeadingCharacter(req.getPathInfo(), '/');
-        int idx = path.indexOf('/');
-        if (idx > 0) {
-            serviceFeedUuid = path.substring(0, idx);
-            datasetFeedUuid = path.substring(idx + 1);
-        } else {
-            serviceFeedUuid = path;
-        }
+        serviceFeedUuid = StringUtils.trimLeadingCharacter(req.getPathInfo(), '/');
+        datasetFeedUuid = req.getParameter("datasetUuid");
         
         if (datasetFeedUuid != null && datasetFeedUuid.toLowerCase().contains("getrecordbyid")) {
             this.setType(EntryType.CSW);

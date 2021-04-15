@@ -5,6 +5,24 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.8.0" date="2021-04-15" description="Release 5.8.0">
+      <action type="fix" dev="wemove" issue="2287">
+        Change requested field for 'wms-url'
+      </action>
+      <action type="fix" dev="wemove" issue="2340">
+        Fix xml parsing error for ids.
+      </action>
+      <action type="fix" dev="wemove" issue="2366">
+        Fix getting information about external coupled resources.
+      </action>
+      <action type="add" dev="wemove" issue="582">
+        Add 'uvp' query parameter for an uvp style feed
+      </action>
+      <action type="fix" dev="wemove">
+        Catch all errors in Communication
+      </action>
+    </release>
+
     <release version="5.7.0" date="2021-01-18" description="Release 5.7.0">
       <action type="add" dev="wemove" issue="2211">
         Fix Redmine issue link generation for changes.
@@ -99,7 +117,7 @@
         Fixed detail link generation.
       </action>
     </release>
-    
+
     <release version="3.6.2.1" date="2016-07-07" description="Release 3.6.2.1">
       <action type="fix" dev="wemove" issue="REDMINE-329">
         Fix problem: All results from IGE iplug are treated as address results. Object results have no title.
@@ -123,7 +141,7 @@
         Remove all references to PortalU.
       </action>
     </release>
-    
+
     <release version="3.6.0" date="2015-06-19" description="Release 3.6.0">
       <action type="update" dev="wemove">
         Filter duplicate entries in the service feeds
@@ -138,7 +156,7 @@
         Add new configuration property 'atom.download.service.search.extension' for ATOM service feed query extension.
       </action>
     </release>
-    
+
     <release version="3.4.2.2" date="2014-07-08" description="Release InGrid 3.4.2.2">
       <action type="fix" dev="wemove" issue="INGRID-2351">
         Fix GDI-DE test suite compatibility issues.

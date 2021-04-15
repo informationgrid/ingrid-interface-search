@@ -20,6 +20,29 @@
  * limitations under the Licence.
  * **************************************************#
  */
+function PartnerCtrl($scope, $http, $routeParams, $route, $timeout, $location) {
+    if ($location.search().partner) {
+        let partnerLoc = {"hh":"Hamburg",
+            "bb":"Brandenburg",
+            "be":"Berlin",
+            "bw":"Baden-Württemberg",
+            "by":"Bayern",
+            "hb": "Bremen",
+            "he": "Hessen",
+            "mv": "Mecklenburg-Vorpommern",
+            "ni": "Niedersachsen",
+            "nw": "Nordrhein-Westfalen",
+            "rp": "Rheinland-Pfalz",
+            "sh": "Schleswig-Holstein",
+            "sl": "Saarland",
+            "sn": "Sachsen",
+            "st": "Sachsen-Anhalt",
+            "th": "Thüringen"}
+        $scope.partner=$location.search().partner;
+        $scope.partnerLoc=partnerLoc;
+    }
+}
+
 function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlFilter) {
     a = $scope;
     $scope.oneAtATime = false;
@@ -40,24 +63,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
     	} else {
             filter = filter + "+partner:" + $location.search().partner;
     	}
-    	let partnerLoc = {"hh":"Hamburg",
-    	    "bb":"Brandenburg",
-    	    "be":"Berlin",
-    	    "bw":"Baden-Württemberg",
-    	    "by":"Bayern",
-    	    "hb": "Bremen",
-    	    "he": "Hessen",
-    	    "mv": "Mecklenburg-Vorpommern",
-    	    "ni": "Niedersachsen",
-    	    "nw": "Nordrhein-Westfalen",
-    	    "rp": "Rheinland-Pfalz",
-    	    "sh": "Schleswig-Holstein",
-    	    "sl": "Saarland",
-    	    "sn": "Sachsen",
-    	    "st": "Sachsen-Anhalt",
-    	    "th": "Thüringen"}
     	$scope.partner=$location.search().partner;
-    	$scope.partnerLoc=partnerLoc;
     }
     if ($location.search().serviceOnly) {
         $scope.serviceOnly = true;
@@ -95,7 +101,7 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             }
         });
         $scope.feedsLoaded = true;
-    }).error(function(data, status) {
+    }).error(function() {
         $scope.feedsLoaded = true;
         $scope.message.error = "Keine Dienste gefunden!";
     });
@@ -179,11 +185,10 @@ function AtomCtrl($scope, $http, $routeParams, $route, $timeout, $location, xmlF
             }
             $location.search(searchObj);
 
-            $http.get( dsEntry.link + "?detail=true" ).then(function(response) {
+            $http.get( dsEntry.link + "&detail=true" ).then(function(response) {
                 var xml = xmlFilter(response.data);
                 dsEntry.useConstraints = xml.find("rights").text();
-                var detailLinkElem = xml.find("feed link[rel=detail]").attr("href");
-                dsEntry.detailLink = detailLinkElem;// ? detailLinkElem.getAttribute("href") : null;
+                dsEntry.detailLink = xml.find("feed link[rel=detail]").attr("href");// ? detailLinkElem.getAttribute("href") : null;
                 var entriesDom = xml.find("entry");
                 dsEntry.downloads = [];
                 angular.forEach(entriesDom, function(entry) {
