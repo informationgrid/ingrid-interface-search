@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -92,8 +92,8 @@ public class DatasetFeedFactoryTest {
         doc = datasetFeedFactory.getDatasetFeedDocument(datasetFeedRequest);
 
         assertEquals("DATASET_FEED_UUID_2", XPATH.getString(doc, "//gmd:fileIdentifier/gco:CharacterString"));
-        
-        
+
+
     }
 
     @Before
@@ -115,7 +115,7 @@ public class DatasetFeedFactoryTest {
         ServiceFeedUtils serviceFeedUtils = new ServiceFeedUtils();
         serviceFeedUtils.setConfig(SearchInterfaceConfig.getInstance());
         serviceFeedUtils.init();
-        
+
         ServiceFeedProducer serviceFeedProducer = new ServiceFeedProducer();
         serviceFeedProducer.setServiceFeedUtils(serviceFeedUtils);
         serviceFeedProducer.setiBusHelper(iBusHelper);
@@ -126,7 +126,7 @@ public class DatasetFeedFactoryTest {
         igcServiceFeedEntryProducer.setConfig(SearchInterfaceConfig.getInstance());
         igcServiceFeedEntryProducer.setiBusHelper(iBusHelper);
         igcServiceFeedEntryProducer.setIngridQueryProducer(ingridQueryProducer);
-        
+
         serviceFeedEntryProducers.add(igcServiceFeedEntryProducer);
 
         serviceFeedProducer.setServiceFeedEntryProducer(serviceFeedEntryProducers);
@@ -135,7 +135,7 @@ public class DatasetFeedFactoryTest {
 
         datasetFeedFactory.setStringUtilsService(stringUtilsService);
 
-        IngridQuery q = QueryStringParser.parse("ranking:score (t01_object.obj_id:DATASET_FEED_UUID_1 OR t01_object.org_obj_id:DATASET_FEED_UUID_1) dataType:dsc_ecs");
+        IngridQuery q = QueryStringParser.parse("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"DATASET_FEED_UUID_1\" OR t01_object.org_obj_id:\"DATASET_FEED_UUID_1\")");
 
         IngridHit[] hits = new IngridHit[2];
         for (int i = 0; i < hits.length; i++) {
@@ -153,7 +153,7 @@ public class DatasetFeedFactoryTest {
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
 
-        q = QueryStringParser.parse("ranking:score (t01_object.obj_id:SERVICE_FEED_UUID_1 OR t01_object.org_obj_id:SERVICE_FEED_UUID_1) dataType:dsc_ecs");
+        q = QueryStringParser.parse("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"SERVICE_FEED_UUID_1\" OR t01_object.org_obj_id:\"SERVICE_FEED_UUID_1\")");
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
@@ -170,8 +170,8 @@ public class DatasetFeedFactoryTest {
         when(
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
-        
-        q = QueryStringParser.parse("ranking:score iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\") dataType:dsc_ecs");
+
+        q = QueryStringParser.parse("ranking:score dataType:dsc_ecs iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\")");
 
         hits = new IngridHit[1];
         for (int i = 0; i < hits.length; i++) {
@@ -184,12 +184,12 @@ public class DatasetFeedFactoryTest {
             when(mockedIbus.getRecord(hits[i])).thenReturn(record);
         }
         hitsObject = new IngridHits(hits.length, hits);
-        
+
         when(
                 mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
                         Matchers.any(String[].class))).thenReturn(hitsObject);
-        
-        
+
+
         when(iBusHelper.getIBus()).thenReturn(mockedIbus);
 
         when(
