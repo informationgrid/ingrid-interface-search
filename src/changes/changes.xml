@@ -9,6 +9,9 @@
       <action type="update" dev="wemove" issue="2498">
         Update Layout for ATOM Feed Client
       </action>
+      <action type="fix" dev="wemove" issue="3364">
+        Fix self referencing link of dataset.
+      </action>
     </release>
 
     <release version="5.10.0" date="2021-10-21" description="Release 5.10.0">

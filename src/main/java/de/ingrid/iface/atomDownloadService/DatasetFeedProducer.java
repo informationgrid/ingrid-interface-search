@@ -22,6 +22,8 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +96,9 @@ public class DatasetFeedProducer {
 
             Link link = new Link();
             String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, datasetFeedRequest.getProtocol() );
-            link.setHref(urlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getDatasetFeedUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
+            link.setHref(urlPattern
+                    .replace("{datasetfeed-uuid}", URLEncoder.encode(datasetFeedRequest.getDatasetFeedUuid(), StandardCharsets.UTF_8.toString()))
+                    .replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
             link.setRel("self");
