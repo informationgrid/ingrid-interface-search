@@ -54,6 +54,16 @@
         <artifactId>ingrid-iplug-se</artifactId>
         <version>3.0.0</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-jul</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -128,7 +138,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-communication</artifactId>
-      <version>5.11.0-SNAPSHOT</version>
+      <version>5.11.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
