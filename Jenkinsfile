@@ -37,7 +37,7 @@ pipeline {
                     echo "Project version: $VERSION"
 
                     // Run the maven build
-                    sh 'mvn clean deploy -PrequireSnapshotVersion,docker,docker-$GIT_BRANCH -Dmaven.test.failure.ignore=true'
+                    sh 'mvn clean deploy -PrequireSnapshotVersion,docker,docker-$GIT_BRANCH -Dmaven.test.failure.ignore=true -U'
 
                 } // withMaven will discover the generated Maven artifacts, JUnit Surefire & FailSafe & FindBugs reports...
             }

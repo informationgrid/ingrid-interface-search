@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -39,6 +39,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.SearchInterfaceServletConfigurator;
 
+import java.net.URL;
+
 /**
  * TODO Describe your created type (class, etc.) here.
  * 
@@ -74,11 +76,14 @@ public class IFaceServer {
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed(false);
         resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-        resourceHandler.setResourceBase(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client"));
+        URL baseUrl  = IFaceServer.class.getResource( "/static" );
+        String  basePath = baseUrl.toExternalForm();
+        log.info("BasePath:" + basePath);
+        resourceHandler.setResourceBase(basePath);
         context.setHandler(resourceHandler);
         log.info("==================================================");
         log.info("Server port: " + serverPort);
-        log.info("Serving resources from '"+SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_CLIENT_PATH, "client")+"' at '/dls'.");
+        log.info("Serving resources from '/static' at '/dls'.");
         log.info("Implementation Version: " + server.getClass().getPackage().getImplementationVersion());
         log.info("==================================================");
         
