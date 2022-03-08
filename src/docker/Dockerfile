@@ -4,7 +4,7 @@ ADD ingrid-interface-*-installer.jar /
 RUN unzip ingrid-interface-*-installer.jar -d /tmp
 
 
-FROM docker-registry.wemove.com/ingrid-java:jre-8-alpine
+FROM docker-registry.wemove.com/ingrid-java:jre-8-slim
 ENV INGRID_USER=ingrid
 ENV RUN_DIRECTLY=true
 
