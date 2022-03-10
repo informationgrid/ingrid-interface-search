@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>5.9.2.4-SNAPSHOT</version>
+  <version>5.9.2.4</version>
   <packaging>jar</packaging>
   <name>InGrid Interface Search</name>
   <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.
@@ -41,7 +41,7 @@
   <!-- ==================== PROPERTIES ==================== -->
   <properties>
     <iplug.type>INTERFACE_SEARCH</iplug.type>
-    <log4j2.version>2.15.0</log4j2.version>
+    <log4j2.version>2.17.2</log4j2.version>
   </properties>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
