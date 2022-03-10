@@ -5,6 +5,11 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.11.2.1" date="2022-03-10" description="Release 5.11.2.1">
+      <action type="fix" dev="wemove" issue="3596">
+        Fix critical docker base image problem.
+      </action>
+    </release>
     <release version="5.11.0" date="2021-01-19" description="Release 5.11.0">
       <action type="update" dev="wemove" issue="2498">
         Update Layout for ATOM Feed Client
