@@ -43,6 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +54,8 @@ public class MapperService {
 
     public static final String DISTRIBUTION_RESOURCE_POSTFIX = "/distribution";
     public static final String PUBLISHER_RESOURCE_POSTFIX = "/#publisher";
+
+    private final Pattern HREF_PATTERN = Pattern.compile("href=\"([^\"])+\"");
 
     @Autowired
     private FormatMapper formatMapper;
@@ -544,18 +548,21 @@ public class MapperService {
             if(distribution.getDescription() != null && !distribution.getDescription().trim().isEmpty()) {
                 dist.setDescription(distribution.getDescription().trim());
             }
+*/
 
-            if (license != null) {
-                String uriFromLicenseURL = LicenseMapper.getURIFromLicenseURL(license.getUrl());
-                if (uriFromLicenseURL == null) {
-                    log.warn("Using free license for dataset: " + hit.getTitle() + " (" + hit.getId() + ")");
-                    // TODO: make default license configurable
-                    dist.setLicense(new ResourceElement("http://dcat-ap.de/def/licenses/other-open"));
-                } else {
-                    dist.setLicense(new ResourceElement(uriFromLicenseURL));
+            //License
+            List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+            for(Node constraintsNode: constraintsNodes){
+                Node useConstraintsNode = constraintsNode.selectSingleNode("./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
+                Node otherConstraintsNode = constraintsNode.selectSingleNode("./gmd:otherConstraints/gco:CharacterString");
+                if(useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getText().trim().equals("otherRestrictions")){
+                    Matcher hrefMatcher = HREF_PATTERN.matcher(otherConstraintsNode.getText().trim());
+                    if(hrefMatcher.matches()) {
+                        dist.setLicense(new ResourceElement(hrefMatcher.group(1)));
+                        break;
+                    }
                 }
             }
-            */
 
             dists.add(dist);
         }
