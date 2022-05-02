@@ -14,7 +14,7 @@ COPY --chown=1000:1000 --from=builder /tmp/ingrid-interface-search-* /opt/ingrid
 USER ingrid
 
 # forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /opt/ingrid/ingrid-interface-search/log.log
+RUN ln -sf /dev/stdout /opt/ingrid/ingrid-interface-search/logs/log.log
 
 WORKDIR /opt/ingrid/ingrid-interface-search
 EXPOSE 8080/tcp

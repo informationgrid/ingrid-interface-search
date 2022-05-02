@@ -694,6 +694,7 @@ public class MapperService {
                 datasetIds.add(hit.getId().toString());
                 distributions.addAll(distributionList);
             } catch (Exception e) {
+                log.error(e);
                 log.warn("Document has been skipped: " + e.getMessage());
             }
         }
