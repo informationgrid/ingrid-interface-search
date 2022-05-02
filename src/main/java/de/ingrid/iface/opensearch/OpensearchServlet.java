@@ -25,6 +25,9 @@
  */
 package de.ingrid.iface.opensearch;
 
+import de.ingrid.iface.opensearch.model.dcatapde.DcatApDe;
+import de.ingrid.iface.opensearch.service.dcatapde.MapperService;
+import de.ingrid.iface.opensearch.service.dcatapde.XmlService;
 import de.ingrid.iface.opensearch.util.OpensearchUtil;
 import de.ingrid.iface.opensearch.util.RequestWrapper;
 import de.ingrid.iface.util.*;
@@ -35,6 +38,7 @@ import de.ingrid.utils.dsc.Column;
 import de.ingrid.utils.dsc.Record;
 import de.ingrid.utils.idf.IdfTool;
 import de.ingrid.utils.iplug.IPlugVersionInspector;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.udk.UtilsDate;
 import net.weta.components.communication.server.TooManyRunningThreads;
@@ -45,6 +49,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.eclipse.jetty.http.HttpException;
+import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +67,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -85,7 +91,13 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
     @Autowired
     private IBusHelper iBusHelper;
 
-    private static Integer MAX_IBUS_RESULT_SET_SIZE = 100;
+    @Autowired
+    private MapperService dcatMapperService;
+
+    @Autowired
+    private XmlService xmlService;
+
+    private static final Integer MAX_IBUS_RESULT_SET_SIZE = 100;
 
     /**
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
@@ -125,98 +137,51 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         int hitCounter = 0;
         boolean outputStreamWritten = false;
         try {
-
+            if(requestWrapper.getFormat().equals("rdf")){
+                query.addField(new FieldQuery(true, false, "t04_search.searchterm", "opendata"));
+                List<FieldQuery> datatypeQueries = new ArrayList<>();
+                datatypeQueries.add(new FieldQuery(true, false, "datatype", "metadata"));
+                query.put("datatype", datatypeQueries);
+            }
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
+
+            if(requestWrapper.getFormat().equals("rdf")){
+                DcatApDe dcat = this.dcatMapperService.mapHitsToDcat(toIterable(hitIterator));
+
+                dcat.handlePaging((Request) request, page, pageSize, hitIterator.getTotalResults());
+
+                // convert Java class to XML
+                String xmlDcat = xmlService.getMapper().writeValueAsString(dcat);
+
+                // add namespaces to header area of XML
+                xmlDcat = xmlService.attachNamespaces(xmlDcat);
+
+                if (pout == null) {
+                    pout = response.getWriter();
+                }
+
+                response.setContentType("application/rdf+xml");
+                response.setCharacterEncoding("UTF-8");
+                pout.write(xmlDcat);
+
+                return;
+            }
+
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/rss+xml");
             Document doc = DocumentHelper.createDocument();
             while ((hitIterator.hasNext() && hitCounter < requestWrapper.getHitsPerPage()) || hitCounter == 0) {
                 if (hitCounter == 0) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("No result written yet, add opensearch response header...");
-                    }
+                    outputStreamWritten = true;
                     if (pout == null) {
                         pout = response.getWriter();
                     }
-                    outputStreamWritten = true;
-                    pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                    pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
-                    pout.write("<channel>");
-                    pout.write("<title>" + StringEscapeUtils.escapeXml(getChannelTitle(requestWrapper)) + "</title>");
-                    String url = null;
-                    String queryString = requestWrapper.getRequest().getQueryString();
-                    if (queryString == null)
-                        queryString = "";
-                    queryString.replace("+", "%2B");
-                    String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
-                    if (proxyurl != null && proxyurl.trim().length() > 0) {
-                        url = proxyurl.concat("/query").concat("?").concat(queryString);
-                    } else {
-                        url = requestWrapper.getRequest().getRequestURL().toString().concat("?").concat(queryString);
-                    }
-
-                    String link = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LINK, StringEscapeUtils.escapeXml(url));
-                    if (!link.isEmpty())
-                        pout.write("<link>" + link + "</link>");
-                    else
-                        pout.write("<description>"+StringEscapeUtils.escapeXml(url)+"</description>");
 
 
-                    String description = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_DESCRIPTION, "Search results");
-                    if (!description.isEmpty())
-                        pout.write("<description>" + description + "</description>");
-                    else
-                        pout.write("<description>Search results</description>");
-
-                    if (!requestWrapper.withUVPData()) {
-                        pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
-                        pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
-                        pout.write("<opensearch:itemsPerPage>" + String.valueOf(requestWrapper.getHitsPerPage()) + "</opensearch:itemsPerPage>");
-                        pout.write("<opensearch:Query role=\"request\" searchTerms=\"" + StringEscapeUtils.escapeXml(requestWrapper.getQueryString()) + "\"/>");
-                    } else {
-                        String language = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LANGUAGE, "");
-                        if (!language.isEmpty()) pout.write("<language>" + language + "</language>");
-                        String copyright = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_COPYRIGHT, "");
-                        if (!copyright.isEmpty()) pout.write("<copyright>" + copyright + "</copyright>");
-                    }
+                    writeResponseHead(request, requestWrapper, pout, hitIterator);
                 }
                 if (hitIterator.hasNext()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Add item...");
-                    }
-                    IngridHit hit = hitIterator.next();
-
-                    if ((hitCounter == 0) && requestWrapper.withUVPData()) {
-                        // set channel pubDate to first (most recent) hit
-                        String modTime = getModTimeString(hit);
-                        if (!modTime.isEmpty()) pout.write("<pubDate>" + modTime + "</pubDate>");
-                    }
-
-                    Element item = doc.addElement("item");
-                    if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail()) {
-                        item.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
-                    }
-                    if (requestWrapper.withGeoRSS()) {
-                        item.addNamespace("georss", "http://www.georss.org/georss");
-                    }
-                    if (requestWrapper.withUVPData()) {
-                        item.addNamespace("uvp", "http://www.uvp-verbund.de/opensearch/extension/1.0");
-                    } else {
-                        item.addNamespace("relevance", "http://a9.com/-/opensearch/extensions/relevance/1.0/");
-                    }
-
-                    IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
-
-                    addItemTitle(item, hit, requestWrapper, true);
-                    addItemLink(item, hit, requestWrapper, true);
-                    item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(OpensearchUtil.getDetailValue(detail, "summary"))));
-                    if (!requestWrapper.withUVPData())
-                        item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
-                    addIngridData(item, hit, requestWrapper, true);
-                    addUVPData(item, hit, requestWrapper, true);
-                    addGeoRssData(item, hit, requestWrapper);
-                    pout.write(doc.getRootElement().asXML());
-                    doc.clearContent();
+                    addItem(requestWrapper, pout, hitIterator, hitCounter, doc);
                 }
                 hitCounter++;
             }
@@ -247,6 +212,95 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
         }
 
+    }
+
+    public static <T> Iterable<T> toIterable(Iterator<T> it) {
+        return () -> it;
+    }
+
+    private void addItem(RequestWrapper requestWrapper, PrintWriter pout, IBusQueryResultIterator hitIterator, int hitCounter, Document doc) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("Add item...");
+        }
+        IngridHit hit = hitIterator.next();
+
+        if ((hitCounter == 0) && requestWrapper.withUVPData()) {
+            // set channel pubDate to first (most recent) hit
+            String modTime = getModTimeString(hit);
+            if (!modTime.isEmpty()) pout.write("<pubDate>" + modTime + "</pubDate>");
+        }
+
+        Element item = doc.addElement("item");
+        if (requestWrapper.withIngridData() || requestWrapper.getMetadataDetail()) {
+            item.addNamespace("ingrid", "http://www.portalu.de/opensearch/extension/1.0");
+        }
+        if (requestWrapper.withGeoRSS()) {
+            item.addNamespace("georss", "http://www.georss.org/georss");
+        }
+        if (requestWrapper.withUVPData()) {
+            item.addNamespace("uvp", "http://www.uvp-verbund.de/opensearch/extension/1.0");
+        } else {
+            item.addNamespace("relevance", "http://a9.com/-/opensearch/extensi+ons/relevance/1.0/");
+        }
+
+        IngridHitDetail detail = (IngridHitDetail) hit.getHitDetail();
+
+        addItemTitle(item, hit, requestWrapper, true);
+        addItemLink(item, hit, requestWrapper, true);
+        item.addElement("description").addText(OpensearchUtil.removeInvalidChars(OpensearchUtil.deNullify(OpensearchUtil.getDetailValue(detail, "summary"))));
+        if (!requestWrapper.withUVPData())
+            item.addElement("relevance:score").addText(String.valueOf(hit.getScore()));
+        addIngridData(item, hit, requestWrapper, true);
+        addUVPData(item, hit, requestWrapper, true);
+        addGeoRssData(item, hit, requestWrapper);
+        pout.write(doc.getRootElement().asXML());
+        doc.clearContent();
+    }
+
+    private void writeResponseHead(HttpServletRequest request, RequestWrapper requestWrapper, PrintWriter pout, IBusQueryResultIterator hitIterator) {
+        if (log.isDebugEnabled()) {
+            log.debug("No result written yet, add opensearch response header...");
+        }
+        pout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        pout.write("<rss xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\" xmlns:relevance=\"http://a9.com/-/opensearch/extensions/relevance/1.0/\" xmlns:ingrid=\"http://www.portalu.de/opensearch/extension/1.0\" version=\"2.0\">");
+        pout.write("<channel>");
+        pout.write("<title>" + StringEscapeUtils.escapeXml(getChannelTitle(requestWrapper)) + "</title>");
+        String url = null;
+        String queryString = requestWrapper.getRequest().getQueryString();
+        if (queryString == null)
+            queryString = "";
+        queryString.replace("+", "%2B");
+        String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
+        if (proxyurl != null && proxyurl.trim().length() > 0) {
+            url = proxyurl.concat("/query").concat("?").concat(queryString);
+        } else {
+            url = requestWrapper.getRequest().getRequestURL().toString().concat("?").concat(queryString);
+        }
+
+        String link = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LINK, StringEscapeUtils.escapeXml(url));
+        if (!link.isEmpty())
+            pout.write("<link>" + link + "</link>");
+        else
+            pout.write("<description>"+StringEscapeUtils.escapeXml(url)+"</description>");
+
+
+        String description = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_DESCRIPTION, "Search results");
+        if (!description.isEmpty())
+            pout.write("<description>" + description + "</description>");
+        else
+            pout.write("<description>Search results</description>");
+
+        if (!requestWrapper.withUVPData()) {
+            pout.write("<opensearch:totalResults>" + hitIterator.getTotalResults() + "</opensearch:totalResults>");
+            pout.write("<opensearch:startIndex>" + String.valueOf(requestWrapper.getRequestedPage()) + "</opensearch:startIndex>");
+            pout.write("<opensearch:itemsPerPage>" + String.valueOf(requestWrapper.getHitsPerPage()) + "</opensearch:itemsPerPage>");
+            pout.write("<opensearch:Query role=\"request\" searchTerms=\"" + StringEscapeUtils.escapeXml(requestWrapper.getQueryString()) + "\"/>");
+        } else {
+            String language = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_LANGUAGE, "");
+            if (!language.isEmpty()) pout.write("<language>" + language + "</language>");
+            String copyright = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_CHANNEL_COPYRIGHT, "");
+            if (!copyright.isEmpty()) pout.write("<copyright>" + copyright + "</copyright>");
+        }
     }
 
     /**

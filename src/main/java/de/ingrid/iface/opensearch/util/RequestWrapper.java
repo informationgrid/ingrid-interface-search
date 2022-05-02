@@ -73,6 +73,8 @@ public class RequestWrapper extends HashMap<String, Object> {
     public static final String REQUEST                  = "request";
     
     public static final String CHANNEL_TITLE            = "title";
+
+    public static final String FORMAT                  = "format";
     
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
@@ -165,6 +167,13 @@ public class RequestWrapper extends HashMap<String, Object> {
             title = "";
         }
         this.put(RequestWrapper.CHANNEL_TITLE, title);
+
+        // get query
+        String format = request.getParameter(RequestWrapper.FORMAT);
+        if (format == null) {
+            format = "rss";
+        }
+        this.put(RequestWrapper.FORMAT, format);
     }
 
     /**
@@ -246,6 +255,10 @@ public class RequestWrapper extends HashMap<String, Object> {
     
     public HttpServletRequest getRequest() {
         return (HttpServletRequest)this.get(REQUEST);
+    }
+
+    public String getFormat() {
+        return (String)this.get(FORMAT);
     }
     
 
