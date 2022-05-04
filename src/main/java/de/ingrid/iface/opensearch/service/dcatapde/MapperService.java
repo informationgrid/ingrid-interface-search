@@ -52,10 +52,10 @@ public class MapperService {
 
     private final Logger log = LogManager.getLogger(MapperService.class);
 
-    public static final String DISTRIBUTION_RESOURCE_POSTFIX = "/distribution";
-    public static final String PUBLISHER_RESOURCE_POSTFIX = "/#publisher";
+    public static final String DISTRIBUTION_RESOURCE_POSTFIX = "#distribution";
+    public static final String PUBLISHER_RESOURCE_POSTFIX = "#publisher";
 
-    private final Pattern HREF_PATTERN = Pattern.compile("href=\"([^\"])+\"");
+    private final Pattern HREF_PATTERN = Pattern.compile("href=\"([^\"]+)\"");
 
     @Autowired
     private FormatMapper formatMapper;
@@ -67,14 +67,14 @@ public class MapperService {
         Dataset dataset = new Dataset();
 
 
-        Node idfMdMetadataNode = idfDataNode.selectSingleNode("//idf:idfMdMetadata");
+        Node idfMdMetadataNode = idfDataNode.selectSingleNode("./idf:body/idf:idfMdMetadata");
 
-        Node abstractNode = idfMdMetadataNode.selectSingleNode("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
+        Node abstractNode = idfMdMetadataNode.selectSingleNode("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
         if (abstractNode != null) {
             dataset.setDescription(new LangTextElement(abstractNode.getText().trim()));
         }
 
-        Node titleNode = idfMdMetadataNode.selectSingleNode("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
+        Node titleNode = idfMdMetadataNode.selectSingleNode("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
         if(titleNode != null) {
             dataset.setTitle(new LangTextElement(titleNode.getText().trim()));
         }
@@ -104,13 +104,13 @@ public class MapperService {
 
 
         // KEYWORDS
-        List<Node> keywordNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/*/gmd:descriptiveKeywords/*/gmd:keyword/gco:CharacterString");
+        List<Node> keywordNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:descriptiveKeywords/*/gmd:keyword/gco:CharacterString");
         List<String> keywords = keywordNodes.stream().map(keywordNode -> keywordNode.getText().trim()).filter(keyword -> !keyword.isEmpty()).collect(Collectors.toList());
         if (keywords.size() > 0) {
             dataset.setKeyword(keywords);
         }
 
-        List<Node> categoryNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode");
+        List<Node> categoryNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode");
         List<String> categories = categoryNodes.stream().map(categoryNode -> categoryNode.getText().trim()).filter(category -> !category.isEmpty()).collect(Collectors.toList());
         if (categories.size() > 0 || keywords.size() > 0) {
             Collection<Theme> themes = ThemeMapper.mapThemes(categories, keywords);
@@ -120,15 +120,15 @@ public class MapperService {
         }
 
 
-        String modified = idfMdMetadataNode.selectSingleNode("//gmd:dateStamp/gco:Date").getText().trim();
+        String modified = getDateOrDateTime(idfMdMetadataNode.selectSingleNode("./gmd:dateStamp"));
         dataset.setModified(modified);
 
-        String issued = idfMdMetadataNode.selectSingleNode("//gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:DateTime").getText().trim();
+        String issued = getDateOrDateTime(idfMdMetadataNode.selectSingleNode("./gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date"));
         dataset.setIssued(issued);
 
         // Distribution
         List<ResourceElement> distResources = new ArrayList<>();
-        List<Node> transferOptionNodes = idfMdMetadataNode.selectNodes("//gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
+        List<Node> transferOptionNodes = idfMdMetadataNode.selectNodes("./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
         for (Node transferOptionNode : transferOptionNodes) {
             Node linkageNode = transferOptionNode.selectSingleNode("./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
             if(linkageNode == null) {
@@ -145,17 +145,14 @@ public class MapperService {
 
 
 
-        Node fileIdentifierNode = idfMdMetadataNode.selectSingleNode("//gmd:fileIdentifier/gco:CharacterString");
+        Node fileIdentifierNode = idfMdMetadataNode.selectSingleNode("./gmd:fileIdentifier/gco:CharacterString");
         if (fileIdentifierNode != null) {
+            String fileIdentifier = fileIdentifierNode.getText().trim();
             dataset.setIdentifier(fileIdentifierNode.getText().trim());
+            dataset.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier));
         }
 
-
-        // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //dataset.setAbout(this.appConfig.getPortalDetailUrl() + hit.getId());
-        dataset.setAbout(fileIdentifierNode.getText().trim());
-
-        Node languageNode = idfMdMetadataNode.selectSingleNode("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:language/gmd:LanguageCode/@codeListValue");
+        Node languageNode = idfMdMetadataNode.selectSingleNode("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:language/gmd:LanguageCode/@codeListValue");
         if(languageNode != null) {
             dataset.setLanguage(new LangTextElement(languageNode.getText().trim()));
         }
@@ -180,7 +177,7 @@ public class MapperService {
         dataset.setContributorID(new ResourceElement("http://dcat-ap.de/def/contributors/NUMIS"));
 
         // SPATIAL
-        List<Node> geographicBoundingBoxNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
+        List<Node> geographicBoundingBoxNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
         if (geographicBoundingBoxNodes.size() > 0) {
             for (Node node : geographicBoundingBoxNodes) {
                 SpatialElement spatial = mapSpatial(node, null);
@@ -199,7 +196,7 @@ public class MapperService {
 
  */
 
-        List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+        List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
         for(Node constraintsNode: constraintsNodes){
             Node useConstraintsNode = constraintsNode.selectSingleNode("./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
             Node otherConstraintsNode = constraintsNode.selectSingleNode("./gmd:otherConstraints/gco:CharacterString");
@@ -482,11 +479,11 @@ public class MapperService {
 
         List<Distribution> dists = new ArrayList<>();
 
-        Node idfMdMetadataNode = idfDataNode.selectSingleNode("//idf:idfMdMetadata");
+        Node idfMdMetadataNode = idfDataNode.selectSingleNode("./idf:body/idf:idfMdMetadata");
 
-        String modified = idfMdMetadataNode.selectSingleNode("//gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:DateTime").getText().trim();
+        String modified = getDateOrDateTime(idfMdMetadataNode.selectSingleNode("./gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date"));
 
-        List<Node> transferOptionNodes = idfMdMetadataNode.selectNodes("//gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
+        List<Node> transferOptionNodes = idfMdMetadataNode.selectNodes("./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
 
         for (Node transferOptionNode : transferOptionNodes) {
             Node onlineResNode = transferOptionNode.selectSingleNode("./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource");
@@ -521,6 +518,11 @@ public class MapperService {
             Node titleNode = onlineResNode.selectSingleNode("./gmd:name/gco:CharacterString");
             dist.setTitle(titleNode.getText().trim());
 
+            Node descriptionNode = onlineResNode.selectSingleNode("./gmd:description/gco:CharacterString");
+            if(descriptionNode != null){
+                dist.setDescription(descriptionNode.getText().trim());
+            }
+
             dist.setModified(new DatatypeTextElement(modified));
             dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
 
@@ -551,13 +553,13 @@ public class MapperService {
 */
 
             //License
-            List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("//gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+            List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
             for(Node constraintsNode: constraintsNodes){
                 Node useConstraintsNode = constraintsNode.selectSingleNode("./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
                 Node otherConstraintsNode = constraintsNode.selectSingleNode("./gmd:otherConstraints/gco:CharacterString");
                 if(useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getText().trim().equals("otherRestrictions")){
                     Matcher hrefMatcher = HREF_PATTERN.matcher(otherConstraintsNode.getText().trim());
-                    if(hrefMatcher.matches()) {
+                    if(hrefMatcher.find()) {
                         dist.setLicense(new ResourceElement(hrefMatcher.group(1)));
                         break;
                     }
@@ -571,6 +573,13 @@ public class MapperService {
 
         return dists;
 
+    }
+
+    private String getDateOrDateTime(Node parent){
+        Node node = parent.selectSingleNode("./gco:Date|./gcoDateTime");
+        if(node != null)
+            return node.getText().trim();
+        return null;
     }
 
 
@@ -602,10 +611,10 @@ public class MapperService {
     private String mapGeoJson(Node spatial) {
         String type = "Polygon";
 
-        String north = spatial.selectSingleNode("//gmd:northBoundLatitude/gco:Decimal").getText().trim();
-        String east = spatial.selectSingleNode("//gmd:eastBoundLongitude/gco:Decimal").getText().trim();
-        String south = spatial.selectSingleNode("//gmd:southBoundLatitude/gco:Decimal").getText().trim();
-        String west = spatial.selectSingleNode("//gmd:westBoundLongitude/gco:Decimal").getText().trim();
+        String north = spatial.selectSingleNode("./gmd:northBoundLatitude/gco:Decimal").getText().trim();
+        String east = spatial.selectSingleNode("./gmd:eastBoundLongitude/gco:Decimal").getText().trim();
+        String south = spatial.selectSingleNode("./gmd:southBoundLatitude/gco:Decimal").getText().trim();
+        String west = spatial.selectSingleNode("./gmd:westBoundLongitude/gco:Decimal").getText().trim();
 
         String coordinates = "[[[" + east + ", " + north + "], " +
                 "[" + east + ", " + south + "], " +

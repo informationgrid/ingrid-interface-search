@@ -27,6 +27,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import de.ingrid.iface.opensearch.model.dcatapde.general.DatatypeTextElement;
+import de.ingrid.iface.util.SearchInterfaceConfig;
 import org.eclipse.jetty.server.Request;
 
 import javax.servlet.http.HttpServletRequest;
@@ -140,6 +141,7 @@ public class DcatApDe {
     public void handlePaging(Request request, int page, int numPerPage, long totalCount) {
         HydraCollection hydraCollection = new HydraCollection();
         String baseURL = request.getRequestURL().toString();
+        baseURL = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, baseURL);
 
         hydraCollection.setItemsPerPage(new DatatypeTextElement(String.valueOf(numPerPage)));
         hydraCollection.setTotalItems(new DatatypeTextElement(String.valueOf(totalCount)));
