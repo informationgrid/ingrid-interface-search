@@ -19,7 +19,7 @@ public class LicenseMapper {
 
     private static Logger log = LogManager.getLogger(LicenseMapper.class);
 
-    private static List<LicenseInfo> licenses = prepareLicenses(getProperties("dcatapde/license.properties"));
+    private static List<LicenseInfo> licenses = prepareLicenses(getProperties("dcatapde/licenses.properties"));
 
     private static Properties getProperties(String filename) {
         Properties licenseProps = new Properties();
