@@ -55,7 +55,8 @@ public class MapperService {
     public static final String DISTRIBUTION_RESOURCE_POSTFIX = "#distribution";
     public static final String PUBLISHER_RESOURCE_POSTFIX = "#publisher";
 
-    private final Pattern HREF_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
+    private final Pattern URL_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
+    private final Pattern QUELLE_PATTERN = Pattern.compile("\"quelle\":\\s*\"([^\"]+)\"");
 
     @Autowired
     private FormatMapper formatMapper;
@@ -559,9 +560,14 @@ public class MapperService {
                 List<Node> otherConstraintsNodes = constraintsNode.selectNodes("./gmd:otherConstraints/gco:CharacterString");
                 if(useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getText().trim().equals("otherRestrictions")){
                     for(Node otherConstraintsNode: otherConstraintsNodes) {
-                        Matcher hrefMatcher = HREF_PATTERN.matcher(otherConstraintsNode.getText().trim());
-                        if (hrefMatcher.find()) {
-                            dist.setLicense(new ResourceElement(hrefMatcher.group(1)));
+                        Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getText().trim());
+                        if (urlMatcher.find()) {
+                            String licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
+                            dist.setLicense(new ResourceElement(licenseURI));
+                            Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getText().trim());
+                            if (quelleMatcher.find()) {
+                                dist.setLicenseAttributionByText(quelleMatcher.group(1));
+                            }
                             break;
                         }
                     }
@@ -578,7 +584,7 @@ public class MapperService {
     }
 
     private String getDateOrDateTime(Node parent){
-        Node node = parent.selectSingleNode("./gco:Date|./gcoDateTime");
+        Node node = parent.selectSingleNode("./gco:Date|./gco:DateTime");
         if(node != null)
             return node.getText().trim();
         return null;

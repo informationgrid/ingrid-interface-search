@@ -101,7 +101,7 @@ public class Distribution {
 
     // 0..1
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
-    private ResourceElement licenseAttributionByText;
+    private String licenseAttributionByText;
 
     @JacksonXmlProperty(isAttribute = true, namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     private String about;
@@ -245,11 +245,11 @@ public class Distribution {
         this.plannedAvailability = plannedAvailability;
     }
 
-    public ResourceElement getLicenseAttributionByText() {
+    public String getLicenseAttributionByText() {
         return licenseAttributionByText;
     }
 
-    public void setLicenseAttributionByText(ResourceElement licenseAttributionByText) {
+    public void setLicenseAttributionByText(String licenseAttributionByText) {
         this.licenseAttributionByText = licenseAttributionByText;
     }
 
