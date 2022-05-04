@@ -55,7 +55,7 @@ public class MapperService {
     public static final String DISTRIBUTION_RESOURCE_POSTFIX = "#distribution";
     public static final String PUBLISHER_RESOURCE_POSTFIX = "#publisher";
 
-    private final Pattern HREF_PATTERN = Pattern.compile("href=\"([^\"]+)\"");
+    private final Pattern HREF_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
 
     @Autowired
     private FormatMapper formatMapper;
@@ -556,12 +556,14 @@ public class MapperService {
             List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
             for(Node constraintsNode: constraintsNodes){
                 Node useConstraintsNode = constraintsNode.selectSingleNode("./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
-                Node otherConstraintsNode = constraintsNode.selectSingleNode("./gmd:otherConstraints/gco:CharacterString");
-                if(useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getText().trim().equals("otherRestrictions")){
-                    Matcher hrefMatcher = HREF_PATTERN.matcher(otherConstraintsNode.getText().trim());
-                    if(hrefMatcher.find()) {
-                        dist.setLicense(new ResourceElement(hrefMatcher.group(1)));
-                        break;
+                List<Node> otherConstraintsNodes = constraintsNode.selectNodes("./gmd:otherConstraints/gco:CharacterString");
+                if(useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getText().trim().equals("otherRestrictions")){
+                    for(Node otherConstraintsNode: otherConstraintsNodes) {
+                        Matcher hrefMatcher = HREF_PATTERN.matcher(otherConstraintsNode.getText().trim());
+                        if (hrefMatcher.find()) {
+                            dist.setLicense(new ResourceElement(hrefMatcher.group(1)));
+                            break;
+                        }
                     }
                 }
             }
