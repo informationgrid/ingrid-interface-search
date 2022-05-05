@@ -231,8 +231,8 @@ public class MapperService {
                 if(endNode != null && !endNode.getText().trim().isEmpty()){
                     DatatypeTextElement end = new DatatypeTextElement();
                     end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-                    end.setText(beginNode.getText().trim());
-                    periodOfTimeElement.setStartDate(end);
+                    end.setText(endNode.getText().trim());
+                    periodOfTimeElement.setEndDate(end);
                 }
 
                 if(dataset.getTemporal() == null){
@@ -269,12 +269,12 @@ public class MapperService {
             agent.setName(individualNameNode.getText().trim());
         }
 
-        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
         if(emailNode != null){
             agent.setMbox(emailNode.getText().trim());
         }
 
-        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
         if(urlNode != null){
             agent.setHomepage(urlNode.getText().trim());
         }
@@ -300,32 +300,32 @@ public class MapperService {
             organization.setFn(individualNameNode.getText().trim());
         }
 
-        Node postalCodeNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString");
+        Node postalCodeNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString");
         if(postalCodeNode != null){
             organization.setHasPostalCode(postalCodeNode.getText().trim());
         }
 
-        Node deliveryPointNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString");
+        Node deliveryPointNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString");
         if(deliveryPointNode != null){
             organization.setHasStreetAddress(deliveryPointNode.getText().trim());
         }
 
-        Node cityNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString");
+        Node cityNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString");
         if(cityNode != null){
             organization.setHasLocality(cityNode.getText().trim());
         }
 
-        Node countryNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString");
+        Node countryNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString");
         if(countryNode != null){
             organization.setHasCountryName(countryNode.getText().trim());
         }
 
-        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
         if(emailNode != null){
             organization.setHasEmail(new ResourceElement(emailNode.getText().trim()));
         }
 
-        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
         if(urlNode != null){
             organization.setHasURL(new ResourceElement(urlNode.getText().trim()));
         }
