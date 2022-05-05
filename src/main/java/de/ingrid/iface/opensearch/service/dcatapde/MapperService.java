@@ -27,6 +27,9 @@ import de.ingrid.iface.opensearch.model.dcatapde.Dataset;
 import de.ingrid.iface.opensearch.model.dcatapde.DcatApDe;
 import de.ingrid.iface.opensearch.model.dcatapde.Distribution;
 import de.ingrid.iface.opensearch.model.dcatapde.catalog.Agent;
+import de.ingrid.iface.opensearch.model.dcatapde.catalog.AgentWrapper;
+import de.ingrid.iface.opensearch.model.dcatapde.catalog.VCardOrganization;
+import de.ingrid.iface.opensearch.model.dcatapde.catalog.VCardOrganizationWrapper;
 import de.ingrid.iface.opensearch.model.dcatapde.general.*;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.SearchInterfaceConfig;
@@ -42,6 +45,7 @@ import org.dom4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,9 +83,25 @@ public class MapperService {
         if(titleNode != null) {
             dataset.setTitle(new LangTextElement(titleNode.getText().trim()));
         }
-/*
-        // Publisher / ContactPoint
 
+        // Publisher / ContactPoint
+        List<Node> responsiblePartyNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:pointOfContact/idf:idfResponsibleParty");
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("pointOfContact")) {
+                dataset.setContactPoint(mapVCard(responsiblePartyNode));
+            }
+        }
+
+
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("publisher")) {
+                dataset.setPublisher(mapAgent(responsiblePartyNode));
+            }
+        }
+
+/*
         dataset.setPublisher(new AgentWrapper());
         Agent agent = dataset.getPublisher().getAgent();
         ESAgent[] publisher = hit.getPublisher();
@@ -101,6 +121,19 @@ public class MapperService {
         if (agent.getName() == null || agent.getName().trim().isEmpty()) {
             throw new SkipException("No publisher set in dataset: " + hit.getTitle() + " (" + hit.getId() + ")");
         }
+*/
+
+
+        /*
+        // ContactPoint
+        dataset.setContactPoint(mapContactPoint(hit.getContact_point()));
+
+        // ORIGINATOR
+        dataset.setOriginator(mapOrganizations(hit.getOriginator()));
+
+        // CREATOR
+        dataset.setCreator(mapOrganizations(hit.getCreator()));
+
 */
 
 
@@ -163,17 +196,6 @@ public class MapperService {
         dataset.setAccrualPeriodicity(accrualPeriodicity);
 */
 
-        /*
-        // ContactPoint
-        dataset.setContactPoint(mapContactPoint(hit.getContact_point()));
-
-        // ORIGINATOR
-        dataset.setOriginator(mapOrganizations(hit.getOriginator()));
-
-        // CREATOR
-        dataset.setCreator(mapOrganizations(hit.getCreator()));
-
-*/
         // CONTRIBUTOR ID
         dataset.setContributorID(new ResourceElement("http://dcat-ap.de/def/contributors/NUMIS"));
 
@@ -186,16 +208,40 @@ public class MapperService {
             }
         }
 
-        /*
+
 
         // TEMPORAL
-        if (hit.getExtras() != null && hit.getExtras().getTemporal() != null) {
-            List<TemporalElement> temporal = mapTemporal(hit.getExtras().getTemporal());
-            dataset.setTemporal(temporal);
+        List<Node> temporalNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent");
+        for(Node temporalNode: temporalNodes){
+            Node beginNode = idfMdMetadataNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:beginPosition");
+            Node endNode = idfMdMetadataNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:endPosition");
+            if((beginNode != null && !beginNode.getText().trim().isEmpty()) || (endNode != null && !endNode.getText().trim().isEmpty())){
+                PeriodOfTimeElement periodOfTimeElement = new PeriodOfTimeElement();
+
+                TemporalElement temporalElement = new TemporalElement();
+                temporalElement.setPeriodOfTime(periodOfTimeElement);
+
+                if(beginNode != null && !beginNode.getText().trim().isEmpty()){
+                    DatatypeTextElement start = new DatatypeTextElement();
+                    start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                    start.setText(beginNode.getText().trim());
+                    periodOfTimeElement.setStartDate(start);
+                }
+
+                if(endNode != null && !endNode.getText().trim().isEmpty()){
+                    DatatypeTextElement end = new DatatypeTextElement();
+                    end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                    end.setText(beginNode.getText().trim());
+                    periodOfTimeElement.setStartDate(end);
+                }
+
+                if(dataset.getTemporal() == null){
+                    dataset.setTemporal(new ArrayList<>());
+                }
+                dataset.getTemporal().add(temporalElement);
+            }
         }
 
-
- */
 
         List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
         for(Node constraintsNode: constraintsNodes){
@@ -210,6 +256,84 @@ public class MapperService {
 
 
         return dataset;
+    }
+
+    private AgentWrapper mapAgent(Node responsiblePartyNode) {
+        Agent agent = new Agent();
+
+        Node organisationNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
+        Node individualNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
+        if(organisationNameNode != null) {
+            agent.setName(organisationNameNode.getText().trim());
+        } else if (individualNameNode != null) {
+            agent.setName(individualNameNode.getText().trim());
+        }
+
+        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        if(emailNode != null){
+            agent.setMbox(emailNode.getText().trim());
+        }
+
+        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        if(urlNode != null){
+            agent.setHomepage(urlNode.getText().trim());
+        }
+
+        AgentWrapper result = new AgentWrapper();
+        result.setAgent(agent);
+        return result;
+    }
+
+    private VCardOrganizationWrapper mapVCard(Node responsiblePartyNode) {
+        VCardOrganization organization = new VCardOrganization();
+
+        Node uuidNode = responsiblePartyNode.selectSingleNode("./@uuid");
+        if(uuidNode != null){
+            organization.setNodeID(uuidNode.getText().trim());
+        }
+
+        Node organisationNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
+        Node individualNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
+        if(organisationNameNode != null) {
+            organization.setFn(organisationNameNode.getText().trim());
+        } else if (individualNameNode != null) {
+            organization.setFn(individualNameNode.getText().trim());
+        }
+
+        Node postalCodeNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString");
+        if(postalCodeNode != null){
+            organization.setHasPostalCode(postalCodeNode.getText().trim());
+        }
+
+        Node deliveryPointNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString");
+        if(deliveryPointNode != null){
+            organization.setHasStreetAddress(deliveryPointNode.getText().trim());
+        }
+
+        Node cityNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString");
+        if(cityNode != null){
+            organization.setHasLocality(cityNode.getText().trim());
+        }
+
+        Node countryNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString");
+        if(countryNode != null){
+            organization.setHasCountryName(countryNode.getText().trim());
+        }
+
+        Node emailNode = responsiblePartyNode.selectSingleNode("./gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        if(emailNode != null){
+            organization.setHasEmail(new ResourceElement(emailNode.getText().trim()));
+        }
+
+        Node urlNode = responsiblePartyNode.selectSingleNode("./gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        if(urlNode != null){
+            organization.setHasURL(new ResourceElement(urlNode.getText().trim()));
+        }
+
+        VCardOrganizationWrapper result = new VCardOrganizationWrapper();
+        result.setOrganization(organization);
+
+        return result;
     }
 
     /*
@@ -277,184 +401,8 @@ public class MapperService {
 
             return null;
         }
-
-        private SpatialElement mapSpatial(ESGeoShape spatial, String spatialText) {
-            if(spatial == null){
-                return null;
-            }
-
-            List<DatatypeTextElement> geometries = new ArrayList<>();
-
-            DatatypeTextElement geoJSON = new DatatypeTextElement();
-            geoJSON.setDatatype("https://www.iana.org/assignments/media-types/application/vnd.geo+json");
-            geoJSON.setText(mapGeoJson(spatial));
-            geometries.add(geoJSON);
-
-            DatatypeTextElement wkt = new DatatypeTextElement();
-            wkt.setDatatype("http://www.opengis.net/ont/geosparql#wktLiteral");
-            wkt.setText(mapWKT(spatial));
-            geometries.add(wkt);
-
-            LocationElement location = new LocationElement();
-            location.setGeometry(geometries);
-
-            if(spatialText != null) {
-                location.setPrefLabel(spatialText);
-            }
-
-            SpatialElement result = new SpatialElement();
-            result.setLocation(location);
-
-            return result;
-        }
-
-        private String mapGeoJson(ESGeoShape spatial) {
-            String type = mapGeoJsonType(spatial.getType());
-            if(type.toLowerCase().equals("geometrycollection")){
-                String geometries = "["+spatial.getGeometries().stream().map(this::mapGeoJson).collect(Collectors.joining(","))+"]";
-                return "{" +
-                        "\"type\": \"" + type + "\"" +
-                        ", \"geometries\": " + geometries +
-                        '}';
-            }
-            String coordinates = spatial.getCoordinates().toString();
-            if(spatial.getType().toLowerCase().equals("envelope")){
-                List<List> coords = spatial.getCoordinates();
-                coordinates = "[[["+coords.get(0).get(0).toString()+", "+coords.get(0).get(1).toString()+"], " +
-                        "["+coords.get(1).get(0).toString()+", "+coords.get(0).get(1).toString()+"], " +
-                        "["+coords.get(1).get(0).toString()+", "+coords.get(1).get(1).toString()+"], " +
-                        "["+coords.get(0).get(0).toString()+", "+coords.get(1).get(1).toString()+"], " +
-                        "["+coords.get(0).get(0).toString()+", "+coords.get(0).get(1).toString()+"]]]";
-            }
-                return "{" +
-                        "\"type\": \"" + type + "\"" +
-                        ", \"coordinates\": " + coordinates +
-                        '}';
-        }
-
-        private String mapGeoJsonType(String type) {
-            switch(type.toLowerCase())
-            {
-                case "point":
-                    return "Point";
-                case "linestring":
-                    return "LineString";
-                case "polygon":
-                case "envelope":
-                    return "Polygon";
-                case "multipoint":
-                    return "MultiPoint";
-                case "multilinestring":
-                    return "MultiLineString";
-                case "multipolygon":
-                    return "MultiPolygon";
-                case "geometrycollection":
-                    return "GeometryCollection";
-                default: return "UNKNOWN";
-            }
-        }
-
-        private String mapWKT(ESGeoShape spatial) {
-            String type = mapWKTType(spatial.getType());
-            if(type.toLowerCase().equals("geometrycollection")){
-                String geometries = "("+spatial.getGeometries().stream().map(this::mapWKT).collect(Collectors.joining(","))+")";
-                return type + geometries;
-            }
-            String coordinates = mapWKTCoordinates(spatial.getCoordinates());
-            if(spatial.getType().toLowerCase().equals("envelope")){
-                List<List> coords = spatial.getCoordinates();
-                coordinates = "(("+coords.get(0).get(0).toString()+" "+coords.get(0).get(1).toString()+", " +
-                        coords.get(1).get(0).toString()+" "+coords.get(0).get(1).toString()+", " +
-                        coords.get(1).get(0).toString()+" "+coords.get(1).get(1).toString()+", " +
-                        coords.get(0).get(0).toString()+" "+coords.get(1).get(1).toString()+", " +
-                        coords.get(0).get(0).toString()+" "+coords.get(0).get(1).toString()+"))";
-            }
-            return type + " " + coordinates;
-        }
-
-        private String mapWKTType(String type) {
-            switch(type.toLowerCase())
-            {
-                case "point":
-                    return "POINT";
-                case "linestring":
-                    return "LINESTRING";
-                case "polygon":
-                case "envelope":
-                    return "POLYGON";
-                case "multipoint":
-                    return "MULTIPOINT";
-                case "multilinestring":
-                    return "MULTILINESTRING";
-                case "multipolygon":
-                    return "MULTIPOLYGON";
-                case "geometrycollection":
-                    return "GEOMETRYCOLLECTION";
-                default: return "UNKNOWN";
-            }
-        }
-
-
-        private String mapWKTCoordinates(List coordinates) {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("(");
-            for(Object coords: coordinates){
-                if(coords instanceof List){
-                    if(((List) coords).get(0) instanceof List){
-                        sb.append(mapWKTCoordinates((List) coords));
-                    } else {
-                        for(Object coord : (List)coords){
-                            sb.append(coord);
-                            sb.append(" ");
-                        }
-                        sb.deleteCharAt(sb.length()-1);
-                    }
-                    sb.append(",");
-                }
-                else{
-                    sb.append(coords);
-                }
-                sb.append(" ");
-            }
-            sb.deleteCharAt(sb.length()-1);
-            if(sb.charAt(sb.length()-1) == ',') {
-                sb.deleteCharAt(sb.length() - 1);
-            }
-
-            sb.append(")");
-
-            return sb.toString();
-        }
-
-        private List<TemporalElement> mapTemporal(List<ESDateRange> temporal) {
-            List<TemporalElement> result = new ArrayList<>();
-            for (ESDateRange range: temporal) {
-                if(range.getGte() != null || range.getLte() != null) {
-                    TemporalElement temporalElement = new TemporalElement();
-                    PeriodOfTimeElement periodOfTime = new PeriodOfTimeElement();
-                    temporalElement.setPeriodOfTime(periodOfTime);
-                    if (range.getGte() != null) {
-                        DatatypeTextElement start = new DatatypeTextElement();
-                        start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-                        start.setText(range.getGte().toInstant().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime().toString());
-                        periodOfTime.setStartDate(start);
-                    }
-                    if (range.getLte() != null) {
-                        DatatypeTextElement end = new DatatypeTextElement();
-                        end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-                        end.setText(range.getLte().toInstant().atZone(ZoneId.of("Europe/Berlin")).toLocalDateTime().toString());
-                        periodOfTime.setEndDate(end);
-                    }
-                    result.add(temporalElement);
-                }
-            }
-            if(result.size() > 0) {
-                return result;
-            }
-            return null;
-        }
-
+        */
+/*
         private OrganizationWrapper[] mapOrganizations(ESAgent[] agents) {
             if (agents == null) {
                 return null;
@@ -504,6 +452,12 @@ public class MapperService {
                 continue;
             }
 
+            Node functionNode = onlineResNode.selectSingleNode("./gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue");
+            if(functionNode == null || (!functionNode.getText().equals("information") && !functionNode.getText().equals("download"))){
+                log.warn("Skip Distribution - Function neither information nor download");
+                continue;
+            }
+
             String accessURL = linkageNode.getText().trim();
 
             // skip distributions that are already added
@@ -533,28 +487,22 @@ public class MapperService {
                 dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
             }
             dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
-            dist.setDownloadURL(new ResourceElement(accessURL));
+
+            if(functionNode.getText().equals("download")) {
+                dist.setDownloadURL(new ResourceElement(accessURL));
+            }
 
             /*
             if(distribution.getByteSize() != null){
                 dist.setByteSize(new DatatypeTextElement(distribution.getByteSize().toString()));
                 dist.getByteSize().setDatatype("http://www.w3.org/2001/XMLSchema#decimal");
             }
-            if(distribution.getIssued() != null){
-                dist.setIssued(new DatatypeTextElement(distribution.getIssued().toInstant().toString()));
-                dist.getIssued().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-            }
-            if(distribution.getModified() != null){
-                dist.setModified(new DatatypeTextElement(distribution.getModified().toInstant().toString()));
-                dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-            }
-            if(distribution.getDescription() != null && !distribution.getDescription().trim().isEmpty()) {
-                dist.setDescription(distribution.getDescription().trim());
-            }
 */
 
             //License
             List<Node> constraintsNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+
+            String licenseURI = null;
             for(Node constraintsNode: constraintsNodes){
                 Node useConstraintsNode = constraintsNode.selectSingleNode("./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
                 List<Node> otherConstraintsNodes = constraintsNode.selectNodes("./gmd:otherConstraints/gco:CharacterString");
@@ -562,7 +510,7 @@ public class MapperService {
                     for(Node otherConstraintsNode: otherConstraintsNodes) {
                         Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getText().trim());
                         if (urlMatcher.find()) {
-                            String licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
+                            licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
                             dist.setLicense(new ResourceElement(licenseURI));
                             Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getText().trim());
                             if (quelleMatcher.find()) {
@@ -572,6 +520,11 @@ public class MapperService {
                         }
                     }
                 }
+            }
+            if(licenseURI != null) {
+                dist.setLicense(new ResourceElement(licenseURI));
+            } else {
+                dist.setLicense(new ResourceElement("http://dcat-ap.de/def/licenses/other-open"));
             }
 
             dists.add(dist);
@@ -664,22 +617,6 @@ public class MapperService {
         catalog.setHomepage(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_URL)));
         catalog.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_URL));
     }
-
-/*
-    public DcatApDe mapHitDocToDcat(IngridHit hit) {
-
-        DcatApDe dcatApDe = new DcatApDe();
-        mapCatalog(dcatApDe.getCatalog());
-        Dataset dataset = mapDataset(hit);
-        List<Dataset> datasets = new ArrayList<>();
-        datasets.add(dataset);
-        dcatApDe.getCatalog().setDataset(this.appConfig.getPortalDetailUrl() + hit.getId());
-        dcatApDe.setDataset(datasets);
-        dcatApDe.setDistribution(mapDistribution(hit, new ArrayList<>()));
-
-        return dcatApDe;
-    }
-    */
 
     public DcatApDe mapHitsToDcat(Iterable<IngridHit> hits) {
         DcatApDe dcatApDe = new DcatApDe();
