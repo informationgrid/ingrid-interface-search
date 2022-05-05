@@ -87,7 +87,7 @@ public class MapperService {
         // Publisher / ContactPoint
         List<Node> responsiblePartyNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:pointOfContact/idf:idfResponsibleParty");
         for(Node responsiblePartyNode: responsiblePartyNodes){
-            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode");
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
             if(contactRoleNode != null && contactRoleNode.getText().trim().equals("pointOfContact")) {
                 dataset.setContactPoint(mapVCard(responsiblePartyNode));
             }
@@ -95,7 +95,7 @@ public class MapperService {
 
 
         for(Node responsiblePartyNode: responsiblePartyNodes){
-            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode");
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
             if(contactRoleNode != null && contactRoleNode.getText().trim().equals("publisher")) {
                 dataset.setPublisher(mapAgent(responsiblePartyNode));
             }
