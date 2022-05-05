@@ -213,8 +213,8 @@ public class MapperService {
         // TEMPORAL
         List<Node> temporalNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent");
         for(Node temporalNode: temporalNodes){
-            Node beginNode = idfMdMetadataNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:beginPosition");
-            Node endNode = idfMdMetadataNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:endPosition");
+            Node beginNode = temporalNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:beginPosition");
+            Node endNode = temporalNode.selectSingleNode("./gmd:extent/gml:TimePeriod/gml:endPosition");
             if((beginNode != null && !beginNode.getText().trim().isEmpty()) || (endNode != null && !endNode.getText().trim().isEmpty())){
                 PeriodOfTimeElement periodOfTimeElement = new PeriodOfTimeElement();
 
