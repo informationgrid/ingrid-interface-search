@@ -293,7 +293,7 @@ public class MapperService {
         }
 
         Node organisationNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
-        Node individualNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
+        Node individualNameNode = responsiblePartyNode.selectSingleNode("./gmd:individualName/gco:CharacterString");
         if(organisationNameNode != null) {
             organization.setFn(organisationNameNode.getText().trim());
         } else if (individualNameNode != null) {
