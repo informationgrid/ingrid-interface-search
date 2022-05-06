@@ -26,10 +26,7 @@ import de.ingrid.iface.opensearch.model.dcatapde.Catalog;
 import de.ingrid.iface.opensearch.model.dcatapde.Dataset;
 import de.ingrid.iface.opensearch.model.dcatapde.DcatApDe;
 import de.ingrid.iface.opensearch.model.dcatapde.Distribution;
-import de.ingrid.iface.opensearch.model.dcatapde.catalog.Agent;
-import de.ingrid.iface.opensearch.model.dcatapde.catalog.AgentWrapper;
-import de.ingrid.iface.opensearch.model.dcatapde.catalog.VCardOrganization;
-import de.ingrid.iface.opensearch.model.dcatapde.catalog.VCardOrganizationWrapper;
+import de.ingrid.iface.opensearch.model.dcatapde.catalog.*;
 import de.ingrid.iface.opensearch.model.dcatapde.general.*;
 import de.ingrid.iface.util.IBusHelper;
 import de.ingrid.iface.util.SearchInterfaceConfig;
@@ -45,7 +42,6 @@ import org.dom4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,21 +80,66 @@ public class MapperService {
             dataset.setTitle(new LangTextElement(titleNode.getText().trim()));
         }
 
-        // Publisher / ContactPoint
+
         List<Node> responsiblePartyNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:pointOfContact/idf:idfResponsibleParty");
         for(Node responsiblePartyNode: responsiblePartyNodes){
             Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
             if(contactRoleNode != null && contactRoleNode.getText().trim().equals("pointOfContact")) {
                 dataset.setContactPoint(mapVCard(responsiblePartyNode));
+                break;
             }
         }
-
 
         for(Node responsiblePartyNode: responsiblePartyNodes){
             Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
             if(contactRoleNode != null && contactRoleNode.getText().trim().equals("publisher")) {
-                dataset.setPublisher(mapAgent(responsiblePartyNode));
+                dataset.setPublisher(mapAgentWrapper(responsiblePartyNode));
+                break;
             }
+        }
+
+        List<OrganizationWrapper> originator = new ArrayList<>();
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("originator")) {
+                originator.add(mapOrganizationWrapper(responsiblePartyNode));
+            }
+        }
+        if(originator.size() > 0){
+            dataset.setOriginator(originator.toArray(new OrganizationWrapper[originator.size()]));
+        }
+
+        List<AgentWrapper> maintainer = new ArrayList<>();
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("maintainer")) {
+                maintainer.add(mapAgentWrapper(responsiblePartyNode));
+            }
+        }
+        if(maintainer.size() > 0){
+            dataset.setMaintainer(maintainer.toArray(new AgentWrapper[maintainer.size()]));
+        }
+
+        List<AgentWrapper> contributor = new ArrayList<>();
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("originator")) {
+                contributor.add(mapAgentWrapper(responsiblePartyNode));
+            }
+        }
+        if(contributor.size() > 0){
+            dataset.setContributor(contributor.toArray(new AgentWrapper[contributor.size()]));
+        }
+
+        List<OrganizationWrapper> creator = new ArrayList<>();
+        for(Node responsiblePartyNode: responsiblePartyNodes){
+            Node contactRoleNode = responsiblePartyNode.selectSingleNode("./gmd:role/gmd:CI_RoleCode/@codeListValue");
+            if(contactRoleNode != null && contactRoleNode.getText().trim().equals("creator")) {
+                creator.add(mapOrganizationWrapper(responsiblePartyNode));
+            }
+        }
+        if(creator.size() > 0){
+            dataset.setOriginator(creator.toArray(new OrganizationWrapper[creator.size()]));
         }
 
 /*
@@ -197,7 +238,8 @@ public class MapperService {
 */
 
         // CONTRIBUTOR ID
-        dataset.setContributorID(new ResourceElement("http://dcat-ap.de/def/contributors/NUMIS"));
+        dataset.setContributorID(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CONTRIBUTOR_ID, "http://dcat-ap.de/def/contributors/InGrid")));
+
 
         // SPATIAL
         List<Node> geographicBoundingBoxNodes = idfMdMetadataNode.selectNodes("./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
@@ -258,7 +300,19 @@ public class MapperService {
         return dataset;
     }
 
-    private AgentWrapper mapAgent(Node responsiblePartyNode) {
+    private OrganizationWrapper mapOrganizationWrapper(Node responsiblePartyNode) {
+        OrganizationWrapper result = new OrganizationWrapper();
+        result.setAgent(mapAgent(responsiblePartyNode));
+        return result;
+    }
+
+    private AgentWrapper mapAgentWrapper(Node responsiblePartyNode) {
+        AgentWrapper result = new AgentWrapper();
+        result.setAgent(mapAgent(responsiblePartyNode));
+        return result;
+    }
+
+    private Agent mapAgent(Node responsiblePartyNode) {
         Agent agent = new Agent();
 
         Node organisationNameNode = responsiblePartyNode.selectSingleNode("./gmd:organisationName/gco:CharacterString");
@@ -278,10 +332,7 @@ public class MapperService {
         if(urlNode != null){
             agent.setHomepage(urlNode.getText().trim());
         }
-
-        AgentWrapper result = new AgentWrapper();
-        result.setAgent(agent);
-        return result;
+        return agent;
     }
 
     private VCardOrganizationWrapper mapVCard(Node responsiblePartyNode) {
@@ -491,6 +542,9 @@ public class MapperService {
             if(functionNode.getText().equals("download")) {
                 dist.setDownloadURL(new ResourceElement(accessURL));
             }
+            else if(functionNode.getText().equals("information")) {
+                dist.setPage(new ResourceElement(accessURL));
+            }
 
             /*
             if(distribution.getByteSize() != null){
@@ -524,7 +578,7 @@ public class MapperService {
             if(licenseURI != null) {
                 dist.setLicense(new ResourceElement(licenseURI));
             } else {
-                dist.setLicense(new ResourceElement("http://dcat-ap.de/def/licenses/other-open"));
+                dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
             }
 
             dists.add(dist);
@@ -611,7 +665,6 @@ public class MapperService {
 
         Agent agent = catalog.getPublisher().getAgent();
         agent.setName(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_NAME));
-        agent.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_NAME));
 
         catalog.setTitle(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_TITLE));
         catalog.setHomepage(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_URL)));

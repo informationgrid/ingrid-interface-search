@@ -100,6 +100,8 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     public static final String  DCAT_CONTRIBUTOR_ID = "opensearch.dcat.contributor_id";
 
+    public static final String  DCAT_DEFAULT_LICENSE = "opensearch.dcat.license.default";
+
     public static final String  DCAT_CATALOG_PUPLISHER_NAME = "opensearch.dcat.catalog.publisher.name";
 
     public static final String  DCAT_CATALOG_PUPLISHER_URL = "opensearch.dcat.catalog.publisher.url";
