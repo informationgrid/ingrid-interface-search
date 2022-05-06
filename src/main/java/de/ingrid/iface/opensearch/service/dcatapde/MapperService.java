@@ -250,14 +250,20 @@ public class MapperService {
 
                     if (beginNode != null && !beginNode.getTextContent().trim().isEmpty()) {
                         DatatypeTextElement start = new DatatypeTextElement();
-                        start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        if(beginNode.getTextContent().contains("T"))
+                            start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        else
+                            start.setDatatype("http://www.w3.org/2001/XMLSchema#date");
                         start.setText(beginNode.getTextContent().trim());
                         periodOfTimeElement.setStartDate(start);
                     }
 
                     if (endNode != null && !endNode.getTextContent().trim().isEmpty()) {
                         DatatypeTextElement end = new DatatypeTextElement();
-                        end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        if(endNode.getTextContent().contains("T"))
+                            end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        else
+                            end.setDatatype("http://www.w3.org/2001/XMLSchema#date");
                         end.setText(endNode.getTextContent().trim());
                         periodOfTimeElement.setEndDate(end);
                     }
@@ -682,8 +688,7 @@ public class MapperService {
                 List<Distribution> distributionList = mapDistribution(idfDataNode, distributionsIds);
 
                 datasets.add(dataset);
-                //datasetIds.add(this.appConfig.getPortalDetailUrl() + hit.getId());
-                datasetIds.add(hit.getId().toString());
+                datasetIds.add(dataset.getAbout());
                 distributions.addAll(distributionList);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
