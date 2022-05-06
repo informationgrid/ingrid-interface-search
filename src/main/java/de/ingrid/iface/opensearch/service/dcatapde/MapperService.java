@@ -76,24 +76,24 @@ public class MapperService {
         Dataset dataset = new Dataset();
 
 
-        Node idfMdMetadataNode = XPATH.getNode(idfDataNode,"./idf:body/idf:idfMdMetadata");
+        Node idfMdMetadataNode = XPATH.getNode(idfDataNode,"./body/idfMdMetadata");
 
-        Node abstractNode = XPATH.getNode(idfMdMetadataNode,"./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString");
+        Node abstractNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/abstract/CharacterString");
         if (abstractNode != null) {
             dataset.setDescription(new LangTextElement(abstractNode.getTextContent().trim()));
         }
 
-        Node titleNode = XPATH.getNode(idfMdMetadataNode,"./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString");
+        Node titleNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/citation/CI_Citation/title/CharacterString");
         if(titleNode != null) {
             dataset.setTitle(new LangTextElement(titleNode.getTextContent().trim()));
         }
 
 
-        NodeList responsiblePartyNodes = XPATH.getNodeList(idfMdMetadataNode,"./gmd:identificationInfo[1]/*/gmd:pointOfContact/idf:idfResponsibleParty");
+        NodeList responsiblePartyNodes = XPATH.getNodeList(idfMdMetadataNode,"./identificationInfo[1]/*/pointOfContact/idfResponsibleParty");
         if(responsiblePartyNodes != null) {
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("pointOfContact")) {
                     dataset.setContactPoint(mapVCard(responsiblePartyNode));
                     break;
@@ -102,7 +102,7 @@ public class MapperService {
 
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("publisher")) {
                     dataset.setPublisher(mapAgentWrapper(responsiblePartyNode));
                     break;
@@ -112,7 +112,7 @@ public class MapperService {
             List<OrganizationWrapper> originator = new ArrayList<>();
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
                     originator.add(mapOrganizationWrapper(responsiblePartyNode));
                 }
@@ -124,7 +124,7 @@ public class MapperService {
             List<AgentWrapper> maintainer = new ArrayList<>();
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("maintainer")) {
                     maintainer.add(mapAgentWrapper(responsiblePartyNode));
                 }
@@ -136,7 +136,7 @@ public class MapperService {
             List<AgentWrapper> contributor = new ArrayList<>();
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
                     contributor.add(mapAgentWrapper(responsiblePartyNode));
                 }
@@ -148,7 +148,7 @@ public class MapperService {
             List<OrganizationWrapper> creator = new ArrayList<>();
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
-                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("creator")) {
                     creator.add(mapOrganizationWrapper(responsiblePartyNode));
                 }
@@ -159,12 +159,12 @@ public class MapperService {
         }
 
         // KEYWORDS
-        List<String> keywords = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:descriptiveKeywords/*/gmd:keyword/gco:CharacterString"));
+        List<String> keywords = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./identificationInfo[1]/*/descriptiveKeywords/*/keyword/CharacterString"));
         if (keywords.size() > 0) {
             dataset.setKeyword(keywords);
         }
 
-        List<String> categories = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode"));
+        List<String> categories = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/topicCategory/MD_TopicCategoryCode"));
         if (categories.size() > 0 || keywords.size() > 0) {
             Collection<Theme> themes = ThemeMapper.mapThemes(categories, keywords);
             if (themes.size() > 0) {
@@ -173,21 +173,21 @@ public class MapperService {
         }
 
 
-        String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./gmd:dateStamp"));
+        String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./dateStamp"));
         dataset.setModified(modified);
 
-        String issued = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date"));
+        String issued = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
         dataset.setIssued(issued);
 
         // Distribution
         List<ResourceElement> distResources = new ArrayList<>();
-        NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
+        NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/transferOptions");
         if(transferOptionNodes != null) {
             for (int i = 0; i < transferOptionNodes.getLength(); i++) {
                 Node transferOptionNode = transferOptionNodes.item(i);
-                Node linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
+                Node linkageNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/idfOnlineResource/linkage/URL");
                 if (linkageNode == null) {
-                    linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+                    linkageNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/CI_OnlineResource/linkage/URL");
                 }
                 if (linkageNode == null) {
                     log.warn("Skip Distribution - No Linkage");
@@ -201,14 +201,14 @@ public class MapperService {
 
 
 
-        Node fileIdentifierNode = XPATH.getNode(idfMdMetadataNode,"./gmd:fileIdentifier/gco:CharacterString");
+        Node fileIdentifierNode = XPATH.getNode(idfMdMetadataNode,"./fileIdentifier/CharacterString");
         if (fileIdentifierNode != null) {
             String fileIdentifier = fileIdentifierNode.getTextContent().trim();
             dataset.setIdentifier(fileIdentifierNode.getTextContent().trim());
             dataset.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier));
         }
 
-        Node languageNode = XPATH.getNode(idfMdMetadataNode,"./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:language/gmd:LanguageCode/@codeListValue");
+        Node languageNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/language/LanguageCode/@codeListValue");
         if(languageNode != null) {
             dataset.setLanguage(new LangTextElement(languageNode.getTextContent().trim()));
         }
@@ -223,7 +223,7 @@ public class MapperService {
 
 
         // SPATIAL
-        NodeList geographicBoundingBoxNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
+        NodeList geographicBoundingBoxNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/*/extent/EX_Extent/geographicElement/EX_GeographicBoundingBox");
         if(geographicBoundingBoxNodes != null) {
             for (int i = 0; i < geographicBoundingBoxNodes.getLength(); i++) {
                 Node node = geographicBoundingBoxNodes.item(i);
@@ -236,12 +236,12 @@ public class MapperService {
 
 
         // TEMPORAL
-        NodeList temporalNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent");
+        NodeList temporalNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/*/extent/EX_Extent/temporalElement/EX_TemporalExtent");
         if(temporalNodes != null) {
             for (int i = 0; i < temporalNodes.getLength(); i++) {
                 Node temporalNode = temporalNodes.item(i);
-                Node beginNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:beginPosition");
-                Node endNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:endPosition");
+                Node beginNode = XPATH.getNode(temporalNode, "./extent/TimePeriod/beginPosition");
+                Node endNode = XPATH.getNode(temporalNode, "./extent/TimePeriod/endPosition");
                 if ((beginNode != null && !beginNode.getTextContent().trim().isEmpty()) || (endNode != null && !endNode.getTextContent().trim().isEmpty())) {
                     PeriodOfTimeElement periodOfTimeElement = new PeriodOfTimeElement();
 
@@ -271,12 +271,12 @@ public class MapperService {
         }
 
 
-        NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+        NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints");
         if(constraintsNodes != null) {
             for (int i = 0; i < constraintsNodes.getLength(); i++) {
                 Node constraintsNode = constraintsNodes.item(i);
-                Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
-                Node otherConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
+                Node useConstraintsNode = XPATH.getNode(constraintsNode, "./useConstraints/MD_RestrictionCode/@codeListValue");
+                Node otherConstraintsNode = XPATH.getNode(constraintsNode, "./otherConstraints/CharacterString");
                 if (useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
                     dataset.setAccessRights(new LangTextElement(otherConstraintsNode.getTextContent().trim()));
                     break;
@@ -304,20 +304,20 @@ public class MapperService {
     private Agent mapAgent(Node responsiblePartyNode) {
         Agent agent = new Agent();
 
-        Node organisationNameNode = XPATH.getNode(responsiblePartyNode, "./gmd:organisationName/gco:CharacterString");
-        Node individualNameNode = XPATH.getNode(responsiblePartyNode, "./gmd:organisationName/gco:CharacterString");
+        Node organisationNameNode = XPATH.getNode(responsiblePartyNode, "./organisationName/CharacterString");
+        Node individualNameNode = XPATH.getNode(responsiblePartyNode, "./organisationName/CharacterString");
         if(organisationNameNode != null) {
             agent.setName(organisationNameNode.getTextContent().trim());
         } else if (individualNameNode != null) {
             agent.setName(individualNameNode.getTextContent().trim());
         }
 
-        Node emailNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        Node emailNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/electronicMailAddress/CharacterString");
         if(emailNode != null){
             agent.setMbox(emailNode.getTextContent().trim());
         }
 
-        Node urlNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        Node urlNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage/URL");
         if(urlNode != null){
             agent.setHomepage(urlNode.getTextContent().trim());
         }
@@ -332,40 +332,40 @@ public class MapperService {
             organization.setNodeID(uuidNode.getTextContent().trim());
         }
 
-        Node organisationNameNode = XPATH.getNode(responsiblePartyNode, "./gmd:organisationName/gco:CharacterString");
-        Node individualNameNode = XPATH.getNode(responsiblePartyNode, "./gmd:individualName/gco:CharacterString");
+        Node organisationNameNode = XPATH.getNode(responsiblePartyNode, "./organisationName/CharacterString");
+        Node individualNameNode = XPATH.getNode(responsiblePartyNode, "./individualName/CharacterString");
         if(organisationNameNode != null) {
             organization.setFn(organisationNameNode.getTextContent().trim());
         } else if (individualNameNode != null) {
             organization.setFn(individualNameNode.getTextContent().trim());
         }
 
-        Node postalCodeNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString");
+        Node postalCodeNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/postalCode/CharacterString");
         if(postalCodeNode != null){
             organization.setHasPostalCode(postalCodeNode.getTextContent().trim());
         }
 
-        Node deliveryPointNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString");
+        Node deliveryPointNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/deliveryPoint/CharacterString");
         if(deliveryPointNode != null){
             organization.setHasStreetAddress(deliveryPointNode.getTextContent().trim());
         }
 
-        Node cityNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString");
+        Node cityNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/city/CharacterString");
         if(cityNode != null){
             organization.setHasLocality(cityNode.getTextContent().trim());
         }
 
-        Node countryNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:country/gco:CharacterString");
+        Node countryNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/country/CharacterString");
         if(countryNode != null){
             organization.setHasCountryName(countryNode.getTextContent().trim());
         }
 
-        Node emailNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString");
+        Node emailNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/electronicMailAddress/CharacterString");
         if(emailNode != null){
             organization.setHasEmail(new ResourceElement(emailNode.getTextContent().trim()));
         }
 
-        Node urlNode = XPATH.getNode(responsiblePartyNode, "./gmd:contactInfo/gmd:CI_Contact/gmd:onlineResource/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        Node urlNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage/URL");
         if(urlNode != null){
             organization.setHasURL(new ResourceElement(urlNode.getTextContent().trim()));
         }
@@ -447,20 +447,20 @@ public class MapperService {
 
         List<Distribution> dists = new ArrayList<>();
 
-        Node idfMdMetadataNode = XPATH.getNode(idfDataNode, "./idf:body/idf:idfMdMetadata");
+        Node idfMdMetadataNode = XPATH.getNode(idfDataNode, "./body/idfMdMetadata");
 
-        String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./gmd:identificationInfo[1]/*/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date"));
+        String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
 
-        NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
+        NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/transferOptions");
 
-        NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString|./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format/gmd:name");
+        NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/distributionFormat/MD_Format/name/CharacterString|./distributionInfo/MD_Distribution/distributor/MD_Distributor/distributorFormat/MD_Format/name");
 
         if(transferOptionNodes != null) {
             for (int i = 0; i < transferOptionNodes.getLength(); i++) {
                 Node transferOptionNode = transferOptionNodes.item(i);
-                Node onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource");
+                Node onlineResNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/idfOnlineResource");
                 if (onlineResNode == null) {
-                    onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource");
+                    onlineResNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/CI_OnlineResource");
                 }
 
                 if (onlineResNode == null) {
@@ -468,14 +468,14 @@ public class MapperService {
                     continue;
                 }
 
-                Node linkageNode = XPATH.getNode(onlineResNode, "./gmd:linkage/gmd:URL");
+                Node linkageNode = XPATH.getNode(onlineResNode, "./linkage/URL");
 
                 if (linkageNode == null) {
                     log.warn("Skip Distribution - No Linkage");
                     continue;
                 }
 
-                Node functionNode = XPATH.getNode(onlineResNode, "./gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue");
+                Node functionNode = XPATH.getNode(onlineResNode, "./function/CI_OnLineFunctionCode/@codeListValue");
                 if (functionNode == null || (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))) {
                     log.warn("Skip Distribution - Function neither information nor download");
                     continue;
@@ -493,10 +493,10 @@ public class MapperService {
                 Distribution dist = new Distribution();
                 dist.getAccessURL().setResource(accessURL);
 
-                Node titleNode = XPATH.getNode(onlineResNode, "./gmd:name/gco:CharacterString");
+                Node titleNode = XPATH.getNode(onlineResNode, "./name/CharacterString");
                 dist.setTitle(titleNode.getTextContent().trim());
 
-                Node descriptionNode = XPATH.getNode(onlineResNode, "./gmd:description/gco:CharacterString");
+                Node descriptionNode = XPATH.getNode(onlineResNode, "./description/CharacterString");
                 if (descriptionNode != null) {
                     dist.setDescription(descriptionNode.getTextContent().trim());
                 }
@@ -514,7 +514,7 @@ public class MapperService {
                 }
 
                 if (format == null) {
-                    Node applicationProfileNode = XPATH.getNode(onlineResNode, "./gmd:applicationProfile/gco:CharacterString");
+                    Node applicationProfileNode = XPATH.getNode(onlineResNode, "./applicationProfile/CharacterString");
                     if (applicationProfileNode != null) {
                         format = formatMapper.map(applicationProfileNode.getTextContent().trim());
                     }
@@ -539,14 +539,14 @@ public class MapperService {
 */
 
                 //License
-                NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+                NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints");
 
                 String licenseURI = null;
                 if(constraintsNodes != null) {
                     for (int constraintsNodeIndex = 0; constraintsNodeIndex < constraintsNodes.getLength(); constraintsNodeIndex++) {
                         Node constraintsNode = constraintsNodes.item(constraintsNodeIndex);
-                        Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
-                        NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
+                        Node useConstraintsNode = XPATH.getNode(constraintsNode, "./useConstraints/MD_RestrictionCode/@codeListValue");
+                        NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./otherConstraints/CharacterString");
                         if (useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
                             for (int otherConstraintsNodeIndex = 0; otherConstraintsNodeIndex < otherConstraintsNodes.getLength(); otherConstraintsNodeIndex++) {
                                 Node otherConstraintsNode = otherConstraintsNodes.item(otherConstraintsNodeIndex);
@@ -580,7 +580,7 @@ public class MapperService {
     }
 
     private String getDateOrDateTime(Node parent){
-        Node node = XPATH.getNode(parent, "./gco:Date|./gco:DateTime");
+        Node node = XPATH.getNode(parent, "./Date|./DateTime");
         if(node != null)
             return node.getTextContent().trim();
         return null;
@@ -615,10 +615,10 @@ public class MapperService {
     private String mapGeoJson(Node spatial) {
         String type = "Polygon";
 
-        String north = XPATH.getNode(spatial, "./gmd:northBoundLatitude/gco:Decimal").getTextContent().trim();
-        String east = XPATH.getNode(spatial, "./gmd:eastBoundLongitude/gco:Decimal").getTextContent().trim();
-        String south = XPATH.getNode(spatial, "./gmd:southBoundLatitude/gco:Decimal").getTextContent().trim();
-        String west = XPATH.getNode(spatial, "./gmd:westBoundLongitude/gco:Decimal").getTextContent().trim();
+        String north = XPATH.getNode(spatial, "./northBoundLatitude/Decimal").getTextContent().trim();
+        String east = XPATH.getNode(spatial, "./eastBoundLongitude/Decimal").getTextContent().trim();
+        String south = XPATH.getNode(spatial, "./southBoundLatitude/Decimal").getTextContent().trim();
+        String west = XPATH.getNode(spatial, "./westBoundLongitude/Decimal").getTextContent().trim();
 
         String coordinates = "[[[" + east + ", " + north + "], " +
                 "[" + east + ", " + south + "], " +
@@ -687,7 +687,7 @@ public class MapperService {
                 distributions.addAll(distributionList);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                log.warn("Document has been skipped: " + e.getMessage());
+                log.warn("Document " + hit.getId() + " has been skipped: " + e.getMessage());
             }
         }
         mapCatalog(dcatApDe.getCatalog());
