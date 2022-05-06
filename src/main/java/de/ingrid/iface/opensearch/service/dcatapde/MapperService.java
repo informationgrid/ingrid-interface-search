@@ -40,12 +40,16 @@ import de.ingrid.utils.xml.IDFNamespaceContext;
 import de.ingrid.utils.xpath.XPathUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.dom4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -660,9 +664,15 @@ public class MapperService {
                     }
                     if (idfRecord != null) {
                         String idfData = IdfTool.getIdfDataFromRecord(idfRecord);
-                        Document idfDoc = DocumentHelper.parseText(idfData);
+                        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder builder = factory.newDocumentBuilder();
+                        StringBuilder xmlStringBuilder = new StringBuilder();
+                        xmlStringBuilder.append(idfData);
+                        ByteArrayInputStream input = new ByteArrayInputStream(
+                                xmlStringBuilder.toString().getBytes("UTF-8"));
+                        Document idfDoc = builder.parse(input);
 
-                        idfDataNode = idfDoc.getRootElement();
+                        idfDataNode = idfDoc.getDocumentElement();
                     }
                 }
 
