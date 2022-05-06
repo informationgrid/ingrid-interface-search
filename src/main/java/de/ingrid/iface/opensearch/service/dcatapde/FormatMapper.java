@@ -36,73 +36,22 @@ public class FormatMapper {
     }
 
     private Map<String, List<String>> getMapFromFile() throws IOException {
-        return new HashMap<>();
-        /*
         ObjectMapper objectMapper = new ObjectMapper();
-        InputStream fileStream = new ClassPathResource("mapping.json").getInputStream();
+        InputStream fileStream = new ClassPathResource("dcatapde/file-types.json").getInputStream();
         TypeReference<HashMap<String,List<String>>> typeRef
                 = new TypeReference<HashMap<String,List<String>>>() {};
         return objectMapper.readValue(fileStream, typeRef);
-
-         */
     }
 
-    public String map(String type, String url) {
+    public String map(String type) {
 
         if (type == null) {
-            log.warn("Format type is null!");
             return null;
         }
 
-        String lowerCaseURL = url == null ? "" : url.toLowerCase();
+        String mappedFormat = formatMap.get(type.toLowerCase().trim());
 
-        String mappedFormat = handleExcelFormats(type, lowerCaseURL);
-
-        if (mappedFormat == null) {
-            mappedFormat = formatMap.get(type.toLowerCase().trim());
-
-            if (mappedFormat == null) {
-                log.warn("FormatType not accepted: " + type + " and URL: " + url);
-                return null;
-            }
-        }
         return mappedFormat;
 
-    }
-
-    private String handleExcelFormats(String type, String lowerCaseURL) {
-        switch (type.trim()) {
-            case "Dateidownload":
-            case "FTP":
-            case "SOS":
-            case "WMTS":
-            case "WCS":
-            case "API":
-                if (lowerCaseURL.contains("service=wfs")) {
-                    return "WFS_SRVC";
-                } else if (lowerCaseURL.contains("capabilities")) {
-                    return "XML";
-                } else if (lowerCaseURL.contains("geojson")) {
-                    return "GeoJSON";
-                } else if (lowerCaseURL.contains("f=kmz")) {
-                    return "KMZ";
-                } else if (lowerCaseURL.endsWith(".csv")) {
-                    return "CSV";
-                } else if (lowerCaseURL.endsWith(".pdf")) {
-                    return "PDF";
-                } else if (lowerCaseURL.endsWith(".xls")) {
-                    return "XLS";
-                } else if (lowerCaseURL.endsWith(".kml")) {
-                    return "KML";
-                } else if (lowerCaseURL.endsWith(".ovl")) {
-                    return "GML";
-                } else if (lowerCaseURL.endsWith(".gpx")) {
-                    return "GML";
-                } else if (lowerCaseURL.endsWith(".zip")) {
-                    return "ZIP";
-                }
-            default:
-                return null;
-        }
     }
 }

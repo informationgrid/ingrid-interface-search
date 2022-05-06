@@ -485,6 +485,9 @@ public class MapperService {
 
         List<Node> transferOptionNodes = idfMdMetadataNode.selectNodes("./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
 
+        List<Node> formatNodes = idfMdMetadataNode.selectNodes("./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString|./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format/gmd:name");
+
+
         for (Node transferOptionNode : transferOptionNodes) {
             Node onlineResNode = transferOptionNode.selectSingleNode("./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource");
             if(onlineResNode == null){
@@ -533,6 +536,17 @@ public class MapperService {
             dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
 
             String format = null;//mapFormat(accessURL, distribution.getFormat());
+            for(Node formatNode: formatNodes){
+                format = formatMapper.map(formatNode.getText().trim());
+                if(format != null) break;
+            }
+
+            if (format == null) {
+                Node applicationProfileNode = onlineResNode.selectSingleNode("./gmd:applicationProfile/gco:CharacterString");
+                if(applicationProfileNode != null){
+                    format = formatMapper.map(applicationProfileNode.getText().trim());
+                }
+            }
 
             if (format != null) {
                 dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
@@ -640,24 +654,6 @@ public class MapperService {
                 "\"type\": \"" + type + "\"" +
                 ", \"coordinates\": " + coordinates +
                 '}';
-    }
-
-    /**
-     * Map data format to a DCAT-AP.de compatible format. Especially imported data from Excel file
-     * has ambigous data formats.
-     * See: http://publications.europa.eu/resource/authority/file-type
-     *
-     * @param url   is the URL of the given ling
-     * @param types is the given type that shall define the target of the URL
-     * @return the conform target type for DCAT-AP.de
-     */
-    private String mapFormat(String url, String[] types) {
-
-        // only use the first format in case multiple formats are available
-        String type = types == null || types.length == 0 ? null : types[0];
-
-        return formatMapper.map(type, url);
-
     }
 
     private void mapCatalog(Catalog catalog) {
