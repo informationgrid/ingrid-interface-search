@@ -86,107 +86,73 @@ public class MapperService {
 
 
         NodeList responsiblePartyNodes = XPATH.getNodeList(idfMdMetadataNode,"./gmd:identificationInfo[1]/*/gmd:pointOfContact/idf:idfResponsibleParty");
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("pointOfContact")) {
-                dataset.setContactPoint(mapVCard(responsiblePartyNode));
-                break;
+        if(responsiblePartyNodes != null) {
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("pointOfContact")) {
+                    dataset.setContactPoint(mapVCard(responsiblePartyNode));
+                    break;
+                }
+            }
+
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("publisher")) {
+                    dataset.setPublisher(mapAgentWrapper(responsiblePartyNode));
+                    break;
+                }
+            }
+
+            List<OrganizationWrapper> originator = new ArrayList<>();
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
+                    originator.add(mapOrganizationWrapper(responsiblePartyNode));
+                }
+            }
+            if (originator.size() > 0) {
+                dataset.setOriginator(originator.toArray(new OrganizationWrapper[originator.size()]));
+            }
+
+            List<AgentWrapper> maintainer = new ArrayList<>();
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("maintainer")) {
+                    maintainer.add(mapAgentWrapper(responsiblePartyNode));
+                }
+            }
+            if (maintainer.size() > 0) {
+                dataset.setMaintainer(maintainer.toArray(new AgentWrapper[maintainer.size()]));
+            }
+
+            List<AgentWrapper> contributor = new ArrayList<>();
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
+                    contributor.add(mapAgentWrapper(responsiblePartyNode));
+                }
+            }
+            if (contributor.size() > 0) {
+                dataset.setContributor(contributor.toArray(new AgentWrapper[contributor.size()]));
+            }
+
+            List<OrganizationWrapper> creator = new ArrayList<>();
+            for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
+                Node responsiblePartyNode = responsiblePartyNodes.item(i);
+                Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
+                if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("creator")) {
+                    creator.add(mapOrganizationWrapper(responsiblePartyNode));
+                }
+            }
+            if (creator.size() > 0) {
+                dataset.setOriginator(creator.toArray(new OrganizationWrapper[creator.size()]));
             }
         }
-
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("publisher")) {
-                dataset.setPublisher(mapAgentWrapper(responsiblePartyNode));
-                break;
-            }
-        }
-
-        List<OrganizationWrapper> originator = new ArrayList<>();
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
-                originator.add(mapOrganizationWrapper(responsiblePartyNode));
-            }
-        }
-        if(originator.size() > 0){
-            dataset.setOriginator(originator.toArray(new OrganizationWrapper[originator.size()]));
-        }
-
-        List<AgentWrapper> maintainer = new ArrayList<>();
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("maintainer")) {
-                maintainer.add(mapAgentWrapper(responsiblePartyNode));
-            }
-        }
-        if(maintainer.size() > 0){
-            dataset.setMaintainer(maintainer.toArray(new AgentWrapper[maintainer.size()]));
-        }
-
-        List<AgentWrapper> contributor = new ArrayList<>();
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("originator")) {
-                contributor.add(mapAgentWrapper(responsiblePartyNode));
-            }
-        }
-        if(contributor.size() > 0){
-            dataset.setContributor(contributor.toArray(new AgentWrapper[contributor.size()]));
-        }
-
-        List<OrganizationWrapper> creator = new ArrayList<>();
-        for(int i = 0; i < responsiblePartyNodes.getLength(); i++){
-            Node responsiblePartyNode= responsiblePartyNodes.item(i);
-            Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./gmd:role/gmd:CI_RoleCode/@codeListValue");
-            if(contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("creator")) {
-                creator.add(mapOrganizationWrapper(responsiblePartyNode));
-            }
-        }
-        if(creator.size() > 0){
-            dataset.setOriginator(creator.toArray(new OrganizationWrapper[creator.size()]));
-        }
-
-/*
-        dataset.setPublisher(new AgentWrapper());
-        Agent agent = dataset.getPublisher().getAgent();
-        ESAgent[] publisher = hit.getPublisher();
-        ESAgent[] displayContact = hit.getExtras().getDisplay_contact();
-
-        // only take first one if available (see specification)
-        if (publisher != null && publisher.length > 0) {
-            agent.setName(publisher[0].getOrganization());
-            //agent.setType(publisher[0].getOrganization());
-            agent.setAbout(this.appConfig.getPortalDetailUrl() + hit.getId() + PUBLISHER_RESOURCE_POSTFIX);
-        } else if (displayContact != null && displayContact.length > 0){
-            agent.setName(displayContact[0].getOrganization() != null ? displayContact[0].getOrganization() : displayContact[0].getName());
-            agent.setAbout(this.appConfig.getPortalDetailUrl() + hit.getId() + PUBLISHER_RESOURCE_POSTFIX);
-        }
-
-        // skip documents where no publisher could be found
-        if (agent.getName() == null || agent.getName().trim().isEmpty()) {
-            throw new SkipException("No publisher set in dataset: " + hit.getTitle() + " (" + hit.getId() + ")");
-        }
-*/
-
-
-        /*
-        // ContactPoint
-        dataset.setContactPoint(mapContactPoint(hit.getContact_point()));
-
-        // ORIGINATOR
-        dataset.setOriginator(mapOrganizations(hit.getOriginator()));
-
-        // CREATOR
-        dataset.setCreator(mapOrganizations(hit.getCreator()));
-
-*/
-
 
         // KEYWORDS
         List<String> keywords = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:descriptiveKeywords/*/gmd:keyword/gco:CharacterString"));
@@ -212,18 +178,20 @@ public class MapperService {
         // Distribution
         List<ResourceElement> distResources = new ArrayList<>();
         NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions");
-        for (int i = 0; i < transferOptionNodes.getLength(); i++) {
-            Node transferOptionNode = transferOptionNodes.item(i);
-            Node linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
-            if(linkageNode == null) {
-                linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+        if(transferOptionNodes != null) {
+            for (int i = 0; i < transferOptionNodes.getLength(); i++) {
+                Node transferOptionNode = transferOptionNodes.item(i);
+                Node linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource/gmd:linkage/gmd:URL");
+                if (linkageNode == null) {
+                    linkageNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:URL");
+                }
+                if (linkageNode == null) {
+                    log.warn("Skip Distribution - No Linkage");
+                    continue;
+                }
+                String accessURL = linkageNode.getTextContent().trim();
+                distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
             }
-            if(linkageNode == null){
-                log.warn("Skip Distribution - No Linkage");
-                continue;
-            }
-            String accessURL = linkageNode.getTextContent().trim();
-            distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
         }
         dataset.setDistribution(distResources);
 
@@ -252,10 +220,12 @@ public class MapperService {
 
         // SPATIAL
         NodeList geographicBoundingBoxNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox");
-        for (int i = 0; i < geographicBoundingBoxNodes.getLength(); i++) {
-            Node node = geographicBoundingBoxNodes.item(i);
-            SpatialElement spatial = mapSpatial(node, null);
-            dataset.setSpatial(spatial);
+        if(geographicBoundingBoxNodes != null) {
+            for (int i = 0; i < geographicBoundingBoxNodes.getLength(); i++) {
+                Node node = geographicBoundingBoxNodes.item(i);
+                SpatialElement spatial = mapSpatial(node, null);
+                dataset.setSpatial(spatial);
+            }
         }
 
 
@@ -263,46 +233,50 @@ public class MapperService {
 
         // TEMPORAL
         NodeList temporalNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/*/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent");
-        for(int i = 0; i < temporalNodes.getLength(); i++){
-            Node temporalNode = temporalNodes.item(i);
-            Node beginNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:beginPosition");
-            Node endNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:endPosition");
-            if((beginNode != null && !beginNode.getTextContent().trim().isEmpty()) || (endNode != null && !endNode.getTextContent().trim().isEmpty())){
-                PeriodOfTimeElement periodOfTimeElement = new PeriodOfTimeElement();
+        if(temporalNodes != null) {
+            for (int i = 0; i < temporalNodes.getLength(); i++) {
+                Node temporalNode = temporalNodes.item(i);
+                Node beginNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:beginPosition");
+                Node endNode = XPATH.getNode(temporalNode, "./gmd:extent/gml:TimePeriod/gml:endPosition");
+                if ((beginNode != null && !beginNode.getTextContent().trim().isEmpty()) || (endNode != null && !endNode.getTextContent().trim().isEmpty())) {
+                    PeriodOfTimeElement periodOfTimeElement = new PeriodOfTimeElement();
 
-                TemporalElement temporalElement = new TemporalElement();
-                temporalElement.setPeriodOfTime(periodOfTimeElement);
+                    TemporalElement temporalElement = new TemporalElement();
+                    temporalElement.setPeriodOfTime(periodOfTimeElement);
 
-                if(beginNode != null && !beginNode.getTextContent().trim().isEmpty()){
-                    DatatypeTextElement start = new DatatypeTextElement();
-                    start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-                    start.setText(beginNode.getTextContent().trim());
-                    periodOfTimeElement.setStartDate(start);
+                    if (beginNode != null && !beginNode.getTextContent().trim().isEmpty()) {
+                        DatatypeTextElement start = new DatatypeTextElement();
+                        start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        start.setText(beginNode.getTextContent().trim());
+                        periodOfTimeElement.setStartDate(start);
+                    }
+
+                    if (endNode != null && !endNode.getTextContent().trim().isEmpty()) {
+                        DatatypeTextElement end = new DatatypeTextElement();
+                        end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        end.setText(endNode.getTextContent().trim());
+                        periodOfTimeElement.setEndDate(end);
+                    }
+
+                    if (dataset.getTemporal() == null) {
+                        dataset.setTemporal(new ArrayList<>());
+                    }
+                    dataset.getTemporal().add(temporalElement);
                 }
-
-                if(endNode != null && !endNode.getTextContent().trim().isEmpty()){
-                    DatatypeTextElement end = new DatatypeTextElement();
-                    end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-                    end.setText(endNode.getTextContent().trim());
-                    periodOfTimeElement.setEndDate(end);
-                }
-
-                if(dataset.getTemporal() == null){
-                    dataset.setTemporal(new ArrayList<>());
-                }
-                dataset.getTemporal().add(temporalElement);
             }
         }
 
 
         NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
-        for(int i = 0; i < constraintsNodes.getLength(); i++){
-            Node constraintsNode = constraintsNodes.item(i);
-            Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
-            Node otherConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
-            if(useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")){
-                dataset.setAccessRights(new LangTextElement(otherConstraintsNode.getTextContent().trim()));
-                break;
+        if(constraintsNodes != null) {
+            for (int i = 0; i < constraintsNodes.getLength(); i++) {
+                Node constraintsNode = constraintsNodes.item(i);
+                Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
+                Node otherConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
+                if (useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
+                    dataset.setAccessRights(new LangTextElement(otherConstraintsNode.getTextContent().trim()));
+                    break;
+                }
             }
         }
 
@@ -464,28 +438,7 @@ public class MapperService {
             return null;
         }
         */
-/*
-        private OrganizationWrapper[] mapOrganizations(ESAgent[] agents) {
-            if (agents == null) {
-                return null;
-            }
 
-            List<OrganizationWrapper> wrapper = new ArrayList<>();
-            for (ESAgent creator : agents) {
-                String name = creator.getName();
-                if (name == null || name.isEmpty()) {
-                    name = creator.getOrganization();
-                }
-                OrganizationWrapper aw = new OrganizationWrapper();
-                aw.getAgent().setName(name);
-                aw.getAgent().setHomepage(creator.getHomepage());
-                aw.getAgent().setMbox(creator.getMbox());
-
-                wrapper.add(aw);
-            }
-            return wrapper.toArray(new OrganizationWrapper[0]);
-        }
-    */
     private List<Distribution> mapDistribution(Element idfDataNode, List<String> currentDistributionUrls) {
 
         List<Distribution> dists = new ArrayList<>();
@@ -498,79 +451,81 @@ public class MapperService {
 
         NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format/gmd:name/gco:CharacterString|./gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorFormat/gmd:MD_Format/gmd:name");
 
-        for (int i = 0; i < transferOptionNodes.getLength(); i++) {
-            Node transferOptionNode = transferOptionNodes.item(i);
-            Node onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource");
-            if(onlineResNode == null){
-                onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource");
-            }
-
-            if(onlineResNode == null){
-                log.warn("Skip Distribution - No OnlineResource");
-                continue;
-            }
-
-            Node linkageNode = XPATH.getNode(onlineResNode, "./gmd:linkage/gmd:URL");
-
-            if(linkageNode == null){
-                log.warn("Skip Distribution - No Linkage");
-                continue;
-            }
-
-            Node functionNode = XPATH.getNode(onlineResNode,"./gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue");
-            if(functionNode == null || (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))){
-                log.warn("Skip Distribution - Function neither information nor download");
-                continue;
-            }
-
-            String accessURL = linkageNode.getTextContent().trim();
-
-            // skip distributions that are already added
-            if (currentDistributionUrls.contains(accessURL)) {
-                continue;
-            }
-
-            currentDistributionUrls.add(accessURL);
-
-            Distribution dist = new Distribution();
-            dist.getAccessURL().setResource(accessURL);
-
-            Node titleNode = XPATH.getNode(onlineResNode, "./gmd:name/gco:CharacterString");
-            dist.setTitle(titleNode.getTextContent().trim());
-
-            Node descriptionNode = XPATH.getNode(onlineResNode, "./gmd:description/gco:CharacterString");
-            if(descriptionNode != null){
-                dist.setDescription(descriptionNode.getTextContent().trim());
-            }
-
-            dist.setModified(new DatatypeTextElement(modified));
-            dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
-
-            String format = null;
-            for(int j = 0; j < formatNodes.getLength(); j++){
-                Node formatNode = formatNodes.item(j);
-                format = formatMapper.map(formatNode.getTextContent().trim());
-                if(format != null) break;
-            }
-
-            if (format == null) {
-                Node applicationProfileNode = XPATH.getNode(onlineResNode, "./gmd:applicationProfile/gco:CharacterString");
-                if(applicationProfileNode != null){
-                    format = formatMapper.map(applicationProfileNode.getTextContent().trim());
+        if(transferOptionNodes != null) {
+            for (int i = 0; i < transferOptionNodes.getLength(); i++) {
+                Node transferOptionNode = transferOptionNodes.item(i);
+                Node onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/idf:idfOnlineResource");
+                if (onlineResNode == null) {
+                    onlineResNode = XPATH.getNode(transferOptionNode, "./gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource");
                 }
-            }
 
-            if (format != null) {
-                dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
-            }
-            dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+                if (onlineResNode == null) {
+                    log.warn("Skip Distribution - No OnlineResource");
+                    continue;
+                }
 
-            if(functionNode.getTextContent().equals("download")) {
-                dist.setDownloadURL(new ResourceElement(accessURL));
-            }
-            else if(functionNode.getTextContent().equals("information")) {
-                dist.setPage(new ResourceElement(accessURL));
-            }
+                Node linkageNode = XPATH.getNode(onlineResNode, "./gmd:linkage/gmd:URL");
+
+                if (linkageNode == null) {
+                    log.warn("Skip Distribution - No Linkage");
+                    continue;
+                }
+
+                Node functionNode = XPATH.getNode(onlineResNode, "./gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue");
+                if (functionNode == null || (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))) {
+                    log.warn("Skip Distribution - Function neither information nor download");
+                    continue;
+                }
+
+                String accessURL = linkageNode.getTextContent().trim();
+
+                // skip distributions that are already added
+                if (currentDistributionUrls.contains(accessURL)) {
+                    continue;
+                }
+
+                currentDistributionUrls.add(accessURL);
+
+                Distribution dist = new Distribution();
+                dist.getAccessURL().setResource(accessURL);
+
+                Node titleNode = XPATH.getNode(onlineResNode, "./gmd:name/gco:CharacterString");
+                dist.setTitle(titleNode.getTextContent().trim());
+
+                Node descriptionNode = XPATH.getNode(onlineResNode, "./gmd:description/gco:CharacterString");
+                if (descriptionNode != null) {
+                    dist.setDescription(descriptionNode.getTextContent().trim());
+                }
+
+                dist.setModified(new DatatypeTextElement(modified));
+                dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+
+                String format = null;
+                if(formatNodes != null) {
+                    for (int j = 0; j < formatNodes.getLength(); j++) {
+                        Node formatNode = formatNodes.item(j);
+                        format = formatMapper.map(formatNode.getTextContent().trim());
+                        if (format != null) break;
+                    }
+                }
+
+                if (format == null) {
+                    Node applicationProfileNode = XPATH.getNode(onlineResNode, "./gmd:applicationProfile/gco:CharacterString");
+                    if (applicationProfileNode != null) {
+                        format = formatMapper.map(applicationProfileNode.getTextContent().trim());
+                    }
+                }
+
+                if (format != null) {
+                    dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
+                }
+                dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+
+                if (functionNode.getTextContent().equals("download")) {
+                    dist.setDownloadURL(new ResourceElement(accessURL));
+                } else if (functionNode.getTextContent().equals("information")) {
+                    dist.setPage(new ResourceElement(accessURL));
+                }
 
             /*
             if(distribution.getByteSize() != null){
@@ -579,39 +534,41 @@ public class MapperService {
             }
 */
 
-            //License
-            NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
+                //License
+                NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./gmd:identificationInfo[1]/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints");
 
-            String licenseURI = null;
-            for(int constraintsNodeIndex = 0; constraintsNodeIndex < constraintsNodes.getLength(); constraintsNodeIndex++){
-                Node constraintsNode = constraintsNodes.item(constraintsNodeIndex);
-                Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
-                NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
-                if(useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")){
-                    for(int otherConstraintsNodeIndex = 0; otherConstraintsNodeIndex < otherConstraintsNodes.getLength(); otherConstraintsNodeIndex++) {
-                        Node otherConstraintsNode =  otherConstraintsNodes.item(otherConstraintsNodeIndex);
-                        Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
-                        if (urlMatcher.find()) {
-                            licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
-                            dist.setLicense(new ResourceElement(licenseURI));
-                            Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
-                            if (quelleMatcher.find()) {
-                                dist.setLicenseAttributionByText(quelleMatcher.group(1));
+                String licenseURI = null;
+                if(constraintsNodes != null) {
+                    for (int constraintsNodeIndex = 0; constraintsNodeIndex < constraintsNodes.getLength(); constraintsNodeIndex++) {
+                        Node constraintsNode = constraintsNodes.item(constraintsNodeIndex);
+                        Node useConstraintsNode = XPATH.getNode(constraintsNode, "./gmd:useConstraints/gmd:MD_RestrictionCode/@codeListValue");
+                        NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./gmd:otherConstraints/gco:CharacterString");
+                        if (useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
+                            for (int otherConstraintsNodeIndex = 0; otherConstraintsNodeIndex < otherConstraintsNodes.getLength(); otherConstraintsNodeIndex++) {
+                                Node otherConstraintsNode = otherConstraintsNodes.item(otherConstraintsNodeIndex);
+                                Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
+                                if (urlMatcher.find()) {
+                                    licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
+                                    dist.setLicense(new ResourceElement(licenseURI));
+                                    Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
+                                    if (quelleMatcher.find()) {
+                                        dist.setLicenseAttributionByText(quelleMatcher.group(1));
+                                    }
+                                    break;
+                                }
                             }
-                            break;
                         }
                     }
                 }
-            }
-            if(licenseURI != null) {
-                dist.setLicense(new ResourceElement(licenseURI));
-            } else {
-                dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
-            }
+                if (licenseURI != null) {
+                    dist.setLicense(new ResourceElement(licenseURI));
+                } else {
+                    dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
+                }
 
-            dists.add(dist);
+                dists.add(dist);
+            }
         }
-
 
 
         return dists;
