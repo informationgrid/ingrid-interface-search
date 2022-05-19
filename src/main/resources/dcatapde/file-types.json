@@ -1,0 +1,450 @@
+{
+  "ARC": [
+    "ARC"
+  ],
+  "ARC_GZ": [
+    "ARC_GZ"
+  ],
+  "ATOM": [
+    "ATOM",
+    "AtomFeed",
+    "Atom Feed"
+  ],
+  "AZW": [
+    "AZW"
+  ],
+  "BIN": [
+    "BIN"
+  ],
+  "BITS": [
+    "BITS"
+  ],
+  "BMP": [
+    "BMP"
+  ],
+  "BWF": [
+    "BWF"
+  ],
+  "CSS": [
+    "CSS"
+  ],
+  "CSV": [
+    "CSV"
+  ],
+  "DBF": [
+    "DBF"
+  ],
+  "DCR": [
+    "DCR"
+  ],
+  "DMP": [
+    "DMP"
+  ],
+  "DOC": [
+    "DOC"
+  ],
+  "DOCX": [
+    "DOCX"
+  ],
+  "DTD_SGML": [
+    "DTD_SGML"
+  ],
+  "DTD_XML": [
+    "DTD_XML"
+  ],
+  "E00": [
+    "E00"
+  ],
+  "ECW": [
+    "ECW"
+  ],
+  "EPS": [
+    "EPS"
+  ],
+  "EPUB": [
+    "EPUB"
+  ],
+  "EXE": [
+    "EXE"
+  ],
+  "FMX2": [
+    "FMX2"
+  ],
+  "FMX3": [
+    "FMX3"
+  ],
+  "FMX4": [
+    "FMX4"
+  ],
+  "GDB": [
+    "GDB"
+  ],
+  "GEOJSON": [
+    "GEOJSON"
+  ],
+  "GIF": [
+    "GIF"
+  ],
+  "GML": [
+    "GML"
+  ],
+  "GMZ": [
+    "GMZ"
+  ],
+  "GRID": [
+    "GRID"
+  ],
+  "GRID_ASCII": [
+    "GRID_ASCII"
+  ],
+  "GZIP": [
+    "GZIP"
+  ],
+  "HDF": [
+    "HDF"
+  ],
+  "HDT": [
+    "HDT"
+  ],
+  "HTML": [
+    "HTML",
+    "Portal",
+    "WWW"
+  ],
+  "HTML_SIMPL": [
+    "HTML_SIMPL"
+  ],
+  "ICS": [
+    "ICS"
+  ],
+  "IMMC_XML": [
+    "IMMC_XML"
+  ],
+  "INDD": [
+    "INDD"
+  ],
+  "ISO": [
+    "ISO"
+  ],
+  "ISO_ZIP": [
+    "ISO_ZIP"
+  ],
+  "JATS": [
+    "JATS"
+  ],
+  "JPEG": [
+    "JPEG"
+  ],
+  "JPEG2000": [
+    "JPEG2000"
+  ],
+  "JS": [
+    "JS"
+  ],
+  "JSON": [
+    "JSON"
+  ],
+  "JSON_LD": [
+    "JSON_LD"
+  ],
+  "KML": [
+    "KML"
+  ],
+  "KMZ": [
+    "KMZ"
+  ],
+  "LAS": [
+    "LAS"
+  ],
+  "LAZ": [
+    "LAZ"
+  ],
+  "LEG": [
+    "LEG"
+  ],
+  "MAP_PRVW": [
+    "MAP_PRVW"
+  ],
+  "MAP_SRVC": [
+    "MAP_SRVC"
+  ],
+  "MBOX": [
+    "MBOX"
+  ],
+  "MDB": [
+    "MDB"
+  ],
+  "METS": [
+    "METS"
+  ],
+  "METS_ZIP": [
+    "METS_ZIP"
+  ],
+  "MHTML": [
+    "MHTML"
+  ],
+  "MOBI": [
+    "MOBI"
+  ],
+  "MOP": [
+    "MOP"
+  ],
+  "MPEG2": [
+    "MPEG2"
+  ],
+  "MPEG4": [
+    "MPEG4"
+  ],
+  "MPEG4_AVC": [
+    "MPEG4_AVC"
+  ],
+  "MRSID": [
+    "MRSID"
+  ],
+  "MSG_HTTP": [
+    "MSG_HTTP"
+  ],
+  "MXD": [
+    "MXD"
+  ],
+  "N3": [
+    "N3"
+  ],
+  "NETCDF": [
+    "NETCDF"
+  ],
+  "OCTET": [
+    "OCTET"
+  ],
+  "ODB": [
+    "ODB"
+  ],
+  "ODC": [
+    "ODC"
+  ],
+  "ODF": [
+    "ODF"
+  ],
+  "ODG": [
+    "ODG"
+  ],
+  "ODS": [
+    "ODS"
+  ],
+  "ODT": [
+    "ODT"
+  ],
+  "OVF": [
+    "OVF"
+  ],
+  "OWL": [
+    "OWL"
+  ],
+  "PDF": [
+    "PDF"
+  ],
+  "PDF1X": [
+    "PDF1X"
+  ],
+  "PDFA1A": [
+    "PDFA1A"
+  ],
+  "PDFA1B": [
+    "PDFA1B"
+  ],
+  "PDFA2A": [
+    "PDFA2A"
+  ],
+  "PDFA2B": [
+    "PDFA2B"
+  ],
+  "PDFA3": [
+    "PDFA3"
+  ],
+  "PDFX": [
+    "PDFX"
+  ],
+  "PDFX1A": [
+    "PDFX1A"
+  ],
+  "PDFX2A": [
+    "PDFX2A"
+  ],
+  "PDFX4": [
+    "PDFX4"
+  ],
+  "PL": [
+    "PL"
+  ],
+  "PNG": [
+    "PNG"
+  ],
+  "PPS": [
+    "PPS"
+  ],
+  "PPSX": [
+    "PPSX"
+  ],
+  "PPT": [
+    "PPT"
+  ],
+  "PPTX": [
+    "PPTX"
+  ],
+  "PS": [
+    "PS"
+  ],
+  "PSD": [
+    "PSD"
+  ],
+  "PWP": [
+    "PWP"
+  ],
+  "QGS": [
+    "QGS"
+  ],
+  "RAR": [
+    "RAR"
+  ],
+  "RDF": [
+    "RDF"
+  ],
+  "RDF_N_QUADS": [
+    "RDF_N_QUADS"
+  ],
+  "RDF_N_TRIPLES": [
+    "RDF_N_TRIPLES"
+  ],
+  "RDF_TRIG": [
+    "RDF_TRIG"
+  ],
+  "RDF_TURTLE": [
+    "RDF_TURTLE"
+  ],
+  "RDF_XML": [
+    "RDF_XML"
+  ],
+  "RDFA": [
+    "RDFA"
+  ],
+  "REST": [
+    "REST"
+  ],
+  "RSS": [
+    "RSS"
+  ],
+  "RTF": [
+    "RTF"
+  ],
+  "SCHEMA_XML": [
+    "SCHEMA_XML"
+  ],
+  "SDMX": [
+    "SDMX"
+  ],
+  "SGML": [
+    "SGML"
+  ],
+  "SHP": [
+    "SHP",
+    "Shape"
+  ],
+  "SKOS_XML": [
+    "SKOS_XML"
+  ],
+  "SPARQLQ": [
+    "SPARQLQ"
+  ],
+  "SPARQLQRES": [
+    "SPARQLQRES"
+  ],
+  "SQL": [
+    "SQL"
+  ],
+  "SVG": [
+    "SVG"
+  ],
+  "TAB": [
+    "TAB"
+  ],
+  "TAB_RSTR": [
+    "TAB_RSTR"
+  ],
+  "TAR": [
+    "TAR"
+  ],
+  "TAR_GZ": [
+    "TAR_GZ"
+  ],
+  "TAR_XZ": [
+    "TAR_XZ"
+  ],
+  "TIFF": [
+    "TIFF"
+  ],
+  "TIFF_FX": [
+    "TIFF_FX"
+  ],
+  "TMX": [
+    "TMX"
+  ],
+  "TSV": [
+    "TSV"
+  ],
+  "TXT": [
+    "TXT"
+  ],
+  "WARC": [
+    "WARC"
+  ],
+  "WARC_GZ": [
+    "WARC_GZ"
+  ],
+  "WFS_SRVC": [
+    "WFS_SRVC",
+    "WFS"
+  ],
+  "WMS_SRVC": [
+    "WMS_SRVC",
+    "WMS"
+  ],
+  "WORLD": [
+    "WORLD"
+  ],
+  "XHTML": [
+    "XHTML"
+  ],
+  "XHTML_SIMPL": [
+    "XHTML_SIMPL"
+  ],
+  "XLIFF": [
+    "XLIFF"
+  ],
+  "XLS": [
+    "XLS"
+  ],
+  "XLSB": [
+    "XLSB"
+  ],
+  "XLSM": [
+    "XLSM"
+  ],
+  "XLSX": [
+    "XLSX"
+  ],
+  "XML": [
+    "XML"
+  ],
+  "XSLFO": [
+    "XSLFO"
+  ],
+  "XSLT": [
+    "XSLT"
+  ],
+  "XYZ": [
+    "XYZ"
+  ],
+  "ZIP": [
+    "ZIP"
+  ]
+}

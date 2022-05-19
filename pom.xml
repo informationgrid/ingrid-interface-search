@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>5.13.0-SNAPSHOT</version>
+  <version>5.13.0.3632-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>InGrid Interface Search</name>
   <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.
@@ -69,6 +69,11 @@
 
   <!-- ==================== DEPENDENCIES ==================== -->
   <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.13.2</version>
+    </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>atom-feed-client</artifactId>
@@ -178,6 +183,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>3.6.0</version>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
