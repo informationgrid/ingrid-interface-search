@@ -146,7 +146,10 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
 
             if(requestWrapper.getFormat().equals("rdf")){
-                DcatApDe dcat = this.dcatMapperService.mapHitsToDcat(toIterable(hitIterator));
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/rdf+xml");
+
+                DcatApDe dcat = this.dcatMapperService.mapHitsToDcat(hitIterator, pageSize);
 
                 dcat.handlePaging((Request) request, page, pageSize, hitIterator.getTotalResults());
 
@@ -160,8 +163,6 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                     pout = response.getWriter();
                 }
 
-                response.setContentType("application/rdf+xml");
-                response.setCharacterEncoding("UTF-8");
                 pout.write(xmlDcat);
 
                 return;

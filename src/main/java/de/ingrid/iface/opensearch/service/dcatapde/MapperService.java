@@ -29,6 +29,7 @@ import de.ingrid.iface.opensearch.model.dcatapde.Distribution;
 import de.ingrid.iface.opensearch.model.dcatapde.catalog.*;
 import de.ingrid.iface.opensearch.model.dcatapde.general.*;
 import de.ingrid.iface.util.IBusHelper;
+import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
@@ -70,6 +71,9 @@ public class MapperService {
     private FormatMapper formatMapper;
 
     @Autowired
+    private PeriodicityMapper periodicityMapper;
+
+    @Autowired
     private IBusHelper iBusHelper;
 
     private Dataset mapDataset(Element idfDataNode) {
@@ -78,12 +82,12 @@ public class MapperService {
 
         Node idfMdMetadataNode = XPATH.getNode(idfDataNode,"./body/idfMdMetadata");
 
-        Node abstractNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/abstract/CharacterString");
+        Node abstractNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/abstract/CharacterString|./identificationInfo[1]/SV_ServiceIdentification/abstract/CharacterString");
         if (abstractNode != null) {
             dataset.setDescription(new LangTextElement(abstractNode.getTextContent().trim()));
         }
 
-        Node titleNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/citation/CI_Citation/title/CharacterString");
+        Node titleNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/citation/CI_Citation/title/CharacterString|./identificationInfo[1]/SV_ServiceIdentification/citation/CI_Citation/title/CharacterString");
         if(titleNode != null) {
             dataset.setTitle(new LangTextElement(titleNode.getTextContent().trim()));
         }
@@ -170,6 +174,12 @@ public class MapperService {
             if (themes.size() > 0) {
                 dataset.setThemes(themes.stream().map(theme -> "http://publications.europa.eu/resource/authority/data-theme/" + theme.toString()).toArray(String[]::new));
             }
+            else {
+                log.warn("No Themes!");
+            }
+        }
+        else {
+            log.warn("No Keywords or Categories!");
         }
 
 
@@ -197,6 +207,18 @@ public class MapperService {
                 distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
             }
         }
+        Node serviceIdentificationNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/SV_ServiceIdentification");
+        if(serviceIdentificationNode != null) {
+            NodeList containsOperationsNodes = XPATH.getNodeList(serviceIdentificationNode, "./containsOperations");
+            for (int i = 0; i < containsOperationsNodes.getLength(); i++) {
+                Node containsOperationsNode = containsOperationsNodes.item(i);
+                Node linkageNode = XPATH.getNode(containsOperationsNode, "./SV_OperationMetadata/connectPoint/CI_OnlineResource/linkage/URL");
+                if (linkageNode != null) {
+                    String accessURL = linkageNode.getTextContent().trim();
+                    distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
+                }
+            }
+        }
         dataset.setDistribution(distResources);
 
 
@@ -208,15 +230,22 @@ public class MapperService {
             dataset.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier));
         }
 
+        /*
         Node languageNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/language/LanguageCode/@codeListValue");
         if(languageNode != null) {
             dataset.setLanguage(new LangTextElement(languageNode.getTextContent().trim()));
         }
+        */
 
-            /*
-        ResourceElement accrualPeriodicity = mapAccrualPeriodicity(hitDetail.getAccrual_periodicity());
-        dataset.setAccrualPeriodicity(accrualPeriodicity);
-*/
+        Node maintenanceFrequencyNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/*/resourceMaintenance/MD_MaintenanceInformation/maintenanceAndUpdateFrequency/MD_MaintenanceFrequencyCode/@codeListValue");
+        if(maintenanceFrequencyNode != null) {
+            String periodicity = periodicityMapper.map(maintenanceFrequencyNode.getTextContent().trim());
+            if(periodicity != null){
+                dataset.setAccrualPeriodicity(new ResourceElement(periodicity));
+            } else {
+                log.warn("Unknown Periodicity: "+maintenanceFrequencyNode.getTextContent().trim());
+            }
+        }
 
         // CONTRIBUTOR ID
         dataset.setContributorID(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CONTRIBUTOR_ID, "http://dcat-ap.de/def/contributors/InGrid")));
@@ -277,16 +306,28 @@ public class MapperService {
         }
 
 
-        NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints");
+        NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints|./identificationInfo[1]/SV_ServiceIdentification/resourceConstraints/MD_LegalConstraints");
+        String accessRights = null;
         if(constraintsNodes != null) {
             for (int i = 0; i < constraintsNodes.getLength(); i++) {
                 Node constraintsNode = constraintsNodes.item(i);
                 Node useConstraintsNode = XPATH.getNode(constraintsNode, "./useConstraints/MD_RestrictionCode/@codeListValue");
-                Node otherConstraintsNode = XPATH.getNode(constraintsNode, "./otherConstraints/CharacterString");
-                if (useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
-                    dataset.setAccessRights(new LangTextElement(otherConstraintsNode.getTextContent().trim()));
-                    break;
+                NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./otherConstraints/CharacterString");
+                for (int j = 0; j < otherConstraintsNodes.getLength(); j++) {
+                    Node otherConstraintsNode = otherConstraintsNodes.item(j);
+                    if (useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
+                        Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
+                        if (urlMatcher.find()) {
+                            accessRights = otherConstraintsNode.getTextContent();
+                            break;
+                        } else if (accessRights == null) {
+                            accessRights = otherConstraintsNode.getTextContent();
+                        }
+                    }
                 }
+            }
+            if(accessRights != null){
+                dataset.setAccessRights(new LangTextElement(accessRights));
             }
         }
 
@@ -382,73 +423,6 @@ public class MapperService {
         return result;
     }
 
-    /*
-        private VCardOrganizationWrapper mapContactPoint(ESContactPoint contactPoint) {
-            if(contactPoint == null){
-                return null;
-            }
-
-            VCardOrganization organization = new VCardOrganization();
-
-            if(contactPoint.getOrganizationName() != null){
-                organization.setFn(contactPoint.getOrganizationName());
-            } else if(contactPoint.getFn() != null){
-                organization.setFn(contactPoint.getFn());
-            }
-
-            if(contactPoint.getStreetAddress() != null) organization.setHasStreetAddress(contactPoint.getStreetAddress());
-            if(contactPoint.getPostalCode() != null) organization.setHasPostalCode(contactPoint.getPostalCode());
-            if(contactPoint.getRegion() != null) organization.setHasLocality(contactPoint.getRegion());
-            if(contactPoint.getCountryName() != null) organization.setHasCountryName(contactPoint.getCountryName());
-
-            if(contactPoint.getHasEmail() != null) {
-                organization.setHasEmail(new ResourceElement(contactPoint.getHasEmail()));
-            }
-
-            if(contactPoint.getHasURL() != null) {
-                organization.setHasURL(new ResourceElement(contactPoint.getHasURL()));
-            }
-
-            VCardOrganizationWrapper wrapper = new VCardOrganizationWrapper();
-            wrapper.setOrganization(organization);
-
-            return wrapper;
-        }
-
-        private static List<String> PERIODICITIES = new ArrayList<>();
-        {
-            String[] array = {"ANNUAL","ANNUAL_2","ANNUAL_3","BIENNIAL","BIMONTHLY","BIWEEKLY","CONT","DAILY","DAILY_2","IRREG","MONTHLY","MONTHLY_2","MONTHLY_3","NEVER","OP_DATPRO","QUARTERLY","TRIENNIAL","UNKNOWN","UPDATE_CONT","WEEKLY","WEEKLY_2","WEEKLY_3","QUINQUENNIAL","DECENNIAL","HOURLY","QUADRENNIAL","BIHOURLY","TRIHOURLY","BIDECENNIAL","TRIDECENNIAL","OTHER"};
-            PERIODICITIES = Arrays.asList(array);
-        }
-
-        private static List<String> PERIODICITIES_CONT = new ArrayList<>();
-        {
-            String[] array = {"MINUTLY", "BIMINUTLY", "FIVEMINUTLY", "TENMINUTLY", "FIFTEENMINUTLY"};
-            PERIODICITIES_CONT = Arrays.asList(array);
-        }
-
-        private ResourceElement mapAccrualPeriodicity(String accrualPeriodicity) {
-            if(accrualPeriodicity == null || accrualPeriodicity.trim().isEmpty()){
-                return null;
-            }
-            String lowerCase = accrualPeriodicity.toLowerCase();
-            if(lowerCase.startsWith("http://publications.europa.eu/resource/authority/frequency/")){
-                return new ResourceElement(accrualPeriodicity);
-            }
-
-            if(PERIODICITIES.contains(accrualPeriodicity))
-                return new ResourceElement("http://publications.europa.eu/resource/authority/frequency/" + accrualPeriodicity);
-
-
-            if(PERIODICITIES_CONT.contains(accrualPeriodicity))
-                return new ResourceElement("http://publications.europa.eu/resource/authority/frequency/CONT");
-
-            log.warn("AccrualPeriodicity not accepted: "+accrualPeriodicity);
-
-            return null;
-        }
-        */
-
     private List<Distribution> mapDistribution(Element idfDataNode, List<String> currentDistributionUrls) {
 
         List<Distribution> dists = new ArrayList<>();
@@ -482,7 +456,7 @@ public class MapperService {
                 }
 
                 Node functionNode = XPATH.getNode(onlineResNode, "./function/CI_OnLineFunctionCode/@codeListValue");
-                if (functionNode == null || (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))) {
+                if (functionNode != null && (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))) {
                     log.warn("Skip Distribution - Function neither information nor download");
                     continue;
                 }
@@ -500,15 +474,27 @@ public class MapperService {
                 dist.getAccessURL().setResource(accessURL);
 
                 Node titleNode = XPATH.getNode(onlineResNode, "./name/CharacterString");
-                dist.setTitle(titleNode.getTextContent().trim());
-
                 Node descriptionNode = XPATH.getNode(onlineResNode, "./description/CharacterString");
+                Node datasetTitleNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/citation/CI_Citation/title/CharacterString|./identificationInfo[1]/SV_ServiceIdentification/citation/CI_Citation/title/CharacterString");
+
+                if(titleNode != null) {
+                    dist.setTitle(titleNode.getTextContent().trim());
+                } else if (descriptionNode != null){
+                    dist.setTitle(descriptionNode.getTextContent().trim());
+                } else if (datasetTitleNode != null){
+                    dist.setTitle(datasetTitleNode.getTextContent().trim());
+                }
+
                 if (descriptionNode != null) {
                     dist.setDescription(descriptionNode.getTextContent().trim());
                 }
 
                 dist.setModified(new DatatypeTextElement(modified));
-                dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                if(modified.contains("T")) {
+                    dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                } else {
+                    dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+                }
 
                 String format = null;
                 if(formatNodes != null) {
@@ -531,9 +517,9 @@ public class MapperService {
                 }
                 dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
 
-                if (functionNode.getTextContent().equals("download")) {
+                if (functionNode != null && functionNode.getTextContent().equals("download")) {
                     dist.setDownloadURL(new ResourceElement(accessURL));
-                } else if (functionNode.getTextContent().equals("information")) {
+                } else if (functionNode != null && functionNode.getTextContent().equals("information")) {
                     dist.setPage(new ResourceElement(accessURL));
                 }
 
@@ -545,44 +531,107 @@ public class MapperService {
 */
 
                 //License
-                NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints");
-
-                String licenseURI = null;
-                if(constraintsNodes != null) {
-                    for (int constraintsNodeIndex = 0; constraintsNodeIndex < constraintsNodes.getLength(); constraintsNodeIndex++) {
-                        Node constraintsNode = constraintsNodes.item(constraintsNodeIndex);
-                        Node useConstraintsNode = XPATH.getNode(constraintsNode, "./useConstraints/MD_RestrictionCode/@codeListValue");
-                        NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./otherConstraints/CharacterString");
-                        if (useConstraintsNode != null && otherConstraintsNodes != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
-                            for (int otherConstraintsNodeIndex = 0; otherConstraintsNodeIndex < otherConstraintsNodes.getLength(); otherConstraintsNodeIndex++) {
-                                Node otherConstraintsNode = otherConstraintsNodes.item(otherConstraintsNodeIndex);
-                                Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
-                                if (urlMatcher.find()) {
-                                    licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
-                                    dist.setLicense(new ResourceElement(licenseURI));
-                                    Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
-                                    if (quelleMatcher.find()) {
-                                        dist.setLicenseAttributionByText(quelleMatcher.group(1));
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (licenseURI != null) {
-                    dist.setLicense(new ResourceElement(licenseURI));
-                } else {
-                    dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
-                }
+                setLicense(idfMdMetadataNode, dist);
 
                 dists.add(dist);
             }
         }
 
 
+        Node serviceIdentificationNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/SV_ServiceIdentification");
+        if(serviceIdentificationNode != null) {
+            NodeList containsOperationsNodes = XPATH.getNodeList(serviceIdentificationNode, "./containsOperations");
+            for (int i = 0; i < containsOperationsNodes.getLength(); i++) {
+                Node containsOperationsNode = containsOperationsNodes.item(i);
+                Node linkageNode = XPATH.getNode(containsOperationsNode, "./SV_OperationMetadata/connectPoint/CI_OnlineResource/linkage/URL");
+                if (linkageNode != null) {
+                    String accessURL = linkageNode.getTextContent().trim();
+
+                    // skip distributions that are already added
+                    if (currentDistributionUrls.contains(accessURL)) {
+                        continue;
+                    }
+
+                    currentDistributionUrls.add(accessURL);
+
+                    Distribution dist = new Distribution();
+                    dist.getAccessURL().setResource(accessURL);
+
+                    dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+
+                    setLicense(idfMdMetadataNode, dist);
+
+                    Node serviceTypeNode = XPATH.getNode(serviceIdentificationNode, "./serviceType/LocalName");
+                    if (serviceTypeNode != null) {
+                        String format = formatMapper.map(serviceTypeNode.getTextContent().trim());
+                        if (format != null) {
+                            dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
+                        }
+                    }
+
+                    Node titleNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/SV_ServiceIdentification/citation/CI_Citation/title/CharacterString");
+                    if (titleNode != null) {
+                        dist.setTitle(titleNode.getTextContent().trim());
+                    }
+
+                    dist.setModified(new DatatypeTextElement(modified));
+                    if(modified.contains("T")) {
+                        dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                    } else {
+                        dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+                    }
+
+                    Node abstractNode = XPATH.getNode(serviceIdentificationNode, "./abstract/CharacterString");
+                    if(abstractNode != null){
+                        dist.setDescription(abstractNode.getTextContent().trim());
+                    }
+
+                    dists.add(dist);
+                }
+            }
+        }
+
         return dists;
 
+    }
+
+    private void setLicense(Node idfMdMetadataNode, Distribution dist) {
+        String licenseURI = null;
+        NodeList constraintsNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/resourceConstraints/MD_LegalConstraints|./identificationInfo[1]/SV_ServiceIdentification/resourceConstraints/MD_LegalConstraints");
+        if(constraintsNodes != null) {
+            for (int constraintsNodeIndex = 0; constraintsNodeIndex < constraintsNodes.getLength(); constraintsNodeIndex++) {
+                Node constraintsNode = constraintsNodes.item(constraintsNodeIndex);
+                /*
+                NodeList useConstraintsNodes = XPATH.getNodeList(constraintsNode, "./useConstraints/MD_RestrictionCode/@codeListValue");
+                boolean hasOtherRestrictionsUseContraints = false;
+                for(int useConstraintsNodeIndex = 0; useConstraintsNodeIndex < useConstraintsNodes.getLength(); useConstraintsNodeIndex++){
+                    if(useConstraintsNodes.item(useConstraintsNodeIndex).getTextContent().trim().equals("otherRestrictions")) hasOtherRestrictionsUseContraints = true;
+                }
+                 */
+                NodeList otherConstraintsNodes = XPATH.getNodeList(constraintsNode, "./otherConstraints/CharacterString");
+                if (otherConstraintsNodes != null) {
+                    for (int otherConstraintsNodeIndex = 0; otherConstraintsNodeIndex < otherConstraintsNodes.getLength(); otherConstraintsNodeIndex++) {
+                        Node otherConstraintsNode = otherConstraintsNodes.item(otherConstraintsNodeIndex);
+                        Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
+                        if (urlMatcher.find()) {
+                            licenseURI = LicenseMapper.getURIFromLicenseURL(urlMatcher.group(1));
+                            dist.setLicense(new ResourceElement(licenseURI));
+                            Matcher quelleMatcher = QUELLE_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
+                            if (quelleMatcher.find()) {
+                                dist.setLicenseAttributionByText(quelleMatcher.group(1));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (licenseURI != null) {
+            dist.setLicense(new ResourceElement(licenseURI));
+        } else {
+            log.warn("No License found - Use Default License!");
+            dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
+        }
     }
 
     private String getDateOrDateTime(Node parent){
@@ -648,14 +697,15 @@ public class MapperService {
         catalog.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_URL));
     }
 
-    public DcatApDe mapHitsToDcat(Iterable<IngridHit> hits) {
+    public DcatApDe mapHitsToDcat(IBusQueryResultIterator hitIterator, int hitsPerPage) {
         DcatApDe dcatApDe = new DcatApDe();
         List<Dataset> datasets = new ArrayList<>();
         List<Distribution> distributions = new ArrayList<>();
         List<String> datasetIds = new ArrayList<>();
         List<String> distributionsIds = new ArrayList<>();
 
-        for (IngridHit hit : hits) {
+        for(int counter = 0; (counter < hitsPerPage) && hitIterator.hasNext(); counter++){
+            IngridHit hit = hitIterator.next();
             try {
 
                 IngridHitDetail hitDetail = hit.getHitDetail();
