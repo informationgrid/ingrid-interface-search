@@ -390,6 +390,9 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         }
         if (modTime != null && modTime.length() > 0) {
             Date d = UtilsDate.parseDateString(modTime);
+            if (d == null) {
+                log.info("Error parsing date string: " + modTime);
+            }
             ZonedDateTime zdt = ZonedDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Berlin"));
             return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(zdt);
         }
