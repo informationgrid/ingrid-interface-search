@@ -229,12 +229,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         } catch (TooManyRunningThreads e) {
             log.error("Too many threads!", e);
             throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
-        } catch (Throwable t) {
+        } catch (Exception e) {
             if (!outputStreamWritten) {
-                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString() + " Outputstream not written, send 500 Error", t);
-                throw (HttpException) new HttpException(500, "Internal error!").initCause(t);
+                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString() + " Outputstream not written, send 500 Error", e);
+                throw (HttpException) new HttpException(500, "Internal error!").initCause(e);
             } else {
-                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString(), t);
+                log.error("Error serving request:" + requestWrapper.getRequest().getQueryString(), e);
             }
         } finally {
             hitIterator.cleanup();
