@@ -114,6 +114,7 @@ public class MapperService {
             }
 
             List<OrganizationWrapper> originator = new ArrayList<>();
+
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
                 Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
@@ -374,10 +375,13 @@ public class MapperService {
     private VCardOrganizationWrapper mapVCard(Node responsiblePartyNode) {
         VCardOrganization organization = new VCardOrganization();
 
+        // NodeID darf nicht mit Zahl beginnen, UUID daher ungeeignet. Wenn keine Referenzierung erfolgt ist keine NodeID nötig.
+        /*
         Node uuidNode = XPATH.getNode(responsiblePartyNode, "./@uuid");
         if(uuidNode != null){
             organization.setNodeID(uuidNode.getTextContent().trim());
         }
+        */
 
         Node organisationNameNode = XPATH.getNode(responsiblePartyNode, "./organisationName/CharacterString");
         Node individualNameNode = XPATH.getNode(responsiblePartyNode, "./individualName/CharacterString");
