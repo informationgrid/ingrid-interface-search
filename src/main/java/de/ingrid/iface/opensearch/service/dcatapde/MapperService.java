@@ -104,13 +104,22 @@ public class MapperService {
                 }
             }
 
+            Node responsiblePartyForPublisherNode = null;
             for (int i = 0; i < responsiblePartyNodes.getLength(); i++) {
                 Node responsiblePartyNode = responsiblePartyNodes.item(i);
                 Node contactRoleNode = XPATH.getNode(responsiblePartyNode, "./role/CI_RoleCode/@codeListValue");
                 if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("publisher")) {
-                    dataset.setPublisher(mapAgentWrapper(responsiblePartyNode));
+                    responsiblePartyForPublisherNode = responsiblePartyNode;
                     break;
+                } else if (contactRoleNode != null && contactRoleNode.getTextContent().trim().equals("publisher") && responsiblePartyForPublisherNode == null) {
+                    responsiblePartyForPublisherNode = responsiblePartyNode;
                 }
+            }
+            if(responsiblePartyForPublisherNode == null && responsiblePartyNodes.getLength() > 0){
+                responsiblePartyForPublisherNode = responsiblePartyNodes.item(0);
+            }
+            if(responsiblePartyForPublisherNode != null && responsiblePartyNodes.getLength() > 0){
+                dataset.setPublisher(mapAgentWrapper(responsiblePartyForPublisherNode));
             }
 
             List<OrganizationWrapper> originator = new ArrayList<>();
