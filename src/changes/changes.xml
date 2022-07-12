@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.12.4" date="2021-07-12" description="Release 5.12.4">
+      <action type="update" dev="wemove" issue="3987">
+        Auto-Switch der Profile und Rücknavigation
+      </action>
+    </release>
+
     <release version="5.12.3" date="2021-06-14" description="Release 5.12.3">
       <action type="update" dev="wemove" issue="2498">
         Update Layout für ATOM Download Service (Verbesserungen)
