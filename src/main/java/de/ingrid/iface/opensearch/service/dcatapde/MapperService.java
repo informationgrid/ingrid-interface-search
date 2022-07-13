@@ -327,11 +327,9 @@ public class MapperService {
                     Node otherConstraintsNode = otherConstraintsNodes.item(j);
                     if (useConstraintsNode != null && otherConstraintsNode != null && useConstraintsNode.getTextContent().trim().equals("otherRestrictions")) {
                         Matcher urlMatcher = URL_PATTERN.matcher(otherConstraintsNode.getTextContent().trim());
-                        if (urlMatcher.find()) {
+                        if (!urlMatcher.find()) {
                             accessRights = otherConstraintsNode.getTextContent();
                             break;
-                        } else if (accessRights == null) {
-                            accessRights = otherConstraintsNode.getTextContent();
                         }
                     }
                 }
