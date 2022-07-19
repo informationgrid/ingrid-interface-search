@@ -9,6 +9,9 @@
       <action type="add" dev="wemove" issue="3632">
         Add Export in DCAT-AP.de format.
       </action>
+      <action type="update" dev="wemove" issue="4087">
+        Add navigation link to metadata in portal
+      </action>
       <action type="update" dev="wemove" issue="3987">
         Auto-Switch der Profile und Rücknavigation
       </action>
