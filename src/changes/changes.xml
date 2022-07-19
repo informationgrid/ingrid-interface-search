@@ -5,7 +5,13 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="5.12.4" date="2021-07-12" description="Release 5.12.4">
+    <release version="5.12.5" date="2022-07-19" description="Release 5.12.5">
+      <action type="update" dev="wemove" issue="4087">
+        Add navigation link to metadata in portal
+      </action>
+    </release>
+
+    <release version="5.12.4" date="2022-07-12" description="Release 5.12.4">
       <action type="update" dev="wemove" issue="3987">
         Auto-Switch der Profile und Rücknavigation
       </action>
