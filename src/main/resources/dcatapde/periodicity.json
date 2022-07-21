@@ -1,0 +1,186 @@
+{
+  "ANNUAL": [
+    "annual",
+    "jährlich",
+    "once_per_year",
+    "annually",
+    "jahr",
+    "6 monat"
+  ],
+  "ANNUAL_2": [
+    "annual_2",
+    "semiannual",
+    "halbjährlich"
+  ],
+  "ANNUAL_3": [
+    "annual_3",
+    "4 monat"
+  ],
+  "BIENNIAL": [
+    "biennial",
+    "zweijährlich",
+    "biannually",
+    "2 jahr"
+  ],
+  "BIMONTHLY": [
+    "bimonthly",
+    "zweimonatlich"
+  ],
+  "BIWEEKLY": [
+    "biweekly",
+    "zweiwöchentlich",
+    "fortnightly"
+  ],
+  "CONT": [
+    "cont",
+    "continuous",
+    "continual",
+    "kontinuierlich"
+  ],
+  "DAILY": [
+    "daily",
+    "täglich",
+    "tag"
+  ],
+  "DAILY_2": [
+    "daily_2",
+    "twice a day",
+    "zweimal täglich"
+  ],
+  "IRREG": [
+    "irreg",
+    "irregular",
+    "unregelmäßig",
+    "asneeded"
+  ],
+  "MONTHLY": [
+    "monthly",
+    "monatlich",
+    "once_per_month",
+    "monat"
+  ],
+  "MONTHLY_2": [
+    "monthly_2",
+    "semimonthly",
+    "zweimal im monat"
+  ],
+  "MONTHLY_3": [
+    "monthly_3",
+    "three times a month",
+    "dreimal im monat"
+  ],
+  "NEVER": [
+    "never",
+    "niemals",
+    "notplanned",
+    "keine"
+  ],
+  "OP_DATPRO": [
+    "op_datpro",
+    "vorläufige daten",
+    "keine"
+  ],
+  "QUARTERLY": [
+    "quarterly",
+    "vierteljährlich",
+    "once_per_quarter",
+    "quartal",
+    "3 monat"
+  ],
+  "TRIENNIAL": [
+    "triennial",
+    "dreijährlich"
+  ],
+  "UPDATE_CONT": [
+    "update_cont",
+    "continuously updated",
+    "ständige aktualisierung"
+  ],
+  "WEEKLY": [
+    "weekly",
+    "wöchentlich",
+    "once_per_week",
+    "woche",
+    "7 tag"
+  ],
+  "WEEKLY_2": [
+    "weekly_2",
+    "semiweekly",
+    "zweimal in woche"
+  ],
+  "WEEKLY_3": [
+    "weekly_3",
+    "three times a week",
+    "dreimal in woche"
+  ],
+  "QUINQUENNIAL": [
+    "quinquennial",
+    "fünfjährlich",
+    "5 jahre"
+  ],
+  "DECENNIAL": [
+    "decennial",
+    "alle zehn jahre",
+    "10 jahre"
+  ],
+  "HOURLY": [
+    "hourly",
+    "stündlich",
+    "stunde"
+  ],
+  "QUADRENNIAL": [
+    "quadrennial",
+    "vierjährlich",
+    "4 jahre"
+  ],
+  "BIHOURLY": [
+    "bihourly",
+    "alle zwei stunden",
+    "2 stunden"
+  ],
+  "TRIHOURLY": [
+    "trihourly",
+    "alle drei stunden",
+    "3 stunden"
+  ],
+  "BIDECENNIAL": [
+    "bidecennial",
+    "alle zwanzig jahre",
+    "20 jahre"
+  ],
+  "TRIDECENNIAL": [
+    "tridecennial",
+    "alle dreißig jahre",
+    "30 jahre"
+  ],
+  "MINUTLY": [
+    "minutly",
+    "minütlich",
+    "minute"
+  ],
+  "BIMINUTLY": [
+    "zweiminütlich",
+    "2 minute"
+  ],
+  "FIVEMINUTLY": [
+    "fünfminütlich",
+    "5 minute"
+  ],
+  "TENMINUTLY": [
+    "zehnminütlich",
+    "10 minute"
+  ],
+  "FIFTEENMINUTLY": [
+    "fünfzehnminütlich",
+    "15 minute"
+  ],
+  "OTHER": [
+    "other",
+    "anderer",
+    "6 jahr"
+  ],
+  "UNKNOWN": [
+    "unknown",
+    "unbekannt"
+  ]
+}
