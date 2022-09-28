@@ -29,10 +29,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -99,7 +96,6 @@ public class StringUtils {
     }
 
     public static Document urlToDocument(String urlString, Integer connectTimeout, Integer readTimeout) throws Exception {
-        
         URLConnection conn = new URL(urlString).openConnection();
         conn.setConnectTimeout(connectTimeout);
         conn.setReadTimeout(readTimeout);
