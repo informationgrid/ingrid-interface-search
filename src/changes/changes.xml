@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.12.6" date="2022-09-30" description="Release 5.12.6">
+      <action type="update" dev="wemove" issue="2400">
+        Build downloads extraction for atom and xml
+      </action>
+    </release>
+
     <release version="5.12.5" date="2022-07-19" description="Release 5.12.5">
       <action type="update" dev="wemove" issue="4087">
         Add navigation link to metadata in portal
