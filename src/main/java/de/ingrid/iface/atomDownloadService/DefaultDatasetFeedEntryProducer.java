@@ -69,7 +69,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             if (type == null) continue;
             if (type.equals("application/atom+xml")) {
                 // produce multiple entries by atom feeds or relative urls
-                ArrayList<DatasetFeedEntry> entries = produceEntriesByAtom(url);
+                ArrayList<DatasetFeedEntry> entries = produceEntriesByAtomOrXml(url);
                 results.addAll(entries);
             } else {
                 // produce a single entry by its type
@@ -159,7 +159,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     }
 
     // should produce more entries
-    private ArrayList<DatasetFeedEntry> produceEntriesByAtom(String url) throws Exception {
+    private ArrayList<DatasetFeedEntry> produceEntriesByAtomOrXml(String url) throws Exception {
         ArrayList<DatasetFeedEntry> entries = new ArrayList<>();
         ArrayList<String> urls = new ArrayList<>();
         urls.add(url);
@@ -170,39 +170,43 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             Document doc = StringUtils.urlToDocument(redirectedUrl, 1000, 1000);
             NodeList nodeList = doc.getElementsByTagName("entry");
             for (int i = 0; i < nodeList.getLength(); i++) {
-                Element nodeEl = (Element) nodeList.item(i);
-                Element linkEl = (Element) nodeEl.getElementsByTagName("link").item(0);
-                String type = linkEl.getAttributeNode("type").getValue();
-                String href = linkEl.getAttributeNode("href").getValue();
-                if (type.equals("application/atom+xml")) {
-                    // add url back to dissolving process
-                    if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
-                    urls.add(href);
-                } else {
-                    // create entry by download
-                    DatasetFeedEntry entry = new DatasetFeedEntry();
-                    String title = linkEl.getAttributeNode("title").getValue();
+                try {
+                    Element nodeEl = (Element) nodeList.item(i);
+                    Element linkEl = getDownloadLink(nodeEl);
+                    String type = linkEl.getAttributeNode("type").getValue();
+                    String href = linkEl.getAttributeNode("href").getValue();
+                    if (type.equals("application/atom+xml")) {
+                        // add url back to dissolving process
+                        if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
+                        urls.add(href);
+                    } else {
+                        // create entry by download
+                        DatasetFeedEntry entry = new DatasetFeedEntry();
+                        String title = linkEl.getAttributeNode("title").getValue();
 
-                    // set link attributes
-                    ArrayList<Link> links = new ArrayList<>();
-                    Link link = new Link();
-                    link.setHref(href);
-                    link.setRel("alternate");
-                    link.setType(type);
-                    link.setTitle(title);
-                    links.add(link);
+                        // set link attributes
+                        ArrayList<Link> links = new ArrayList<>();
+                        Link link = new Link();
+                        link.setHref(href);
+                        link.setRel("alternate");
+                        link.setType(type);
+                        link.setTitle(title);
+                        links.add(link);
 
-                    // set entry attributes
-                    entry.setTitle(title);
-                    entry.setLinks(links);
-                    entry.setId(href);
+                        // set entry attributes
+                        entry.setTitle(title);
+                        entry.setLinks(links);
+                        entry.setId(href);
 
-                    // set entry category
-                    NodeList catNodes = nodeEl.getElementsByTagName("category");
-                    ArrayList<Category> categories = getCategoriesByEl(catNodes);
-                    if (categories.size() > 0) entry.setCrs(categories);
+                        // set entry category
+                        NodeList catNodes = nodeEl.getElementsByTagName("category");
+                        ArrayList<Category> categories = getCategoriesByEl(catNodes);
+                        if (categories.size() > 0) entry.setCrs(categories);
 
-                    entries.add(entry);
+                        entries.add(entry);
+                    }
+                } catch (Exception e) {
+                    log.error(e);
                 }
             }
             urls.remove(0);
@@ -226,6 +230,19 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             }
         }
         return catList;
+    }
+
+    private Element getDownloadLink(Element nodeEl) {
+        Element downloadLink = null;
+        NodeList links = nodeEl.getElementsByTagName("link");
+        for (int i = 0; i < links.getLength(); i++) {
+            Element link = (Element) links.item(i);
+            String rel = link.getAttributeNode("rel").getValue();
+            if (!rel.equals("alternate")) continue;
+            downloadLink = link;
+            break;
+        }
+        return downloadLink;
     }
 
     private boolean isRelativePath(String url) {
