@@ -77,7 +77,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>atom-feed-client</artifactId>
-      <version>5.13.0</version>
+      <version>5.12.6</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
