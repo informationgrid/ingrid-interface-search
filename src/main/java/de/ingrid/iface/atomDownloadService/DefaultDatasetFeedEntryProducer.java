@@ -175,9 +175,9 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                     Element linkEl = getDownloadLink(nodeEl);
                     String type = linkEl.getAttributeNode("type").getValue();
                     String href = linkEl.getAttributeNode("href").getValue();
+                    if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
                     if (type.equals("application/atom+xml")) {
                         // add url back to dissolving process
-                        if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
                         urls.add(href);
                     } else {
                         // create entry by download
