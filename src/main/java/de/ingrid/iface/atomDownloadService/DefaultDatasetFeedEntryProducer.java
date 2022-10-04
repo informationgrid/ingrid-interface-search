@@ -35,9 +35,9 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import java.net.URL;
@@ -51,6 +51,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
     public static final String XPATH_DOWNLOAD_LINK = "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Datendownload']";
+    public static final String XPATH_SYSTEM_IDENTIFIER = "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier";
 
     private TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
     private Detector detector = tikaConfig.getDetector();
@@ -58,78 +59,198 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     private final static Log log = LogFactory.getLog(DefaultDatasetFeedEntryProducer.class);
 
     public List<DatasetFeedEntry> produce(Document doc) throws Exception {
-        List<DatasetFeedEntry> results = new ArrayList<DatasetFeedEntry>();
+        ArrayList<DatasetFeedEntry> results = new ArrayList<>();
 
-        NodeList nl = XPATH.getNodeList(doc, "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier");
-        List<Category> catList = new ArrayList<Category>();
-        for (int i = 0; i < nl.getLength(); i++) {
-            String refSystemCode = XPATH.getString(nl.item(i), "gmd:code/gco:CharacterString|gmd:code/gmx:Anchor");
+        NodeList linkages = XPATH.getNodeList(doc, XPATH_DOWNLOAD_LINK);
+        for (int i = 0; i < linkages.getLength(); i++) {
+            String url = XPATH.getString(linkages.item(i), ".//gmd:linkage/gmd:URL");
+            String type = getTypeByLinkage(url, linkages.item(i));
+
+            if (type == null) continue;
+            if (type.equals("application/atom+xml")) {
+                // produce multiple entries by atom feeds or relative urls
+                ArrayList<DatasetFeedEntry> entries = produceEntriesByAtomOrXml(url);
+                results.addAll(entries);
+            } else {
+                // produce a single entry by its type
+                DatasetFeedEntry entry = produceEntry(url, type, linkages.item(i), doc);
+                results.add(entry);
+            }
+        }
+
+        return results;
+    }
+
+    private String getTypeByLinkage(String url, Object linkage) {
+        try {
+            String redirectedUrl = URLUtil.getRedirectedUrl(url);
+            TikaInputStream stream = TikaInputStream.get(new URL(redirectedUrl));
+            Metadata metadata = new Metadata();
+            metadata.add(Metadata.RESOURCE_NAME_KEY, redirectedUrl);
+            String type = detector.detect(stream, metadata).toString();
+
+            // if application profile (Datentyp) is GMD and the file is considered a ZIP then set
+            // link mime-type to application/x-gmz
+            // see https://redmine.informationgrid.eu/issues/1306
+            String applicationProfile = XPATH.getString(linkage, ".//gmd:applicationProfile/gco:CharacterString");
+            if (applicationProfile != null && applicationProfile.equalsIgnoreCase("gml")) {
+                if (type != null &&
+                    (type.equalsIgnoreCase("application/zip") ||
+                     type.equalsIgnoreCase("application/gzip") ||
+                     type.equalsIgnoreCase("application/x-zip-compressed"))
+                ) {
+                    type = "application/x-gmz";
+                }
+            }
+
+            return type;
+        } catch (UnknownHostException e) {
+            log.info("Invalid download url: " + url);
+            return null;
+        } catch (Exception e) {
+            log.error(e);
+            return "application/octet-stream";
+        }
+    }
+
+    private DatasetFeedEntry produceEntry(String url, String type, Object linkage, Document doc) {
+        DatasetFeedEntry entry = new DatasetFeedEntry();
+
+        // set link attributes
+        Link link = new Link();
+        link.setHref(url);
+        link.setType(type);
+        link.setRel("alternate");
+
+        // set link title
+        String name = XPATH.getString(linkage, ".//gmd:name//gco:CharacterString");
+        if (name == null) name = url;
+        link.setTitle(name);
+
+        // set entry attributes
+        ArrayList<Link> links = new ArrayList<>();
+        links.add(link);
+        entry.setTitle(name);
+        entry.setLinks(links);
+        entry.setId(url);
+
+        // set entry categories
+        NodeList nl = XPATH.getNodeList(doc, XPATH_SYSTEM_IDENTIFIER);
+        ArrayList<Category> catList = getCategories(nl);
+        entry.setCrs(catList);
+        return entry;
+    }
+
+    private ArrayList<Category> getCategories(NodeList list) {
+        ArrayList<Category> catList = new ArrayList<>();
+        for (int i = 0; i < list.getLength(); i++) {
+            String refSystemCode = XPATH.getString(list.item(i), "gmd:code/gco:CharacterString|gmd:code/gmx:Anchor");
             String epsgNumber = StringUtils.extractEpsgCodeNumber(refSystemCode);
             Category cat = new Category();
             cat.setLabel(refSystemCode);
             if (epsgNumber != null) {
                 cat.setTerm("EPSG:" + epsgNumber);
             } else {
-                cat.setTerm(XPATH.getString(nl.item(i), "gmd:codeSpace/gco:CharacterString"));
+                cat.setTerm(XPATH.getString(list.item(i), "gmd:codeSpace/gco:CharacterString"));
             }
             catList.add(cat);
         }
-
-        NodeList linkages = XPATH.getNodeList(doc, XPATH_DOWNLOAD_LINK);
-        for (int i = 0; i < linkages.getLength(); i++) {
-            DatasetFeedEntry entry = new DatasetFeedEntry();
-
-            String linkage = XPATH.getString(linkages.item(i), ".//gmd:linkage/gmd:URL");
-            List<Link> links = new ArrayList<Link>();
-            Link link = new Link();
-            link.setHref(linkage);
-            link.setRel("alternate");
-            try {
-
-                // try to catch redirects
-                String redirectedUrl = URLUtil.getRedirectedUrl(link.getHref());
-                TikaInputStream stream = TikaInputStream.get(new URL(redirectedUrl));
-                Metadata metadata = new Metadata();
-                metadata.add(Metadata.RESOURCE_NAME_KEY, redirectedUrl);
-                MediaType mediaType = detector.detect(stream, metadata);
-                link.setType(mediaType.toString());
-
-                // if application profile (Datentyp) is GMD and the file is considered a ZIP then set
-                // link mime-type to application/x-gmz
-                // see https://redmine.informationgrid.eu/issues/1306
-                String applicationProfile = XPATH.getString(linkages.item(i), ".//gmd:applicationProfile/gco:CharacterString");
-                if (applicationProfile != null && applicationProfile.equalsIgnoreCase("gml")) {
-                    if (link.getType() != null &&
-                            (link.getType().equalsIgnoreCase("application/zip") ||
-                            link.getType().equalsIgnoreCase("application/gzip") ||
-                            link.getType().equalsIgnoreCase("application/x-zip-compressed"))) {
-                        link.setType("application/x-gmz");
-                    }
-                }
-            } catch (UnknownHostException e) {
-                log.info("Invalid download url: " + link.getHref());
-                continue;
-            } catch (Exception e) {
-                link.setType("application/octet-stream");
-            }
-
-            String name = XPATH.getString(linkages.item(i), ".//gmd:name//gco:CharacterString");
-            if (name == null) {
-                name = link.getHref();
-            }
-            link.setTitle(name);
-            if (entry.getTitle() == null) {
-                entry.setTitle(name);
-            }
-            links.add(link);
-            entry.setLinks(links);
-            entry.setId(link.getHref());
-            entry.setCrs(catList);
-
-            results.add(entry);
-        }
-
-        return results;
+        return catList;
     }
 
+    // should produce more entries
+    private ArrayList<DatasetFeedEntry> produceEntriesByAtomOrXml(String url) throws Exception {
+        ArrayList<DatasetFeedEntry> entries = new ArrayList<>();
+        ArrayList<String> urls = new ArrayList<>();
+        urls.add(url);
+
+        // recursive dissolving atom or relative url
+        while (urls.size() > 0) {
+            String redirectedUrl = URLUtil.getRedirectedUrl(urls.get(0));
+            Document doc = StringUtils.urlToDocument(redirectedUrl, 1000, 1000);
+            NodeList nodeList = doc.getElementsByTagName("entry");
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                try {
+                    Element nodeEl = (Element) nodeList.item(i);
+                    Element linkEl = getDownloadLink(nodeEl);
+                    String type = linkEl.getAttributeNode("type").getValue();
+                    String href = linkEl.getAttributeNode("href").getValue();
+                    if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
+                    if (type.equals("application/atom+xml")) {
+                        // add url back to dissolving process
+                        urls.add(href);
+                    } else {
+                        // create entry by download
+                        DatasetFeedEntry entry = new DatasetFeedEntry();
+                        String title = linkEl.getAttributeNode("title").getValue();
+
+                        // set link attributes
+                        ArrayList<Link> links = new ArrayList<>();
+                        Link link = new Link();
+                        link.setHref(href);
+                        link.setRel("alternate");
+                        link.setType(type);
+                        link.setTitle(title);
+                        links.add(link);
+
+                        // set entry attributes
+                        entry.setTitle(title);
+                        entry.setLinks(links);
+                        entry.setId(href);
+
+                        // set entry category
+                        NodeList catNodes = nodeEl.getElementsByTagName("category");
+                        ArrayList<Category> categories = getCategoriesByEl(catNodes);
+                        if (categories.size() > 0) entry.setCrs(categories);
+
+                        entries.add(entry);
+                    }
+                } catch (Exception e) {
+                    log.error(e);
+                }
+            }
+            urls.remove(0);
+        }
+
+        return entries;
+    }
+
+    private ArrayList<Category> getCategoriesByEl(NodeList list) {
+        ArrayList<Category> catList = new ArrayList<>();
+        for (int i = 0; i < list.getLength(); i++) {
+            try {
+                Element catEl = (Element) list.item(i);
+                Category cat = new Category();
+                String term = catEl.getAttributeNode("term").getValue();
+                cat.setTerm(term);
+                String label = catEl.getAttributeNode("label").getValue();
+                cat.setLabel(label);
+                catList.add(cat);
+            } catch (Exception ignored) {
+            }
+        }
+        return catList;
+    }
+
+    private Element getDownloadLink(Element nodeEl) {
+        Element downloadLink = null;
+        NodeList links = nodeEl.getElementsByTagName("link");
+        for (int i = 0; i < links.getLength(); i++) {
+            Element link = (Element) links.item(i);
+            String rel = link.getAttributeNode("rel").getValue();
+            if (!rel.equals("alternate")) continue;
+            downloadLink = link;
+            break;
+        }
+        return downloadLink;
+    }
+
+    private boolean isRelativePath(String url) {
+        return !url.contains("http://") && !url.contains("https://");
+    }
+
+    private String getBaseUrl(String url) {
+        int breakpoint = url.lastIndexOf("/");
+        return breakpoint != -1 ? url.substring(0, breakpoint + 1) : url;
+    }
 }
