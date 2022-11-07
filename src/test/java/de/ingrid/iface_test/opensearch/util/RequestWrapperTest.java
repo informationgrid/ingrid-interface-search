@@ -22,16 +22,21 @@
  */
 package de.ingrid.iface_test.opensearch.util;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.iface.opensearch.util.RequestWrapper;
 import de.ingrid.iface_test.opensearch.test.ServletRequestMockObject;
 
-public class RequestWrapperTest extends TestCase {
+public class RequestWrapperTest {
 
     /*
      * Test method for
      * 'de.ingrid.opensearch.util.RequestWrapper.RequestWrapper(HttpServletRequest)'
      */
+    @Test
     public void testRequestWrapper() {
 
         ServletRequestMockObject r = new ServletRequestMockObject();

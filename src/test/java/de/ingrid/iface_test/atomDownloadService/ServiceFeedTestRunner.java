@@ -22,6 +22,8 @@
  */
 package de.ingrid.iface_test.atomDownloadService;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -31,8 +33,6 @@ import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import junit.framework.TestCase;
 
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -146,9 +146,9 @@ public class ServiceFeedTestRunner {
             String body = serviceFeedAtomBuilder.build(serviceFeed, "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; WOW64; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; Media Center PC 5.0; .NET CLR 1.1.4322)");
             Document atomServiceFeed = stringToDocument(body);
 
-            TestCase.assertEquals(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", uuid), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='describedby']/@href"));
-            TestCase.assertEquals(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(uuid)), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='self']/@href"));
-            TestCase.assertEquals(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:title"));
+            assertEquals(config.getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", uuid), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='describedby']/@href"));
+            assertEquals(atomDownloadServiceFeedUrlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(uuid)), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:link[@rel='self']/@href"));
+            assertEquals(XPATH.getString(idfDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString"), atomXPath.getString(atomServiceFeed, "/atom:feed/atom:title"));
 
             // get the data manually
             String[] coupledUuids = XPATH.getStringArray(idfDoc, "//srv:operatesOn/@uuidref");
@@ -161,12 +161,12 @@ public class ServiceFeedTestRunner {
                     // check for data sets without data download links
                     if (!XPATH.nodeExists(idfCoupledResourceDoc, "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data']")) {
                         System.out.println("No Download Data Links found in coupled resource: " + coupledHit.getHitDetail().getTitle());
-                        TestCase.assertFalse(atomXPath.nodeExists(atomServiceFeed, "/atom:feed/atom:entry/atom:id[contains(.,'" + coupledUuid + "')]"));
+                        assertFalse(atomXPath.nodeExists(atomServiceFeed, "/atom:feed/atom:entry/atom:id[contains(.,'" + coupledUuid + "')]"));
                     } else {
                         System.out.println("Found coupled resource with data download: " + coupledHit.getHitDetail().getTitle());
                         System.out.println(XMLUtils.toString(idfDoc));
-                        TestCase.assertTrue(atomXPath.nodeExists(atomServiceFeed, "/atom:feed/atom:entry/atom:id[contains(.,'" + coupledUuid + "')]"));
-                        TestCase.assertTrue(atomXPath.nodeExists(atomServiceFeed,
+                        assertTrue(atomXPath.nodeExists(atomServiceFeed, "/atom:feed/atom:entry/atom:id[contains(.,'" + coupledUuid + "')]"));
+                        assertTrue(atomXPath.nodeExists(atomServiceFeed,
                                 "/atom:feed/atom:entry/atom:title[contains(.,'" + XPATH.getString(idfCoupledResourceDoc, "//gmd:identificationInfo//gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString") + "')]"));
                     }
                 }
@@ -179,7 +179,7 @@ public class ServiceFeedTestRunner {
             s.close();
             if (!out.toLowerCase().contains("this is a valid atom 1.0 feed.")) {
                 System.out.println("Invalid ATOM Feed:" + feedUrl);
-                TestCase.assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
+                assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
             } else {
                 String[] datasetFeedUrls = atomXPath.getStringArray(atomServiceFeed, "/atom:feed/atom:entry/atom:link[@rel='alternate']/@href");
                 for (String datasetFeedUrl : datasetFeedUrls) {
@@ -189,7 +189,7 @@ public class ServiceFeedTestRunner {
                     s.close();
                     if (!out.toLowerCase().contains("this is a valid atom 1.0 feed.")) {
                         System.out.println("Invalid ATOM Feed:" + feedUrl);
-                        TestCase.assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
+                        assertEquals(true, out.toLowerCase().contains("this is a valid atom 1.0 feed."));
                     }
                 }
             }
