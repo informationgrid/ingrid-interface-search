@@ -309,14 +309,14 @@
         <version>4.35.1</version>
         <configuration>
           <activeRecipes>
-            <recipe>org.openrewrite.java.testing.junit5.JUnit5BestPractices</recipe>
+            <recipe>org.openrewrite.java.migrate.UpgradeJava17</recipe>
           </activeRecipes>
         </configuration>
         <dependencies>
           <dependency>
             <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-testing-frameworks</artifactId>
-            <version>1.29.0</version>
+            <artifactId>rewrite-migrate-java</artifactId>
+            <version>1.13.0</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -358,6 +358,14 @@
         <configuration>
           <defaultOriginUrl>https://github.com/informationgrid/ingrid-interface-search</defaultOriginUrl>
           <noDeploy>true</noDeploy>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jdeprscan-plugin</artifactId>
+        <version>3.0.0-alpha-1</version>
+        <configuration>
+          <release>11</release>
         </configuration>
       </plugin>
     </plugins>
