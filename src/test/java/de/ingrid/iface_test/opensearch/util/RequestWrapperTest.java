@@ -91,7 +91,13 @@ public class RequestWrapperTest {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        assertNull(w);
+        assertNotNull(w);
+        assertEquals(w.getRequestedPage(), 1);
+        assertEquals(w.getHitsPerPage(), 10000);
+        assertEquals(w.getPlugId(), "ingrid:test/test:ingrid");
+        assertEquals(w.getDocId(), 1234567);
+        assertEquals(w.getAltDocId(), "1234567QWERTA");
+        assertEquals(w.getQueryString(), "Wasser ((*");
 
         // check missing query (get details)
         r.getParameterMap().remove("q");
