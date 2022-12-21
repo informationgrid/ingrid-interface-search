@@ -36,7 +36,7 @@
         <include>communication.xml</include>
         <include>descriptor.xml</include>
         <include>interface-search.properties</include>
-        <include>log4j.properties</include>
+        <include>log4j2.xml</include>
       </includes>
     </fileSet>
     <fileSet>
