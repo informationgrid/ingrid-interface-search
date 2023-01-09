@@ -22,12 +22,15 @@
  */
 package de.ingrid.iface_test.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.NoSuchElementException;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.ibus.comm.Bus;
 import de.ingrid.iface.util.IBusQueryResultIterator;
 import de.ingrid.iface.util.SearchInterfaceConfig;
@@ -38,8 +41,9 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 
 //Let's import Mockito statically so that the code looks clearer
 
-public class IBusQueryResultIteratorTest extends TestCase {
+public class IBusQueryResultIteratorTest {
 
+    @Test
     public void testIBusQueryResultIterator() throws Exception {
         Bus mockedIBus = mock(Bus.class);
         IngridQuery q = QueryStringParser.parse("datatype:idf t01_object.obj_uuid:1");
@@ -129,7 +133,8 @@ public class IBusQueryResultIteratorTest extends TestCase {
             assertTrue(false);
         }
     }
-    
+
+    @Test
     public void testMultipleHasNextStability() throws Exception {
         Bus mockedIBus = mock(Bus.class);
         IngridQuery q = QueryStringParser.parse("datatype:idf t01_object.obj_uuid:1");

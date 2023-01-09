@@ -22,16 +22,21 @@
  */
 package de.ingrid.iface_test.opensearch.util;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
+
+
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.iface.opensearch.util.RequestWrapper;
 import de.ingrid.iface_test.opensearch.test.ServletRequestMockObject;
 
-public class RequestWrapperTest extends TestCase {
+public class RequestWrapperTest {
 
     /*
      * Test method for
      * 'de.ingrid.opensearch.util.RequestWrapper.RequestWrapper(HttpServletRequest)'
      */
+    @Test
     public void testRequestWrapper() {
 
         ServletRequestMockObject r = new ServletRequestMockObject();
@@ -86,7 +91,13 @@ public class RequestWrapperTest extends TestCase {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        assertNull(w);
+        assertNotNull(w);
+        assertEquals(w.getRequestedPage(), 1);
+        assertEquals(w.getHitsPerPage(), 10000);
+        assertEquals(w.getPlugId(), "ingrid:test/test:ingrid");
+        assertEquals(w.getDocId(), 1234567);
+        assertEquals(w.getAltDocId(), "1234567QWERTA");
+        assertEquals(w.getQueryString(), "Wasser ((*");
 
         // check missing query (get details)
         r.getParameterMap().remove("q");

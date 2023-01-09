@@ -22,7 +22,7 @@
  */
 package de.ingrid.iface_test.atomDownloadService;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -65,7 +65,7 @@ public class DatasetFeedFactoryTest {
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
 
     @Test
-    public void testGetDatasetFeedDocument() throws Exception {
+    void testGetDatasetFeedDocument() throws Exception {
 
         DatasetFeedRequest datasetFeedRequest = new DatasetFeedRequest();
         datasetFeedRequest.setServiceFeedUuid("SERVICE_FEED_UUID_1");
@@ -96,7 +96,7 @@ public class DatasetFeedFactoryTest {
 
     }
 
-    @Before
+    @BeforeEach
     public void prepareMockedData() throws Exception {
 
         IBus mockedIbus = mock(Bus.class);
@@ -150,8 +150,8 @@ public class DatasetFeedFactoryTest {
         IngridHits hitsObject = new IngridHits(hits.length, hits);
 
         when(
-                mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
-                        Matchers.any(String[].class))).thenReturn(hitsObject);
+                mockedIbus.searchAndDetail(ArgumentMatchers.eq(q), ArgumentMatchers.eq(10), ArgumentMatchers.eq(1), ArgumentMatchers.eq(0), ArgumentMatchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
+                        ArgumentMatchers.any(String[].class))).thenReturn(hitsObject);
 
         q = QueryStringParser.parse("ranking:score dataType:dsc_ecs (t01_object.obj_id:\"SERVICE_FEED_UUID_1\" OR t01_object.org_obj_id:\"SERVICE_FEED_UUID_1\")");
 
@@ -168,8 +168,8 @@ public class DatasetFeedFactoryTest {
         hitsObject = new IngridHits(hits.length, hits);
 
         when(
-                mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
-                        Matchers.any(String[].class))).thenReturn(hitsObject);
+                mockedIbus.searchAndDetail(ArgumentMatchers.eq(q), ArgumentMatchers.eq(10), ArgumentMatchers.eq(1), ArgumentMatchers.eq(0), ArgumentMatchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
+                        ArgumentMatchers.any(String[].class))).thenReturn(hitsObject);
 
         q = QueryStringParser.parse("ranking:score dataType:dsc_ecs iplugs:\"plugid\" (t011_obj_geo.datasource_uuid:\"0e416521-9974-455e-9a49-538dca0546d6\" OR t011_obj_geo.datasource_uuid:\"http://portalu.de/igc_testNS#0e416521-9974-455e-9a49-538dca0546d6\")");
 
@@ -186,8 +186,8 @@ public class DatasetFeedFactoryTest {
         hitsObject = new IngridHits(hits.length, hits);
 
         when(
-                mockedIbus.searchAndDetail(Matchers.eq(q), Matchers.eq(10), Matchers.eq(1), Matchers.eq(0), Matchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
-                        Matchers.any(String[].class))).thenReturn(hitsObject);
+                mockedIbus.searchAndDetail(ArgumentMatchers.eq(q), ArgumentMatchers.eq(10), ArgumentMatchers.eq(1), ArgumentMatchers.eq(0), ArgumentMatchers.eq(SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.IBUS_SEARCH_MAX_TIMEOUT, 30000)),
+                        ArgumentMatchers.any(String[].class))).thenReturn(hitsObject);
 
 
         when(iBusHelper.getIBus()).thenReturn(mockedIbus);
