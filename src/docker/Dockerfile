@@ -1,7 +1,7 @@
 FROM alpine AS builder
 
 ADD ingrid-interface-*-installer.jar /
-RUN unzip ingrid-interface-*-installer.jar -d /tmp \
+RUN unzip -q ingrid-interface-*-installer.jar -d /tmp \
     && export INSTALL_DIR=`ls -d1 /tmp/ingrid-interface-*` \
     && sed -i -r 's/(<AppenderRef.*\/>)/\1<AppenderRef ref="Console" \/>/g' $INSTALL_DIR/conf/log4j2.xml
 
