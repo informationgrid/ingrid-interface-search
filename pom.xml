@@ -3,11 +3,11 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>5.11.0</version>
+    <version>6.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
-  <version>5.14.0</version>
+  <version>6.0.0</version>
   <packaging>jar</packaging>
   <name>InGrid Interface Search</name>
   <description>This component contains all interfaces to request InGrid documents. This includes the Opensearch interface and the ATOM Download Service.
@@ -40,8 +40,9 @@
 
   <!-- ==================== PROPERTIES ==================== -->
   <properties>
+    <java.version>17</java.version>
     <iplug.type>INTERFACE_SEARCH</iplug.type>
-    <log4j.version>2.17.1</log4j.version>
+    <log4j.version>2.19.0</log4j.version>
   </properties>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
@@ -72,17 +73,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
-      <version>2.13.2</version>
+      <version>2.14.0</version>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>atom-feed-client</artifactId>
-      <version>5.12.6</version>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.3</version>
+      <version>3.12.0</version>
     </dependency>
     <dependency>
       <groupId>bitwalker</groupId>
@@ -97,17 +98,17 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>8.1.13.v20130916</version>
+      <version>8.1.22.v20160922</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
-      <version>8.1.13.v20130916</version>
+      <version>8.1.22.v20160922</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-http</artifactId>
-      <version>8.1.13.v20130916</version>
+      <version>8.1.22.v20160922</version>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
@@ -143,7 +144,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-communication</artifactId>
-      <version>5.11.0</version>
+      <version>6.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -154,7 +155,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
-      <version>5.4.0</version>
+      <version>6.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -165,7 +166,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-backend</artifactId>
-      <version>5.4.0</version>
+      <version>6.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -176,7 +177,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
-      <version>5.11.0</version>
+      <version>6.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -192,7 +193,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug</artifactId>
-      <version>5.3.0</version>
+      <version>6.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -204,6 +205,12 @@
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
       <version>1.1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
@@ -227,36 +234,36 @@
       <version>3.2.2</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-      <version>4.13.1</version>
-    </dependency>
-    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <scope>test</scope>
       <version>2.6</version>
     </dependency>
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.9.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>4.0.0.RELEASE</version>
+      <version>5.2.22.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>4.0.0.RELEASE</version>
+      <version>5.2.22.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>4.0.0.RELEASE</version>
+      <version>5.2.22.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.9.5</version>
+      <artifactId>mockito-core</artifactId>
+      <version>3.12.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -285,6 +292,11 @@
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache</artifactId>
       <version>1.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -335,6 +347,14 @@
         <configuration>
           <defaultOriginUrl>https://github.com/informationgrid/ingrid-interface-search</defaultOriginUrl>
           <noDeploy>true</noDeploy>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jdeprscan-plugin</artifactId>
+        <version>3.0.0-alpha-1</version>
+        <configuration>
+          <release>11</release>
         </configuration>
       </plugin>
     </plugins>

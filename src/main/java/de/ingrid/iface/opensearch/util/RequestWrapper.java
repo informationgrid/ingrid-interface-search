@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -89,7 +89,7 @@ public class RequestWrapper extends HashMap<String, Object> {
         if (page <= 0) {
             page = 1;
         }
-        this.put(RequestWrapper.PAGE, new Integer(page));
+        this.put(RequestWrapper.PAGE, Integer.valueOf(page));
 
         // get number of hits for result page
         int maxRequestedHits = SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.OPENSEARCH_MAX_REQUESTED_HITS, 10);
@@ -103,7 +103,7 @@ public class RequestWrapper extends HashMap<String, Object> {
         } else if (requestedHits > maxRequestedHits) {
             requestedHits = maxRequestedHits;
         }
-        this.put(RequestWrapper.HITS_PER_PAGE, new Integer(requestedHits));
+        this.put(RequestWrapper.HITS_PER_PAGE, Integer.valueOf(requestedHits));
 
         // get doc id
         int docId = 0;
@@ -111,7 +111,7 @@ public class RequestWrapper extends HashMap<String, Object> {
             docId = Integer.parseInt(request.getParameter("docid"));
         } catch (NumberFormatException e) {
         }
-        this.put(RequestWrapper.DOC_ID, new Integer(docId));
+        this.put(RequestWrapper.DOC_ID, Integer.valueOf(docId));
 
         // get doc uuid
         String docUuid = null;
@@ -160,7 +160,7 @@ public class RequestWrapper extends HashMap<String, Object> {
         if (searchTimeout <= 0) {
         	searchTimeout = 0;
         }
-        this.put(RequestWrapper.SEARCH_TIMEOUT, new Integer(searchTimeout));
+        this.put(RequestWrapper.SEARCH_TIMEOUT, Integer.valueOf(searchTimeout));
         
         String title = request.getParameter("title");
         if (title == null) {
@@ -191,9 +191,9 @@ public class RequestWrapper extends HashMap<String, Object> {
         	paramValue = Integer.parseInt(request.getParameter(param));
         } catch (NumberFormatException e) {}
         if (paramValue == 1) {
-        	this.put(mappedParam, new Boolean(true));
+        	this.put(mappedParam, Boolean.valueOf(true));
         } else {
-        	this.put(mappedParam, new Boolean(false));
+        	this.put(mappedParam, Boolean.valueOf(false));
         }
 	}
 

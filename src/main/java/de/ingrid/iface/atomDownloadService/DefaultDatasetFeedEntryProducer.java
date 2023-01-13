@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,6 +38,7 @@ import org.apache.tika.metadata.Metadata;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.net.URL;
@@ -171,8 +172,8 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
             NodeList nodeList = doc.getElementsByTagName("entry");
             for (int i = 0; i < nodeList.getLength(); i++) {
                 try {
-                    Element nodeEl = (Element) nodeList.item(i);
-                    Element linkEl = getDownloadLink(nodeEl);
+                    Element entryEl = (Element) nodeList.item(i);
+                    Element linkEl = getLinkElByEntry(entryEl);
                     String type = linkEl.getAttributeNode("type").getValue();
                     String href = linkEl.getAttributeNode("href").getValue();
                     if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
@@ -182,7 +183,8 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                     } else {
                         // create entry by download
                         DatasetFeedEntry entry = new DatasetFeedEntry();
-                        String title = linkEl.getAttributeNode("title").getValue();
+                        String title = getDownloadTitle(linkEl, entryEl);
+                        if (title == null) title = href;
 
                         // set link attributes
                         ArrayList<Link> links = new ArrayList<>();
@@ -199,7 +201,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                         entry.setId(href);
 
                         // set entry category
-                        NodeList catNodes = nodeEl.getElementsByTagName("category");
+                        NodeList catNodes = entryEl.getElementsByTagName("category");
                         ArrayList<Category> categories = getCategoriesByEl(catNodes);
                         if (categories.size() > 0) entry.setCrs(categories);
 
@@ -213,6 +215,16 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
         }
 
         return entries;
+    }
+
+    private String getDownloadTitle(Element link, Element entry) {
+        // get title from link
+        Node title = link.getAttributeNode("title");
+        if (title != null) return title.getNodeValue();
+        // if not attained, get title from entry
+        NodeList titles = entry.getElementsByTagName("title");
+        if (titles.getLength() > 0) title = titles.item(0);
+        return title != null ? title.getTextContent() : null;
     }
 
     private ArrayList<Category> getCategoriesByEl(NodeList list) {
@@ -232,7 +244,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
         return catList;
     }
 
-    private Element getDownloadLink(Element nodeEl) {
+    private Element getLinkElByEntry(Element nodeEl) {
         Element downloadLink = null;
         NodeList links = nodeEl.getElementsByTagName("link");
         for (int i = 0; i < links.getLength(); i++) {

@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,22 +22,24 @@
  */
 package de.ingrid.iface_test.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.StringReader;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import de.ingrid.iface.util.IdfUtils;
 
-public class IdfUtilsTest extends TestCase {
+public class IdfUtilsTest {
 
+    @Test
     public void testEnclosingBoundingBoxAsPolygon() throws Exception {
 
         String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml"));

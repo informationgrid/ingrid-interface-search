@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,10 +22,10 @@
  */
 package de.ingrid.iface.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UserAgentDetectorTest {
 
@@ -79,10 +79,10 @@ public class UserAgentDetectorTest {
     String[] ie11Rss = new String[] {
             "Windows-RSS-Platform/2.0 (IE 11.0; Windows NT 6.1)"
     };
-    
-    
+
+
     @Test
-    public void testUserAgentDetector() {
+    void testUserAgentDetector() {
 
         UserAgentDetector userAgentDetector = new UserAgentDetector();
 
@@ -95,7 +95,7 @@ public class UserAgentDetectorTest {
         assertTrue(userAgentDetector.isIE(ieTooOld[0]));
         assertTrue(userAgentDetector.isIE(ieMobile10[0]));
         assertTrue(userAgentDetector.isIE(ie11Rss[0]));
-        
+
         assertFalse(userAgentDetector.isIE(null));
         assertFalse(userAgentDetector.isIE(""));
     }
