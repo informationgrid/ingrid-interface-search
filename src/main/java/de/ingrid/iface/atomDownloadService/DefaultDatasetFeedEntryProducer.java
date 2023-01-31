@@ -159,13 +159,15 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
         return catList;
     }
 
-    // should produce more entries
+    // the given url of an atom or xml will be recursively dissolved until the downloadable entries
+    // are found. All entries will be grouped in an array and get returned.
+    // this is a special handling for atom or xml that have child atom(s) or xml(s).
     private ArrayList<DatasetFeedEntry> produceEntriesByAtomOrXml(String url) throws Exception {
         ArrayList<DatasetFeedEntry> entries = new ArrayList<>();
         ArrayList<String> urls = new ArrayList<>();
         urls.add(url);
 
-        // recursive dissolving atom or relative url
+        // when a child atom or xml is found, it will be added back to the urls for dissolving.
         while (urls.size() > 0) {
             String redirectedUrl = URLUtil.getRedirectedUrl(urls.get(0));
             Document doc = StringUtils.urlToDocument(redirectedUrl, 1000, 1000);
@@ -177,54 +179,86 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                     String type = linkEl.getAttributeNode("type").getValue();
                     String href = linkEl.getAttributeNode("href").getValue();
                     if (isRelativePath(href)) href = getBaseUrl(redirectedUrl) + href;
+
+                    // check if entry is a child atom or xml
                     if (type.equals("application/atom+xml")) {
                         // add url back to dissolving process
                         urls.add(href);
-                    } else {
-                        // create entry by download
-                        DatasetFeedEntry entry = new DatasetFeedEntry();
-                        String title = getDownloadTitle(linkEl, entryEl);
-                        if (title == null) title = href;
-
-                        // set link attributes
-                        ArrayList<Link> links = new ArrayList<>();
-                        Link link = new Link();
-                        link.setHref(href);
-                        link.setRel("alternate");
-                        link.setType(type);
-                        link.setTitle(title);
-                        links.add(link);
-
-                        // set entry attributes
-                        entry.setTitle(title);
-                        entry.setLinks(links);
-                        entry.setId(href);
-
-                        // set entry category
-                        NodeList catNodes = entryEl.getElementsByTagName("category");
-                        ArrayList<Category> categories = getCategoriesByEl(catNodes);
-                        if (categories.size() > 0) entry.setCrs(categories);
-
-                        entries.add(entry);
+                        continue;
                     }
+
+                    // create downloadable entry
+                    DatasetFeedEntry entry = new DatasetFeedEntry();
+                    String title = getDownloadTitleByEntry(entryEl);
+                    if (title == null) title = href;
+
+                    // set link attributes
+                    ArrayList<Link> links = new ArrayList<>();
+                    Link link = new Link();
+                    link.setHref(href);
+                    link.setRel("alternate");
+                    link.setType(type);
+                    link.setTitle(title);
+                    links.add(link);
+
+                    // set attributes
+                    entry.setTitle(title);
+                    entry.setLinks(links);
+                    entry.setId(href);
+
+                    // set categories
+                    NodeList catNodes = entryEl.getElementsByTagName("category");
+                    ArrayList<Category> categories = getCategoriesByEl(catNodes);
+                    if (categories.size() > 0) entry.setCrs(categories);
+
+                    entries.add(entry);
                 } catch (Exception e) {
                     log.error(e);
                 }
             }
+
+            // remove processed url
             urls.remove(0);
         }
 
         return entries;
     }
 
-    private String getDownloadTitle(Element link, Element entry) {
-        // get title from link
-        Node title = link.getAttributeNode("title");
-        if (title != null) return title.getNodeValue();
-        // if not attained, get title from entry
-        NodeList titles = entry.getElementsByTagName("title");
-        if (titles.getLength() > 0) title = titles.item(0);
-        return title != null ? title.getTextContent() : null;
+    // get download title by a given entry. target attributes can be optional,
+    // title will be therefore extracted by priority.
+    // priority: title > link > id -> unknown
+    private String getDownloadTitleByEntry(Element entry) {
+        // get from title
+        String title = getValueFromFirstEntryByTag("title", entry);
+        if (title != null) return title;
+
+        // get from link
+        NodeList links = entry.getElementsByTagName("link");
+        for (int i = 0; i < links.getLength(); i++) {
+            Element link = (Element) links.item(i);
+            Node linkTitle = link.getAttributeNode("title");
+            if (linkTitle != null) return linkTitle.getNodeValue();
+        }
+
+        // get from id
+        String id = getValueFromFirstEntryByTag("id", entry);
+        return id != null ? id : "unknown";
+    }
+
+    // first entry by tag from a given element will be extracted.
+    // when nothing is found, it returns null.
+    private String getValueFromFirstEntryByTag(String tag, Element el) {
+        NodeList tags = el.getElementsByTagName(tag);
+        for (int i = 0; i < tags.getLength(); i++) {
+            Element title = (Element) tags.item(0);
+            String text = title.getTextContent();
+            if (text == null) continue;
+            // remove cdata if present
+            text = text.replace("<![CDATA[", "");
+            text = text.replace("]]>", "");
+            return text;
+        }
+        return null;
     }
 
     private ArrayList<Category> getCategoriesByEl(NodeList list) {
