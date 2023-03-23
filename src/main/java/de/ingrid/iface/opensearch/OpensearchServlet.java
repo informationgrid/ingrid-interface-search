@@ -40,6 +40,7 @@ import de.ingrid.utils.idf.IdfTool;
 import de.ingrid.utils.iplug.IPlugVersionInspector;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
+import de.ingrid.utils.queryparser.QueryStringParser;
 import de.ingrid.utils.udk.UtilsDate;
 import net.weta.components.communication.server.TooManyRunningThreads;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -65,10 +66,7 @@ import java.net.URLEncoder;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Servlet handles OpenSearch queries.
@@ -138,10 +136,11 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         boolean outputStreamWritten = false;
         try {
             if(requestWrapper.getFormat().equals("rdf")){
-                query.addField(new FieldQuery(true, false, "t04_search.searchterm", "opendata"));
-                List<FieldQuery> datatypeQueries = new ArrayList<>();
-                datatypeQueries.add(new FieldQuery(true, false, "datatype", "metadata"));
-                query.put("datatype", datatypeQueries);
+                String baseQueryString = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_BASE_QUERY, "(t04_search.searchterm:opendata OR t04_search.searchterm:opendataident) datatype:metadata");
+                IngridQuery baseQuery = QueryStringParser.parse("("+baseQueryString+")");
+                Arrays.stream(baseQuery.getClauses()).forEach(clause -> query.addClause(clause));
+                // Origin-Phrase-Query will overwrite baseQuery Filtering
+                query.remove(IngridQuery.ORIGIN);
             }
             hitIterator = new IBusQueryResultIterator(query, requestedMetadata, iBusHelper.getIBus(), pageSize, (page - 1), hitsPerPage * page);
 
