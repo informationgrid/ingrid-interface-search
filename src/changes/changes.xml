@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.14.7" date="2023-03-24" description="Release 5.14.7">
+      <action type="update" dev="wemove" issue="4960">
+        Basequery for DCAT-AP.de Export
+      </action>
+    </release>
+
     <release version="5.14.0" date="2022-10-04" description="Release 5.14.0">
       <action type="update" dev="wemove" issue="2400">
         Build downloads extraction for atom and xml
