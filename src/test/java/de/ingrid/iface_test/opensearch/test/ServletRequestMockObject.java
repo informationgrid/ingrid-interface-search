@@ -41,11 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
+import javax.servlet.http.*;
 
 public class ServletRequestMockObject implements HttpServletRequest {
 
@@ -78,6 +74,11 @@ public class ServletRequestMockObject implements HttpServletRequest {
 	 * @see javax.servlet.ServletRequest#getContentLength()
 	 */
 	public int getContentLength() {
+		return 0;
+	}
+
+	@Override
+	public long getContentLengthLong() {
 		return 0;
 	}
 
@@ -363,6 +364,11 @@ public class ServletRequestMockObject implements HttpServletRequest {
 		return ret;
 	}
 
+	@Override
+	public String changeSessionId() {
+		return null;
+	}
+
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServletRequest#getSession(boolean)
 	 */
@@ -503,7 +509,12 @@ public class ServletRequestMockObject implements HttpServletRequest {
         return null;
     }
 
-    @Override
+	@Override
+	public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
+		return null;
+	}
+
+	@Override
     public Collection<Part> getParts() throws IOException, ServletException {
         // TODO Auto-generated method stub
         return null;
