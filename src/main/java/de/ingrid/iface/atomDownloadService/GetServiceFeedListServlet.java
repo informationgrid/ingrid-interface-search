@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.http.HttpException;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +64,7 @@ public class GetServiceFeedListServlet extends HttpServlet implements SearchInte
             // handle method, create response
             ServiceFeedList serviceFeedList = serviceFeedListProducer.produce(serviceFeedListRequest);
             if (serviceFeedList == null || serviceFeedList.getEntries().isEmpty()) {
-                throw (HttpException) new HttpException(404, "No service feeds found.");
+                throw new ServletException("No service feeds found.");
             }
             String body = serviceFeedListAtomBuilder.build(serviceFeedList, req.getHeader("user-agent"));
             resp.setCharacterEncoding("UTF-8");
@@ -76,7 +75,7 @@ public class GetServiceFeedListServlet extends HttpServlet implements SearchInte
                 log.debug("Finished request within " + (System.currentTimeMillis() - startTimer) + " ms.");
             }
 
-        } catch (HttpException e) {
+        } catch (ServletException e) {
             throw (e);
         } catch (Exception e) {
             log.error("Error executing get service feed list.", e);

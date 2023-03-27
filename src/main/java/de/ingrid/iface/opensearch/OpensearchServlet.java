@@ -49,7 +49,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.eclipse.jetty.http.HttpException;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -193,11 +192,11 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
         } catch (TooManyRunningThreads e) {
             log.error("Too many threads!", e);
-            throw (HttpException) new HttpException(503, "Too many threads!").initCause(e);
+            throw new ServletException("Too many threads!", e);
         } catch (Throwable t) {
             if (!outputStreamWritten) {
                 log.error("Error serving request:" + requestWrapper.getRequest().getQueryString() + " Outputstream not written, send 500 Error", t);
-                throw (HttpException) new HttpException(500, "Internal error!").initCause(t);
+                throw new ServletException("Internal error!", t);
             } else {
                 log.error("Error serving request:" + requestWrapper.getRequest().getQueryString(), t);
             }
