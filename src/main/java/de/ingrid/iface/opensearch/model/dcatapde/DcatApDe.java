@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,9 +31,6 @@ import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.URLUtil;
 import org.eclipse.jetty.server.Request;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,23 +152,23 @@ public class DcatApDe {
 
 
         request.getQueryString();
-        request.mergeQueryString("p="+page);
+        request.mergeQueryParameters("p=" + page, true);
         hydraCollection.setAbout(baseURL + "?" + request.getQueryString());
 
-        request.mergeQueryString("p=1");
+        request.mergeQueryParameters("p=1", true);
         hydraCollection.setFirstPage(baseURL + "?" + request.getQueryString());
 
-        int lastPage = (int)totalCount/numPerPage;
-        if (totalCount > lastPage*numPerPage)lastPage++;
-        request.mergeQueryString("p="+lastPage);
+        int lastPage = (int) totalCount / numPerPage;
+        if (totalCount > lastPage * numPerPage) lastPage++;
+        request.mergeQueryParameters("p=" + lastPage, true);
         hydraCollection.setLastPage(baseURL + "?" + request.getQueryString());
 
-        if (totalCount > page*numPerPage) {
-            request.mergeQueryString("p="+(page+1));
+        if (totalCount > page * numPerPage) {
+            request.mergeQueryParameters("p=" + (page + 1), true);
             hydraCollection.setNextPage(baseURL + "?" + request.getQueryString());
         }
         if (page > 1 && page <= lastPage) {
-            request.mergeQueryString("p="+(page-1));
+            request.mergeQueryParameters("p=" + (page - 1), true);
             hydraCollection.setPreviousPage(baseURL + "?" + request.getQueryString());
         }
 

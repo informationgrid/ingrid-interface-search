@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.http.HttpException;
 import org.eclipse.jetty.server.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,7 +64,7 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
             // handle method, create response
             ServiceFeed serviceFeed = serviceFeedProducer.produce(serviceFeedRequest);
             if (serviceFeed == null) {
-                throw (HttpException) new HttpException(404, "Service Feed not found.");
+                throw new ServletException("Service Feed not found.");
             }
             String body = serviceFeedAtomBuilder.build(serviceFeed, req.getHeader("user-agent"));
             resp.setCharacterEncoding("UTF-8");
@@ -76,7 +75,7 @@ public class GetServiceFeedServlet extends HttpServlet implements SearchInterfac
                 log.debug("Finished request within " + (System.currentTimeMillis() - startTimer) + " ms.");
             }
 
-        } catch (HttpException e) {
+        } catch (ServletException e) {
             throw (e);
         } catch (Exception e) {
             log.error("Error executing get service feed.", e);

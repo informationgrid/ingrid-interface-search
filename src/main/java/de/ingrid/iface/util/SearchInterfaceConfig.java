@@ -98,6 +98,8 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     public static final String  OPENSEARCH_CHANNEL_COPYRIGHT = "opensearch.channel.copyright";
 
+    public static final String  DCAT_BASE_QUERY = "opensearch.dcat.basequery";
+
     public static final String  DCAT_CONTRIBUTOR_ID = "opensearch.dcat.contributor_id";
 
     public static final String  DCAT_DEFAULT_LICENSE = "opensearch.dcat.license.default";

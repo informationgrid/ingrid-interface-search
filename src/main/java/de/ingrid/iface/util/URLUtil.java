@@ -47,6 +47,8 @@ public class URLUtil {
      * @throws MalformedURLException
      */
     public static String updateProtocol(String urlStr, String protocol) {
+        if (urlStr == null) return null;
+        
         if (urlStr.startsWith( "//" )) {
             return (new StringBuilder()).append( protocol ).append( ":" ).append( urlStr ).toString();
         } else {
