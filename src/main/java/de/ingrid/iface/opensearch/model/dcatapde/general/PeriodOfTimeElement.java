@@ -28,11 +28,11 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PeriodOfTimeElement {
     // 0..1
-    @JacksonXmlProperty(namespace = "http://schema.org/")
+    @JacksonXmlProperty(namespace = "http://www.w3.org/ns/dcat#")
     private DatatypeTextElement startDate;
 
     // 0..1
-    @JacksonXmlProperty(namespace = "http://schema.org/")
+    @JacksonXmlProperty(namespace = "http://www.w3.org/ns/dcat#")
     private DatatypeTextElement endDate;
 
     public DatatypeTextElement getStartDate() {
