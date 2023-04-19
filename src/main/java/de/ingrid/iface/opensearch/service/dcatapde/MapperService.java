@@ -195,9 +195,19 @@ public class MapperService {
 
         String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./dateStamp"));
         dataset.setModified(modified);
+        if(modified.contains("T")) {
+            dataset.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+        } else {
+            dataset.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+        }
 
         String issued = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
         dataset.setIssued(issued);
+        if(issued.contains("T")) {
+            dataset.getIssued().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+        } else {
+            dataset.getIssued().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+        }
 
         // Distribution
         List<ResourceElement> distResources = new ArrayList<>();
