@@ -89,7 +89,7 @@ public class ServiceFeedUtils {
         feed.setMetadataAccessUrl(link);
 
         link = new Link();
-        String urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedUrlPattern, request.getProtocol() );
+        String urlPattern = atomDownloadServiceFeedUrlPattern;
         link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");
@@ -99,7 +99,7 @@ public class ServiceFeedUtils {
         feed.setIdentifier(link.getHref());
 
         link = new Link();
-        urlPattern = URLUtil.updateProtocol( atomDownloadOpensearchDefinitionUrlPattern, request.getProtocol() );
+        urlPattern = atomDownloadOpensearchDefinitionUrlPattern;
         link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(feed.getUuid())));
         link.setHrefLang("de");
         link.setType("application/opensearchdescription+xml");
