@@ -269,7 +269,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
         if (queryString == null)
             queryString = "";
         queryString.replace("+", "%2B");
-        String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
+        String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
         if (proxyurl != null && proxyurl.trim().length() > 0) {
             url = proxyurl.concat("/query").concat("?").concat(queryString);
         } else {
@@ -659,7 +659,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
             String metadataDetailsUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_DETAILS_URL, null);
             String docUuid = OpensearchUtil.getDetailValue(detail, "t01_object.obj_id");
-            String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), requestWrapper.getRequest().getScheme());
+            String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
 
             String qStr;
             try {

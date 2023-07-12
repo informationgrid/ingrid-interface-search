@@ -126,7 +126,7 @@ public class CSWGetRecordByIdServiceFeedEntryProducer implements ServiceFeedEntr
                 entry.setDatasetMetadataRecord(link);
 
                 link = new Link();
-                String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, serviceFeedRequest.getProtocol() );
+                String urlPattern = atomDownloadDatasetFeedUrlPattern;
                 link.setHref(urlPattern
                         .replace("{datasetfeed-uuid}", URLEncoder.encode(linkage, StandardCharsets.UTF_8.toString()))
                         .replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));

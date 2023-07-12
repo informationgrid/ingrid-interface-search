@@ -82,7 +82,7 @@ public class ServiceFeedListProducer {
         IBus iBus = iBusHelper.getIBus();
 
         Link link = new Link();
-        String urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedlistUrlPattern, serviceFeedListRequest.getProtocol() );
+        String urlPattern = atomDownloadServiceFeedlistUrlPattern;
         link.setHref(urlPattern.replace("{searchTerms}", StringUtils.encodeForPath(serviceFeedListRequest.getQuery())));
         link.setHrefLang("de");
         link.setType("application/atom+xml");

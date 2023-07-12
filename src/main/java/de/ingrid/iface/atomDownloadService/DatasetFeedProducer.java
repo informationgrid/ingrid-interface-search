@@ -95,7 +95,7 @@ public class DatasetFeedProducer {
             datasetFeed.setSubTitle(XPATH.getString(doc, "//gmd:identificationInfo//gmd:abstract/gco:CharacterString"));
 
             Link link = new Link();
-            String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, datasetFeedRequest.getProtocol() );
+            String urlPattern = atomDownloadDatasetFeedUrlPattern;
             link.setHref(urlPattern
                     .replace("{datasetfeed-uuid}", URLEncoder.encode(datasetFeedRequest.getDatasetFeedUuid(), StandardCharsets.UTF_8.toString()))
                     .replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
@@ -117,7 +117,7 @@ public class DatasetFeedProducer {
             datasetFeed.getDescribedBy().add(link);
             
             link = new Link();
-            urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedUrlPattern, datasetFeedRequest.getProtocol() );
+            urlPattern = atomDownloadServiceFeedUrlPattern;
             link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");

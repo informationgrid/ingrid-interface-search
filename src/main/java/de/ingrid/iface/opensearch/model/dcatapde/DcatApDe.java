@@ -140,7 +140,7 @@ public class DcatApDe {
         HydraCollection hydraCollection = new HydraCollection();
 
         String baseURL = request.getRequestURL().toString();
-        String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
+        String proxyurl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null);
         if (proxyurl != null && proxyurl.trim().length() > 0) {
             baseURL = proxyurl.concat("/query");
         } else {
