@@ -62,7 +62,7 @@ public class DatasetFeedFactory {
 
     public Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
         
-	if (log.isDebugEnabled()) {
+	    if (log.isDebugEnabled()) {
             log.debug("Get single dataset feed document from dataset feed request.");
         }
 
@@ -115,11 +115,12 @@ public class DatasetFeedFactory {
                 datasetFeedRequest.setType(EntryType.IGC);
             } else {
                 // no hit found, try all datasets related to the service
-        	if (log.isDebugEnabled()) {
+        	    if (log.isDebugEnabled()) {
                     log.debug("No IGC found from UUID. Try to get ISO document from related CSW GetRecordById Links referenced from the service.");
                 }
                 ServiceFeedRequest sr = new ServiceFeedRequest();
                 sr.setUuid(datasetFeedRequest.getServiceFeedUuid());
+                sr.setProtocol(datasetFeedRequest.getProtocol());
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
                     if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
