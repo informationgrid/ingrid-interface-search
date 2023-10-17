@@ -50,6 +50,10 @@ public class BaseRequest {
         this.protocol = proto;
     }
 
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
     public String getProtocol() {
         return protocol;
     }

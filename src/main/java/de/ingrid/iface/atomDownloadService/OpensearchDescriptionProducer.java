@@ -157,6 +157,7 @@ public class OpensearchDescriptionProducer {
 
             ServiceFeedRequest serviceFeedRequest = new ServiceFeedRequest();
             serviceFeedRequest.setUuid(opensearchDescriptionRequest.getUuid());
+            serviceFeedRequest.setProtocol(opensearchDescriptionRequest.getProtocol());
             ServiceFeed serviceFeed = serviceFeedProducer.produce(serviceFeedRequest);
             result.setExamples(new ArrayList<Query>());
             for (ServiceFeedEntry entry : serviceFeed.getEntries()) {

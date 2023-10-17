@@ -1,4 +1,11 @@
 
+## 6.3.0 (17.10.2023)
+
+### Features
+
+* Fehlerbehebung der ATOM Download Service Schnittstelle (#4771)
+
+    
 ## 6.2.0 (10.07.2023)
 
 ### Features
