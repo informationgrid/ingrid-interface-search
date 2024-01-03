@@ -42,7 +42,7 @@
   <properties>
     <java.version>17</java.version>
     <iplug.type>INTERFACE_SEARCH</iplug.type>
-    <log4j.version>2.22.0</log4j.version>
+    <log4j.version>2.22.1</log4j.version>
   </properties>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
