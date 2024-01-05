@@ -3,7 +3,7 @@
   <parent>
     <groupId>de.ingrid</groupId>
     <artifactId>ingrid-releases-pom</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-interface-search</artifactId>
@@ -144,7 +144,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-communication</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>7.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -155,7 +155,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>7.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -166,7 +166,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-backend</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>7.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -177,7 +177,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>7.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -193,7 +193,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>7.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
