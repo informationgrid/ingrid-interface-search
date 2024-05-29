@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -190,6 +190,14 @@ public class MapperService {
         }
         else {
             log.warn("No Keywords or Categories!");
+        }
+
+        // HVD
+        List<String> hvdCategories = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./identificationInfo[1]/*/descriptiveKeywords[./MD_Keywords/thesaurusName/CI_Citation/title/Anchor/@href='http://data.europa.eu/bna/asd487ae75']/*/keyword/Anchor/@href"));
+        boolean isHVD = hvdCategories.size() > 0;
+        if(isHVD){
+            dataset.setApplicableLegislation(new ResourceElement("http://data.europa.eu/eli/reg_impl/2023/138/oj"));
+            dataset.setHvdCategory(hvdCategories.stream().map(hvdCategory -> new ResourceElement(hvdCategory)).collect(Collectors.toList()));
         }
 
 
@@ -456,6 +464,10 @@ public class MapperService {
 
         NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/distributionFormat/MD_Format/name/CharacterString|./distributionInfo/MD_Distribution/distributor/MD_Distributor/distributorFormat/MD_Format/name");
 
+        // HVD
+        List<String> hvdCategories = Arrays.asList(XPATH.getStringArray(idfMdMetadataNode, "./identificationInfo[1]/*/descriptiveKeywords[./MD_Keywords/thesaurusName/CI_Citation/title/Anchor/@href='http://data.europa.eu/bna/asd487ae75']/*/keyword/Anchor/@href"));
+        boolean isHVD = hvdCategories.size() > 0;
+
         if(transferOptionNodes != null) {
             for (int i = 0; i < transferOptionNodes.getLength(); i++) {
                 Node transferOptionNode = transferOptionNodes.item(i);
@@ -537,6 +549,10 @@ public class MapperService {
                     dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
                 }
                 dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+
+                if(isHVD){
+                    dist.setApplicableLegislation(new ResourceElement("http://data.europa.eu/eli/reg_impl/2023/138/oj"));
+                }
 
                 if (functionNode != null && functionNode.getTextContent().equals("download")) {
                     dist.setDownloadURL(new ResourceElement(accessURL));

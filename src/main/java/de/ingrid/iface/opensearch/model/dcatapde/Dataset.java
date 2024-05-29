@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -176,6 +176,15 @@ public class Dataset {
     // 0..1
     @JacksonXmlProperty(namespace = "http://purl.org/dc/terms/")
     private DateElement modified;
+
+    // 0..1
+    @JacksonXmlProperty(namespace = "http://data.europa.eu/r5r/")
+    private ResourceElement applicableLegislation;
+
+    // 0..n
+    @JacksonXmlProperty(namespace = "http://data.europa.eu/r5r/")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<ResourceElement> hvdCategory;
 
     // 0..1
     @JacksonXmlProperty(namespace = "http://www.w3.org/2002/07/owl#")
@@ -526,5 +535,22 @@ public class Dataset {
 
     public void setAbout(String about) {
         this.about = about;
+    }
+
+
+    public ResourceElement getApplicableLegislation() {
+        return applicableLegislation;
+    }
+
+    public void setApplicableLegislation(ResourceElement applicableLegislation) {
+        this.applicableLegislation = applicableLegislation;
+    }
+
+    public List<ResourceElement> getHvdCategory() {
+        return hvdCategory;
+    }
+
+    public void setHvdCategory(List<ResourceElement> hvdCategory) {
+        this.hvdCategory = hvdCategory;
     }
 }
