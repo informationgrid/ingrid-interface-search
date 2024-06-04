@@ -1,4 +1,11 @@
 
+## 7.1.3 (04.06.2024)
+
+### Features
+
+* Kennzeichnung HVD Metadaten - Ausgabe über DCAT-AP (#6164)
+
+    
 ## 7.0.0 (05.01.2024)
 
 ### Features
