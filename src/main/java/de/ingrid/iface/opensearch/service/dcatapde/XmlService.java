@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,6 +50,7 @@ public class XmlService {
                 XMLStreamWriter result = super.createXMLStreamWriter(w);
                 result.setPrefix("adms", "http://www.w3.org/ns/adms#");
                 result.setPrefix("dcat", "http://www.w3.org/ns/dcat#");
+                result.setPrefix("dcatap", "http://data.europa.eu/r5r/");
                 result.setPrefix("dcatde", "http://dcat-ap.de/def/dcatde/");
                 result.setPrefix("dcterms", "http://purl.org/dc/terms/");
                 result.setPrefix("foaf", "http://xmlns.com/foaf/0.1/");
@@ -81,6 +82,7 @@ public class XmlService {
         return xmlDcat.replace("<RDF>", "<rdf:RDF\n" +
                 "    xmlns:adms=\"http://www.w3.org/ns/adms#\"\n" +
                 "    xmlns:dcat=\"http://www.w3.org/ns/dcat#\"\n" +
+                "    xmlns:dcatap=\"http://data.europa.eu/r5r/\"\n" +
                 "    xmlns:dcatde=\"http://dcat-ap.de/def/dcatde/\"\n" +
                 "    xmlns:dcterms=\"http://purl.org/dc/terms/\"\n" +
                 "    xmlns:foaf=\"http://xmlns.com/foaf/0.1/\"\n" +
