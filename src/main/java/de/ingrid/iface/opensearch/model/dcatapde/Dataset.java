@@ -204,7 +204,8 @@ public class Dataset {
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
-    private ResourceElement geocodingDescription;
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private List<String> geocodingDescription;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
@@ -513,11 +514,11 @@ public class Dataset {
         this.politicalGeocodingURI = politicalGeocodingURI;
     }
 
-    public ResourceElement getGeocodingDescription() {
+    public List<String> getGeocodingDescription() {
         return geocodingDescription;
     }
 
-    public void setGeocodingDescription(ResourceElement geocodingDescription) {
+    public void setGeocodingDescription(List<String> geocodingDescription) {
         this.geocodingDescription = geocodingDescription;
     }
 

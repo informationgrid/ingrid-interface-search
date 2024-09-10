@@ -288,7 +288,15 @@ public class MapperService {
                 dataset.setSpatial(spatial);
             }
         }
-
+        NodeList geographicIdentifierNodes = XPATH.getNodeList(idfMdMetadataNode, "./identificationInfo[1]/*/extent/EX_Extent/geographicElement/EX_GeographicDescription/geographicIdentifier/MD_Identifier/code/CharacterString");
+        if(geographicIdentifierNodes != null) {
+            List<String> geocodingDescriptions = new ArrayList<>();
+            for (int i = 0; i < geographicIdentifierNodes.getLength(); i++) {
+                Node node = geographicIdentifierNodes.item(i);
+                geocodingDescriptions.add(node.getTextContent());
+            }
+            dataset.setGeocodingDescription(geocodingDescriptions);
+        }
 
 
 
