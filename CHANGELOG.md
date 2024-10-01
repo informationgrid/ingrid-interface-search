@@ -1,4 +1,11 @@
 
+## 7.3.0 (01.10.2024)
+
+### Features
+
+* Abgabe des Textes des Raumbezuges über die DCAT-AP.DE Schnittstelle (#6426)
+
+    
 ## 7.2.0 (08.07.2024)
 
 ### Features
