@@ -444,7 +444,11 @@ public class MapperService {
 
         Node emailNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/address/CI_Address/electronicMailAddress/CharacterString");
         if(emailNode != null){
-            organization.setHasEmail(new ResourceElement(emailNode.getTextContent().trim()));
+            String email = emailNode.getTextContent().trim();
+            if(!email.toLowerCase().startsWith("mailto:")) {
+                email = "mailto:" + email;
+            }
+            organization.setHasEmail(new ResourceElement(email));
         }
 
         Node urlNode = XPATH.getNode(responsiblePartyNode, "./contactInfo/CI_Contact/onlineResource/CI_OnlineResource/linkage/URL");
