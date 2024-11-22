@@ -82,6 +82,15 @@ public class MapperService {
 
         Node idfMdMetadataNode = XPATH.getNode(idfDataNode,"./body/idfMdMetadata");
 
+        String datasetURI = "";
+        Node fileIdentifierNode = XPATH.getNode(idfMdMetadataNode,"./fileIdentifier/CharacterString");
+        if (fileIdentifierNode != null) {
+            String fileIdentifier = fileIdentifierNode.getTextContent().trim();
+            dataset.setIdentifier(fileIdentifierNode.getTextContent().trim());
+            datasetURI = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier);
+            dataset.setAbout(datasetURI);
+        }
+
         Node abstractNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/abstract/CharacterString|./identificationInfo[1]/SV_ServiceIdentification/abstract/CharacterString");
         if (abstractNode != null) {
             dataset.setDescription(new LangTextElement(abstractNode.getTextContent().trim()));
@@ -231,8 +240,7 @@ public class MapperService {
                     log.warn("Skip Distribution - No Linkage");
                     continue;
                 }
-                String accessURL = linkageNode.getTextContent().trim();
-                distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
+                distResources.add(new ResourceElement(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (distResources.size() + 1)));
             }
         }
         Node serviceIdentificationNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/SV_ServiceIdentification");
@@ -242,21 +250,11 @@ public class MapperService {
                 Node containsOperationsNode = containsOperationsNodes.item(i);
                 Node linkageNode = XPATH.getNode(containsOperationsNode, "./SV_OperationMetadata/connectPoint/CI_OnlineResource/linkage/URL");
                 if (linkageNode != null) {
-                    String accessURL = linkageNode.getTextContent().trim();
-                    distResources.add(new ResourceElement(accessURL + DISTRIBUTION_RESOURCE_POSTFIX));
+                    distResources.add(new ResourceElement(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-"+(distResources.size() + 1)));
                 }
             }
         }
         dataset.setDistribution(distResources);
-
-
-
-        Node fileIdentifierNode = XPATH.getNode(idfMdMetadataNode,"./fileIdentifier/CharacterString");
-        if (fileIdentifierNode != null) {
-            String fileIdentifier = fileIdentifierNode.getTextContent().trim();
-            dataset.setIdentifier(fileIdentifierNode.getTextContent().trim());
-            dataset.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier));
-        }
 
         /*
         Node languageNode = XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/MD_DataIdentification/language/LanguageCode/@codeListValue");
@@ -466,6 +464,13 @@ public class MapperService {
 
         Node idfMdMetadataNode = XPATH.getNode(idfDataNode, "./body/idfMdMetadata");
 
+        String datasetURI = "";
+        Node fileIdentifierNode = XPATH.getNode(idfMdMetadataNode,"./fileIdentifier/CharacterString");
+        if (fileIdentifierNode != null) {
+            String fileIdentifier = fileIdentifierNode.getTextContent().trim();
+            datasetURI = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.METADATA_ACCESS_URL).replace("{uuid}", fileIdentifier);
+        }
+
         String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode,"./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
 
         NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/transferOptions");
@@ -503,13 +508,6 @@ public class MapperService {
                 }
 
                 String accessURL = linkageNode.getTextContent().trim();
-
-                // skip distributions that are already added
-                if (currentDistributionUrls.contains(accessURL)) {
-                    continue;
-                }
-
-                currentDistributionUrls.add(accessURL);
 
                 Distribution dist = new Distribution();
                 dist.getAccessURL().setResource(accessURL);
@@ -556,7 +554,7 @@ public class MapperService {
                 if (format != null) {
                     dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + format));
                 }
-                dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+                dist.setAbout(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (dists.size() + 1));
 
                 if(isHVD){
                     dist.setApplicableLegislation(new ResourceElement("http://data.europa.eu/eli/reg_impl/2023/138/oj"));
@@ -592,17 +590,10 @@ public class MapperService {
                 if (linkageNode != null) {
                     String accessURL = linkageNode.getTextContent().trim();
 
-                    // skip distributions that are already added
-                    if (currentDistributionUrls.contains(accessURL)) {
-                        continue;
-                    }
-
-                    currentDistributionUrls.add(accessURL);
-
                     Distribution dist = new Distribution();
                     dist.getAccessURL().setResource(accessURL);
 
-                    dist.setAbout(accessURL + DISTRIBUTION_RESOURCE_POSTFIX);
+                    dist.setAbout(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (dists.size() + 1));
 
                     setLicense(idfMdMetadataNode, dist);
 
