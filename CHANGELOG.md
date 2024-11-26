@@ -1,4 +1,14 @@
 
+## 7.3.4 (26.11.2024)
+
+### Features
+
+* Ergänzung von Email Adressen durch "mailto:" im DCAT-AP.DE Export ergänzt (#6425)
+
+### Bugfixes
+
+* DCAT-AP.DE Schnittstelle gibt ggf. ungültige URLs zurück (#7067)
+    
 ## 7.3.0 (01.10.2024)
 
 ### Features
