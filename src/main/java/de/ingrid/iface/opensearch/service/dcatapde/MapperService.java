@@ -64,6 +64,8 @@ public class MapperService {
 
     public static final String DISTRIBUTION_RESOURCE_POSTFIX = "#distribution";
 
+    private static final List<String> ALLOWED_DISTRIBUTION_FUNCTIONCODES = new ArrayList<String>() {{add("download");add("information");}};
+
     private final Pattern URL_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
     private final Pattern QUELLE_PATTERN = Pattern.compile("\"quelle\":\\s*\"([^\"]+)\"");
 
@@ -232,12 +234,26 @@ public class MapperService {
         if(transferOptionNodes != null) {
             for (int i = 0; i < transferOptionNodes.getLength(); i++) {
                 Node transferOptionNode = transferOptionNodes.item(i);
-                Node linkageNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/idfOnlineResource/linkage/URL");
-                if (linkageNode == null) {
-                    linkageNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/CI_OnlineResource/linkage/URL");
+                Node onlineResNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/idfOnlineResource");
+                if (onlineResNode == null) {
+                    onlineResNode = XPATH.getNode(transferOptionNode, "./MD_DigitalTransferOptions/onLine/CI_OnlineResource");
                 }
+
+                if (onlineResNode == null) {
+                    log.warn("Skip Distribution - No OnlineResource");
+                    continue;
+                }
+
+                Node linkageNode = XPATH.getNode(onlineResNode, "./linkage/URL");
+
                 if (linkageNode == null) {
                     log.warn("Skip Distribution - No Linkage");
+                    continue;
+                }
+
+                Node functionNode = XPATH.getNode(onlineResNode, "./function/CI_OnLineFunctionCode/@codeListValue");
+                if (functionNode != null && (!ALLOWED_DISTRIBUTION_FUNCTIONCODES.contains(functionNode.getTextContent()))) {
+                    log.warn("Skip Distribution - Function neither information nor download");
                     continue;
                 }
                 distResources.add(new ResourceElement(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (distResources.size() + 1)));
@@ -506,7 +522,7 @@ public class MapperService {
                 }
 
                 Node functionNode = XPATH.getNode(onlineResNode, "./function/CI_OnLineFunctionCode/@codeListValue");
-                if (functionNode != null && (!functionNode.getTextContent().equals("information") && !functionNode.getTextContent().equals("download"))) {
+                if (functionNode != null && (!ALLOWED_DISTRIBUTION_FUNCTIONCODES.contains(functionNode.getTextContent()))) {
                     log.warn("Skip Distribution - Function neither information nor download");
                     continue;
                 }
