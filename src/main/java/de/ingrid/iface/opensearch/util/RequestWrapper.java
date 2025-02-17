@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,16 +27,15 @@ package de.ingrid.iface.opensearch.util;
 
 import java.util.HashMap;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.queryparser.QueryStringParser;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * TODO Describe your created type (class, etc.) here.
- * 
+ *
  * @author joachim@wemove.com
  */
 public class RequestWrapper extends HashMap<String, Object> {
@@ -51,19 +50,19 @@ public class RequestWrapper extends HashMap<String, Object> {
     public static final String METADATA_DETAIL_AS_XML_DOC 	= "xml";
 
     public static final String METADATA_DETAIL 	        = "detail";
-    
+
     public static final String HITS_PER_PAGE 			= "hitsPerPage";
 
     public static final String QUERY 					= "query";
     public static final String QUERY_STR 				= "query_str";
-    
+
     public static final String PLUG_ID 					= "iplug_id";
     public static final String DOC_ID 					= "doc_id";
     public static final String DOC_UUID 				= "doc_uuid";
     public static final String ALT_DOC_ID 				= "alt_doc_id";
-    
+
     public static final String GEORSS 					= "georss";
-    
+
     public static final String INGRID_DATA 				= "ingrid";
 
     public static final String UVP_DATA 				= "uvp";
@@ -71,15 +70,15 @@ public class RequestWrapper extends HashMap<String, Object> {
     public static final String SEARCH_TIMEOUT 			= "timeout";
 
     public static final String REQUEST                  = "request";
-    
+
     public static final String CHANNEL_TITLE            = "title";
 
     public static final String FORMAT                  = "format";
-    
+
     public RequestWrapper(HttpServletRequest request) throws ServletException {
 
         this.put(REQUEST, request);
-        
+
         // get result page to display
         int page = 1;
         try {
@@ -117,20 +116,20 @@ public class RequestWrapper extends HashMap<String, Object> {
         String docUuid = null;
         docUuid = request.getParameter("docuuid");
         this.put(RequestWrapper.DOC_UUID, docUuid);
-        
-        
+
+
         // get alternative doc id
         String altDocId = null;
         altDocId = request.getParameter("altdocid");
         this.put(RequestWrapper.ALT_DOC_ID, altDocId);
 
-        
+
         // get plug id
         String plugId = null;
         plugId = request.getParameter("plugid");
         this.put(RequestWrapper.PLUG_ID, plugId);
-        
-        
+
+
         // get query
         IngridQuery query = null;
         String queryString = request.getParameter("q");
@@ -161,7 +160,7 @@ public class RequestWrapper extends HashMap<String, Object> {
         	searchTimeout = 0;
         }
         this.put(RequestWrapper.SEARCH_TIMEOUT, Integer.valueOf(searchTimeout));
-        
+
         String title = request.getParameter("title");
         if (title == null) {
             title = "";
@@ -180,7 +179,7 @@ public class RequestWrapper extends HashMap<String, Object> {
      * Map 'param' from the request, which is expected to be an integer, to a boolean
      * value under the parameter name 'mappedParam'. If the param doesn't exist, no entry
      * will be made in the HashMap.
-     * 
+     *
      * @param request, is the HTTPRequest which contains the parameter
      * @param param, is the parameter to look for
      * @param mappedParam, is the mapped name of the converted parameter, containing a boolean value
@@ -212,7 +211,7 @@ public class RequestWrapper extends HashMap<String, Object> {
     public String getDocUuid() {
         return (String) this.get(RequestWrapper.DOC_UUID);
     }
-    
+
     public String getAltDocId() {
         return (String) this.get(RequestWrapper.ALT_DOC_ID);
     }
@@ -228,7 +227,7 @@ public class RequestWrapper extends HashMap<String, Object> {
     public boolean getMetadataDetail() {
         return (Boolean) this.get(RequestWrapper.METADATA_DETAIL);
     }
-    
+
     public IngridQuery getQuery() {
         return (IngridQuery) this.get(RequestWrapper.QUERY);
     }
@@ -236,11 +235,11 @@ public class RequestWrapper extends HashMap<String, Object> {
     public String getQueryString() {
         return (String) this.get(RequestWrapper.QUERY_STR);
     }
-    
+
     public boolean withGeoRSS() {
     	return (Boolean) this.get(GEORSS);
     }
-    
+
     public boolean withIngridData() {
     	return (Boolean) this.get(INGRID_DATA);
     }
@@ -248,11 +247,11 @@ public class RequestWrapper extends HashMap<String, Object> {
     public boolean withUVPData() {
         return (Boolean) this.get(RequestWrapper.UVP_DATA);
     }
-    
+
     public int getSearchTimeout() {
         return ((Integer) this.get(RequestWrapper.SEARCH_TIMEOUT)).intValue();
     }
-    
+
     public HttpServletRequest getRequest() {
         return (HttpServletRequest)this.get(REQUEST);
     }
@@ -260,6 +259,6 @@ public class RequestWrapper extends HashMap<String, Object> {
     public String getFormat() {
         return (String)this.get(FORMAT);
     }
-    
+
 
 }

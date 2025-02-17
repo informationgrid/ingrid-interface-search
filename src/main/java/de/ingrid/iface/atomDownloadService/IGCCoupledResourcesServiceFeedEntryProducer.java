@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,8 +98,8 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
         if (log.isDebugEnabled()) {
             log.debug("Coupled ressources found: " + coupledUuids.length);
         }
-        
-        
+
+
         if (coupledUuids.length == 0) {
             return entryList;
         }
@@ -112,8 +111,8 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             if (log.isDebugEnabled()) {
                 startTimer = System.currentTimeMillis();
             }
-            
-            idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit)); 
+
+            idfCoupledResourceDoc = IdfUtils.getIdfDocument(iBus.getRecord(hit));
 
             // do not process data with identical uuids (filter duplicates)
             Serializable recordId = IdfUtils.getRecordId(idfCoupledResourceDoc);
@@ -122,13 +121,13 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                 log.error( "Dataset did not have a record id" );
                 continue;
             }
-            
+
             String uuid = recordId.toString();
 
             if (log.isDebugEnabled()) {
                 log.debug("Fetched IDF coupled resource '" + hit.getHitDetail().getTitle() + "' ('" + uuid + "') from iPlug '" + hit.getPlugId() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
             }
-            
+
             // do not process data with identical uuids (filter duplicates)
             if (coupledResourceUuids.contains(uuid)) {
                 if (log.isDebugEnabled()) {

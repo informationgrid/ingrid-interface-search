@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,25 +22,22 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.server.Request;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import de.ingrid.iface.atomDownloadService.om.DatasetFeed;
 import de.ingrid.iface.atomDownloadService.om.DatasetFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.Link;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.util.SearchInterfaceServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class GetDatasetServlet extends HttpServlet implements SearchInterfaceServlet {
@@ -78,7 +75,7 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
                 if (links != null && links.size() == 1) {
                     Link link = links.get(0);
                     resp.sendRedirect(link.getHref());
-                    ((Request) req).setHandled(true);
+//                    ((Request) req).setHandled(true);
                     return;
                 }
             }
@@ -89,7 +86,7 @@ public class GetDatasetServlet extends HttpServlet implements SearchInterfaceSer
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType("application/atom+xml");
             resp.getWriter().print(body);
-            ((Request) req).setHandled(true);
+//            ((Request) req).setHandled(true);
             if (log.isDebugEnabled()) {
                 log.debug("Finished request within " + (System.currentTimeMillis() - startTimer) + " ms.");
             }

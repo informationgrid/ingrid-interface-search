@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,9 @@
  * **************************************************#
  */
 package de.ingrid.iface_test.opensearch.test;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,32 +36,16 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.*;
-
 public class ServletRequestMockObject implements HttpServletRequest {
 
 	private HttpSession session;
 	private Map requestAttributes = new HashMap();
     private Hashtable requestParameters = new Hashtable();
 
-	/**
-	* @see javax.servlet.ServletRequest#getAttribute(java.lang.String)
-	*/
 	public Object getAttribute(String key) {
 		return requestAttributes.get(key);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequest#getAttributeNames()
-	 */
 	public Enumeration getAttributeNames() {
 		return null;
 	}
@@ -152,10 +139,6 @@ public class ServletRequestMockObject implements HttpServletRequest {
 		return null;
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.ServletRequest#getRealPath(java.lang.String)
-	 */
 	public String getRealPath(String arg0) {
 		return null;
 	}
@@ -209,16 +192,10 @@ public class ServletRequestMockObject implements HttpServletRequest {
 		return false;
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequest#removeAttribute(java.lang.String)
-	 */
 	public void removeAttribute(String key) {
 		requestAttributes.remove(key);
 	}
 
-	/**
-	 * @see javax.servlet.ServletRequest#setAttribute(java.lang.String, java.lang.Object)
-	 */
 	public void setAttribute(String key, Object value) {
 		requestAttributes.put(key,value);
 	}
@@ -354,13 +331,13 @@ public class ServletRequestMockObject implements HttpServletRequest {
 	 */
 	public HttpSession getSession() {
 		HttpSession ret;
-		
+
 		if(session == null) {
 			session = new HttpSessionMockObject();
 		}
-		
+
 		ret = session;
-		
+
 		return ret;
 	}
 
@@ -374,16 +351,16 @@ public class ServletRequestMockObject implements HttpServletRequest {
 	 */
 	public HttpSession getSession(boolean create) {
 		HttpSession ret;
-		
+
 		if(create && session == null) {
 			session = new HttpSessionMockObject();
 		}
-		
+
 		ret = session;
-		
+
 		return ret;
 	}
-	
+
 	/**
 	 * Extra method for test cases, so they can create a dummy session..
 	 * @param session
@@ -406,10 +383,6 @@ public class ServletRequestMockObject implements HttpServletRequest {
 		return false;
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpServletRequest#isRequestedSessionIdFromUrl()
-	 */
 	public boolean isRequestedSessionIdFromUrl() {
 		return false;
 	}
@@ -467,7 +440,22 @@ public class ServletRequestMockObject implements HttpServletRequest {
         return null;
     }
 
-    @Override
+	@Override
+	public String getRequestId() {
+		return "";
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		return "";
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
+		return null;
+	}
+
+	@Override
     public ServletContext getServletContext() {
         // TODO Auto-generated method stub
         return null;
@@ -523,13 +511,13 @@ public class ServletRequestMockObject implements HttpServletRequest {
     @Override
     public void login(String arg0, String arg1) throws ServletException {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void logout() throws ServletException {
         // TODO Auto-generated method stub
-        
+
     }
 
 }

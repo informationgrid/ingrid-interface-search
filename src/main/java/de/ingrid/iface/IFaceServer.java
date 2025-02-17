@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,25 +25,26 @@
  */
 package de.ingrid.iface;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.SearchInterfaceServletConfigurator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHandler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import java.net.URL;
 
 /**
  * TODO Describe your created type (class, etc.) here.
- * 
+ *
  * @author joachim@wemove.com
  */
 public class IFaceServer {
@@ -60,37 +61,42 @@ public class IFaceServer {
         log.info("starting search server ...");
 
         Server server = new Server(serverPort);
-        ServletHandler handler = new ServletHandler();
+        ContextHandler contextHandler = new ServletContextHandler();
+        ServletHandler servletHandler = new ServletHandler();
 
         AbstractApplicationContext ctx = new AnnotationConfigApplicationContext("de.ingrid.iface");
         SearchInterfaceServletConfigurator searchInterfaceServletConfigurator = ctx.getBean(SearchInterfaceServletConfigurator.class);
-        
-        // add a shutdown hook for the above context... 
+
+        // add a shutdown hook for the above context...
         ctx.registerShutdownHook();
 
-        searchInterfaceServletConfigurator.addServlets(handler);
+        contextHandler.setHandler(servletHandler);
+
+        searchInterfaceServletConfigurator.addServlets(servletHandler);
         ctx.close();
 
-        ContextHandler context = new ContextHandler();
-        context.setContextPath("/dls");
+        ContextHandler atomContextHandler = new ContextHandler();
+        atomContextHandler.setContextPath("/dls");
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setDirectoriesListed(false);
-        resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-        URL baseUrl  = IFaceServer.class.getResource( "/static" );
-        String  basePath = baseUrl.toExternalForm();
-        log.info("BasePath:" + basePath);
-        resourceHandler.setResourceBase(basePath);
-        context.setHandler(resourceHandler);
+        resourceHandler.setDirAllowed(false);
+        resourceHandler.setWelcomeFiles("index.html");
+        URL baseUrl = IFaceServer.class.getResource("/static");
+        ResourceFactory resourceFactory = ResourceFactory.of(atomContextHandler);
+        Resource baseResource = resourceFactory.newResource(baseUrl);
+
+        log.info("BasePath:" + baseResource.toString());
+        resourceHandler.setBaseResource(baseResource);
+        atomContextHandler.setHandler(resourceHandler);
         log.info("==================================================");
         log.info("Server port: " + serverPort);
         log.info("Serving resources from '/static' at '/dls'.");
         log.info("Implementation Version: " + server.getClass().getPackage().getImplementationVersion());
         log.info("==================================================");
-        
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] { context, handler });
-        server.setHandler(handlers);
 
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        contexts.addHandler(contextHandler);
+        contexts.addHandler(atomContextHandler);
+        server.setHandler(contexts);
 
         server.start();
         server.join();

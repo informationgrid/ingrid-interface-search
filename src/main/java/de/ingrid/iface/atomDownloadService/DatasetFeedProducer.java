@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +114,7 @@ public class DatasetFeedProducer {
             link.setType("application/vnd.ogc.csw.GetRecordByIdResponse_xml");
             datasetFeed.setDescribedBy(new ArrayList<Link>());
             datasetFeed.getDescribedBy().add(link);
-            
+
             link = new Link();
             urlPattern = URLUtil.updateProtocol( atomDownloadServiceFeedUrlPattern, datasetFeedRequest.getProtocol() );
             link.setHref(urlPattern.replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
@@ -132,7 +131,7 @@ public class DatasetFeedProducer {
             StringBuilder copyRight = new StringBuilder();
             for (int i=0; i< resourceConstraints.getLength(); i++) {
                 Node resourceConstraint = resourceConstraints.item(i);
-                
+
                 String useLimitations = XPATH.getString(resourceConstraint, "*/gmd:useLimitation/gco:CharacterString");
                 if (useLimitations != null && useLimitations.length() > 0) {
                     if (copyRight.length() > 0) {
@@ -165,7 +164,7 @@ public class DatasetFeedProducer {
             for (DatasetFeedEntryProducer producer : datasetFeedEntryProducer) {
                 entryList.addAll(producer.produce(doc));
             }
-            
+
             // add link to portal detail page if requested
             if (datasetFeedRequest.isDetail()) {
                 String detailUrl = SearchInterfaceConfig.getInstance().getString( SearchInterfaceConfig.METADATA_DETAILS_URL );

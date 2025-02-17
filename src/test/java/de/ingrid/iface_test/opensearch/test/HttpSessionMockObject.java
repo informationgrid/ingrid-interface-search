@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,19 +40,19 @@
  */
 package de.ingrid.iface_test.opensearch.test;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 
 /**
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class HttpSessionMockObject implements HttpSession {
-	
+
 	private Map attributes = new HashMap();
 
 	public HttpSessionMockObject() {
@@ -104,30 +104,18 @@ public class HttpSessionMockObject implements HttpSession {
 	 * @see javax.servlet.http.HttpSession#getServletContext()
 	 */
 	public ServletContext getServletContext() {
-		
+
 		return null;
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpSession#getSessionContext()
-	 */
-	public javax.servlet.http.HttpSessionContext getSessionContext() {
-		return null;
-	}
+//	public HttpSessionContext getSessionContext() {
+//		return null;
+//	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpSession#getValue(java.lang.String)
-	 */
 	public Object getValue(String arg0) {
 		return null;
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpSession#getValueNames()
-	 */
 	public String[] getValueNames() {
 		return null;
 	}
@@ -145,10 +133,6 @@ public class HttpSessionMockObject implements HttpSession {
 		return false;
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpSession#putValue(java.lang.String, java.lang.Object)
-	 */
 	public void putValue(String arg0, Object arg1) {
 	}
 
@@ -159,10 +143,6 @@ public class HttpSessionMockObject implements HttpSession {
 		attributes.remove(name);
 	}
 
-	/**
-	 * @deprecated
-	 * @see javax.servlet.http.HttpSession#removeValue(java.lang.String)
-	 */
 	public void removeValue(String arg0) {
 	}
 
