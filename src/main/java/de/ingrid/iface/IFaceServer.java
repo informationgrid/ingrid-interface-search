@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHandler;
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -77,6 +77,9 @@ public class IFaceServer {
 
         ContextHandler atomContextHandler = new ContextHandler();
         atomContextHandler.setContextPath("/dls");
+
+
+
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirAllowed(false);
         resourceHandler.setWelcomeFiles("index.html");
@@ -97,6 +100,12 @@ public class IFaceServer {
         contexts.addHandler(contextHandler);
         contexts.addHandler(atomContextHandler);
         server.setHandler(contexts);
+
+        // fix correct redirect when behind proxy (see: https://github.com/jetty/jetty.project/issues/11947)
+        HttpConnectionFactory httpConfig = server.getConnectors()[0].getConnectionFactory(HttpConnectionFactory.class);
+        httpConfig.getHttpConfiguration().setRelativeRedirectAllowed(false);
+        httpConfig.getHttpConfiguration().setSendServerVersion(false);
+        httpConfig.getHttpConfiguration().addCustomizer(new ForwardedRequestCustomizer());
 
         server.start();
         server.join();
