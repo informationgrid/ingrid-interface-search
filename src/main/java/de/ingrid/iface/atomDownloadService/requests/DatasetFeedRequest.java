@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,7 @@
  */
 package de.ingrid.iface.atomDownloadService.requests;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
 
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
@@ -37,7 +36,7 @@ public class DatasetFeedRequest extends BaseRequest {
     private String language;
     private String crs;
     private boolean detail;
-    
+
     private EntryType type;
     private String metadataUrl;
 
@@ -47,9 +46,9 @@ public class DatasetFeedRequest extends BaseRequest {
 
     public DatasetFeedRequest(HttpServletRequest req) throws Exception {
 
-        
+
         this.extractProtocol( req );
-        
+
         String p = req.getParameter("spatial_dataset_identifier_code");
         if (p != null) {
             spatialDatasetIdentifierCode = p;
@@ -69,7 +68,7 @@ public class DatasetFeedRequest extends BaseRequest {
         if (p != null) {
             crs = p;
         }
-        
+
         p = req.getParameter("detail");
         if (p != null) {
             detail = "true".equals( p );
@@ -77,12 +76,12 @@ public class DatasetFeedRequest extends BaseRequest {
 
         serviceFeedUuid = StringUtils.trimLeadingCharacter(req.getPathInfo(), '/');
         datasetFeedUuid = req.getParameter("datasetUuid");
-        
+
         if (datasetFeedUuid != null && datasetFeedUuid.toLowerCase().contains("getrecordbyid")) {
             this.setType(EntryType.CSW);
             this.setMetadataUrl(datasetFeedUuid);
         }
-        
+
     }
 
     public String toString() {
@@ -162,6 +161,6 @@ public class DatasetFeedRequest extends BaseRequest {
         this.detail = detail;
     }
 
-    
+
 
 }

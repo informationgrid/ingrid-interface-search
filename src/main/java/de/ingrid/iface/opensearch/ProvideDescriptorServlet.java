@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,26 +25,24 @@
  */
 package de.ingrid.iface.opensearch;
 
+import de.ingrid.iface.util.SearchInterfaceConfig;
+import de.ingrid.iface.util.SearchInterfaceServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.stereotype.Service;
-
-import de.ingrid.iface.util.SearchInterfaceConfig;
-import de.ingrid.iface.util.SearchInterfaceServlet;
-
 /**
  * Servlet handles OpenSearch queries.
- * 
+ *
  * @author joachim@wemove.com
  */
 @Service
@@ -54,10 +52,6 @@ public class ProvideDescriptorServlet extends HttpServlet implements SearchInter
 
     private final static Log log = LogFactory.getLog(ProvideDescriptorServlet.class);
 
-    /**
-     * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String descriptorFile = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DESCRIPTOR_FILE, "conf/descriptor.xml");
@@ -83,10 +77,6 @@ public class ProvideDescriptorServlet extends HttpServlet implements SearchInter
         }
     }
 
-    /**
-     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse)
-     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }

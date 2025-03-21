@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import de.ingrid.iface.opensearch.model.dcatapde.general.DatatypeTextElement;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.URLUtil;
-import org.eclipse.jetty.server.Request;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +136,7 @@ public class DcatApDe {
         this.collection = collection;
     }
 
-    public void handlePaging(Request request, int page, int numPerPage, long totalCount) {
+    public void handlePaging(HttpServletRequest request, int page, int numPerPage, long totalCount) {
         HydraCollection hydraCollection = new HydraCollection();
 
         String baseURL = request.getRequestURL().toString();
@@ -152,23 +152,38 @@ public class DcatApDe {
 
 
         request.getQueryString();
-        request.mergeQueryParameters("p=" + page, true);
+        String newQueryString = request.getQueryString() == null
+                ? "p=" + page
+                : request.getQueryString() + "&p=" + page;
+        request.setAttribute("javax.servlet.forward.query_string", newQueryString);
         hydraCollection.setAbout(baseURL + "?" + request.getQueryString());
 
-        request.mergeQueryParameters("p=1", true);
+        String newQueryString1 = request.getQueryString() == null
+                ? "p=1"
+                : request.getQueryString() + "&p=1";
+        request.setAttribute("javax.servlet.forward.query_string", newQueryString1);
         hydraCollection.setFirstPage(baseURL + "?" + request.getQueryString());
 
         int lastPage = (int) totalCount / numPerPage;
         if (totalCount > lastPage * numPerPage) lastPage++;
-        request.mergeQueryParameters("p=" + lastPage, true);
+        String newQueryString2 = request.getQueryString() == null
+                ? "p=" + lastPage
+                : request.getQueryString() + "&p=" + lastPage;
+        request.setAttribute("javax.servlet.forward.query_string", newQueryString2);
         hydraCollection.setLastPage(baseURL + "?" + request.getQueryString());
 
         if (totalCount > page * numPerPage) {
-            request.mergeQueryParameters("p=" + (page + 1), true);
+            String newQueryString3 = request.getQueryString() == null
+                    ? "p=" + (page + 1)
+                    : request.getQueryString() + "&p=" + (page + 1);
+            request.setAttribute("javax.servlet.forward.query_string", newQueryString3);
             hydraCollection.setNextPage(baseURL + "?" + request.getQueryString());
         }
         if (page > 1 && page <= lastPage) {
-            request.mergeQueryParameters("p=" + (page - 1), true);
+            String newQueryString4 = request.getQueryString() == null
+                    ? "p=" + (page - 1)
+                    : request.getQueryString() + "&p=" + (page - 1);
+            request.setAttribute("javax.servlet.forward.query_string", newQueryString4);
             hydraCollection.setPreviousPage(baseURL + "?" + request.getQueryString());
         }
 
