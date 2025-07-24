@@ -27,6 +27,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import de.ingrid.iface.opensearch.model.dcatapde.general.DatatypeTextElement;
+import de.ingrid.iface.opensearch.util.QueryParameterUtil;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -141,7 +142,7 @@ public class DcatApDe {
 
         String baseURL = request.getRequestURL().toString();
         String proxyurl = URLUtil.updateProtocol(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.OPENSEARCH_PROXY_URL, null), request.getScheme());
-        if (proxyurl != null && proxyurl.trim().length() > 0) {
+        if (proxyurl != null && !proxyurl.trim().isEmpty()) {
             baseURL = proxyurl.concat("/query");
         } else {
             baseURL = request.getRequestURL().toString();
@@ -152,39 +153,29 @@ public class DcatApDe {
 
 
         request.getQueryString();
-        String newQueryString = request.getQueryString() == null
-                ? "p=" + page
-                : request.getQueryString() + "&p=" + page;
-        request.setAttribute("javax.servlet.forward.query_string", newQueryString);
-        hydraCollection.setAbout(baseURL + "?" + request.getQueryString());
+        String aboutParams = QueryParameterUtil.mergeQueryParameters(
+                request.getQueryString(), "p=" + page);
+        hydraCollection.setAbout(baseURL + "?" + aboutParams);
 
-        String newQueryString1 = request.getQueryString() == null
-                ? "p=1"
-                : request.getQueryString() + "&p=1";
-        request.setAttribute("javax.servlet.forward.query_string", newQueryString1);
-        hydraCollection.setFirstPage(baseURL + "?" + request.getQueryString());
+        String firstPageParams = QueryParameterUtil.mergeQueryParameters(
+                request.getQueryString(), "p=1");
+        hydraCollection.setFirstPage(baseURL + "?" + firstPageParams);
 
         int lastPage = (int) totalCount / numPerPage;
-        if (totalCount > lastPage * numPerPage) lastPage++;
-        String newQueryString2 = request.getQueryString() == null
-                ? "p=" + lastPage
-                : request.getQueryString() + "&p=" + lastPage;
-        request.setAttribute("javax.servlet.forward.query_string", newQueryString2);
-        hydraCollection.setLastPage(baseURL + "?" + request.getQueryString());
+        if (totalCount > (long) lastPage * numPerPage) lastPage++;
+        String lastPageParams = QueryParameterUtil.mergeQueryParameters(
+                request.getQueryString(), "p=" + lastPage);
+        hydraCollection.setLastPage(baseURL + "?" + lastPageParams);
 
-        if (totalCount > page * numPerPage) {
-            String newQueryString3 = request.getQueryString() == null
-                    ? "p=" + (page + 1)
-                    : request.getQueryString() + "&p=" + (page + 1);
-            request.setAttribute("javax.servlet.forward.query_string", newQueryString3);
-            hydraCollection.setNextPage(baseURL + "?" + request.getQueryString());
+        if (totalCount > (long) page * numPerPage) {
+            String nextPageParams = QueryParameterUtil.mergeQueryParameters(
+                    request.getQueryString(), "p=" + (page + 1));
+            hydraCollection.setNextPage(baseURL + "?" + nextPageParams);
         }
         if (page > 1 && page <= lastPage) {
-            String newQueryString4 = request.getQueryString() == null
-                    ? "p=" + (page - 1)
-                    : request.getQueryString() + "&p=" + (page - 1);
-            request.setAttribute("javax.servlet.forward.query_string", newQueryString4);
-            hydraCollection.setPreviousPage(baseURL + "?" + request.getQueryString());
+            String previousPageParams = QueryParameterUtil.mergeQueryParameters(
+                    request.getQueryString(), "p=" + (page - 1));
+            hydraCollection.setPreviousPage(baseURL + "?" + previousPageParams);
         }
 
         setCollection(hydraCollection);
