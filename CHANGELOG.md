@@ -1,4 +1,11 @@
 
+## 8.0.1 (29.07.2025)
+
+
+### Bugfixes
+
+* Open Search rdf Paging Links enhalten keine Page Aufrufe (#8007)
+    
 ## 8.0.0 (04.07.2025)
 
 ### Features
