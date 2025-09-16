@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,26 +22,20 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-
 import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
 import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
 import de.ingrid.iface.atomDownloadService.requests.DatasetFeedRequest;
 import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
 import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
-import de.ingrid.iface.util.IBusHelper;
-import de.ingrid.iface.util.IBusQueryResultIterator;
-import de.ingrid.iface.util.IdfUtils;
-import de.ingrid.iface.util.SearchInterfaceConfig;
-import de.ingrid.iface.util.StringUtils;
-import de.ingrid.iface.util.StringUtilsService;
+import de.ingrid.iface.util.*;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
 
 @Service
 public class DatasetFeedFactory {
@@ -53,21 +47,21 @@ public class DatasetFeedFactory {
     private IBusHelper iBusHelper;
 
     private StringUtilsService stringUtilsService;
-    
+
     private SearchInterfaceConfig config;
 
     private final static Log log = LogFactory.getLog(DatasetFeedFactory.class);
 
-    private static final String[] REQUESTED_FIELDS = new String[] {};
+    private static final String[] REQUESTED_FIELDS = new String[]{};
 
     public Document getDatasetFeedDocument(DatasetFeedRequest datasetFeedRequest) throws Exception {
-        
-	    if (log.isDebugEnabled()) {
+
+        if (log.isDebugEnabled()) {
             log.debug("Get single dataset feed document from dataset feed request.");
         }
 
         Document doc = null;
-        
+
         Integer connectionTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_CONNECTION_TIMEOUT, 1000);
         Integer readTimeout = config.getInt(SearchInterfaceConfig.ATOM_URL_READ_TIMEOUT, 1000);
 
@@ -111,21 +105,23 @@ public class DatasetFeedFactory {
                 if (log.isDebugEnabled()) {
                     log.debug("Fetched IDF record within " + (System.currentTimeMillis() - startTimer) + " ms.");
                 }
-                
+
                 datasetFeedRequest.setType(EntryType.IGC);
             } else {
                 // no hit found, try all datasets related to the service
-        	    if (log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("No IGC found from UUID. Try to get ISO document from related CSW GetRecordById Links referenced from the service.");
                 }
                 ServiceFeedRequest sr = new ServiceFeedRequest();
                 sr.setUuid(datasetFeedRequest.getServiceFeedUuid());
                 sr.setProtocol(datasetFeedRequest.getProtocol());
+
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
+
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
                     if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
-                        if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())
-                                && entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace())) {
+
+                        if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
                             try {
                                 Long startTimer = 0L;
                                 if (log.isDebugEnabled()) {
@@ -167,7 +163,7 @@ public class DatasetFeedFactory {
     public void setStringUtilsService(StringUtilsService stringUtilsService) {
         this.stringUtilsService = stringUtilsService;
     }
-    
+
     @Autowired
     public void setConfig(SearchInterfaceConfig config) {
         this.config = config;
