@@ -120,6 +120,8 @@ public class DatasetFeedFactory {
 
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
                     if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
+                        // TODO add check for identifier namespace - it is not mandatory (anymore), but if present should still be handled
+                        //  entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()))
 
                         if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
                             try {
