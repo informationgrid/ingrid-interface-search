@@ -119,11 +119,39 @@ public class DatasetFeedFactory {
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
 
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
-                    if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
-                        // TODO add check for identifier namespace - it is not mandatory (anymore), but if present should still be handled
-                        //  entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()))
+                    // TODO ask why this check ? correct results from IGC are being filtered out !
+                    //if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
 
-                        if (entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
+                    // TODO add check for identifier namespace - it is not mandatory (anymore), but if present should still be handled
+                    //  entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()))
+                    // need a way to differentiate between a dataset identifier code that is full and one that is made up of namespace and identifier
+
+                    // if the spatial dataset identifier of the request (!) is null, the retrieval is only by id
+                    // SpatialDatasetIdentifierCode enough to id the entry - if alone
+                    if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null &&
+                            entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
+
+                        try {
+                            Long startTimer = 0L;
+                            if (log.isDebugEnabled()) {
+                                startTimer = System.currentTimeMillis();
+                            }
+                            doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Fetched ISO record from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                            }
+                        } catch (Exception e) {
+                            log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
+                        }
+                        datasetFeedRequest.setType(EntryType.CSW);
+                        datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
+                    } else {
+
+                        // use SpatialDatasetIdentifierNamespace and SpatialDatasetIdentifierCode, ignore entry if it has no namespace
+                        if (entry.getSpatialDatasetIdentifierNamespace() != null &&
+                                entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()) &&
+                                entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
+
                             try {
                                 Long startTimer = 0L;
                                 if (log.isDebugEnabled()) {
@@ -136,8 +164,10 @@ public class DatasetFeedFactory {
                             } catch (Exception e) {
                                 log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
                             }
+                            // todo why this ???
                             datasetFeedRequest.setType(EntryType.CSW);
                             datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
+                            log.info("Adding dataset by namespace");
                         }
                     }
                 }
