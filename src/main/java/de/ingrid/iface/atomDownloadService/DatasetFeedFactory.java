@@ -119,15 +119,11 @@ public class DatasetFeedFactory {
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
 
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
+
                     // TODO ask why this check ? correct results from IGC are being filtered out !
                     //if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
 
-                    // TODO add check for identifier namespace - it is not mandatory (anymore), but if present should still be handled
-                    //  entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()))
-                    // need a way to differentiate between a dataset identifier code that is full and one that is made up of namespace and identifier
-
-                    // if the spatial dataset identifier of the request (!) is null, the retrieval is only by id
-                    // SpatialDatasetIdentifierCode enough to id the entry - if alone
+                    // if the SpatialDatasetIdentifierNamespace of the request (!) is null, the retrieval is only by SpatialDatasetIdentifierCode
                     if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null &&
                             entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
 
