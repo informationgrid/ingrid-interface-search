@@ -120,9 +120,6 @@ public class DatasetFeedFactory {
 
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
 
-                    // TODO ask why this check ? correct results from IGC are being filtered out !
-                    //if (entry.getType().equals(ServiceFeedEntry.EntryType.CSW)) {
-
                     // if the SpatialDatasetIdentifierNamespace of the request (!) is null, the retrieval is only by SpatialDatasetIdentifierCode
                     if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null &&
                             entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
@@ -134,12 +131,12 @@ public class DatasetFeedFactory {
                             }
                             doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
                             if (log.isDebugEnabled()) {
-                                log.debug("Fetched ISO record from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                                log.debug("Fetched ISO record by spatial identifier from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
                             }
                         } catch (Exception e) {
                             log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
                         }
-                        datasetFeedRequest.setType(EntryType.CSW);
+                        datasetFeedRequest.setType(entry.getType());
                         datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
                     } else {
 
@@ -155,15 +152,14 @@ public class DatasetFeedFactory {
                                 }
                                 doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
                                 if (log.isDebugEnabled()) {
-                                    log.debug("Fetched ISO record from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                                    log.debug("Fetched ISO record by spatial identifier AND namespace from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
                                 }
                             } catch (Exception e) {
                                 log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
                             }
-                            // todo why this ???
-                            datasetFeedRequest.setType(EntryType.CSW);
+
+                            datasetFeedRequest.setType(entry.getType());
                             datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
-                            log.info("Adding dataset by namespace");
                         }
                     }
                 }
