@@ -57,6 +57,8 @@ public class IFaceServer {
      */
     public static void main(String[] args) throws Exception {
         int serverPort = SearchInterfaceConfig.getInstance().getInt(SearchInterfaceConfig.SERVER_PORT, 80);
+        String serverUrl = SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL);
+
         // Create the server
         log.info("starting search server ...");
 
@@ -93,6 +95,8 @@ public class IFaceServer {
         log.info("==================================================");
         log.info("Server port: " + serverPort);
         log.info("Serving resources from '/static' at '/dls'.");
+
+        log.info("Atom Download Service URL: " + serverUrl);
         log.info("Implementation Version: " + server.getClass().getPackage().getImplementationVersion());
         log.info("==================================================");
 
