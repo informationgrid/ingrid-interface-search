@@ -122,6 +122,7 @@ public class DatasetFeedFactory {
 
                     // if the SpatialDatasetIdentifierNamespace of the request (!) is null, the retrieval is only by SpatialDatasetIdentifierCode
                     if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null &&
+                            entry.getSpatialDatasetIdentifierCode() != null &&
                             entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
 
                         try {

@@ -96,7 +96,6 @@ public class DatasetFeedProducer {
             Link link = new Link();
             String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, datasetFeedRequest.getProtocol() );
 
-            // todo dataset feed is returned as null because this file is not available on the passed href () > happened because metadata.access.url was wrong > should add check ??
             // the servicefeed UUID comes from the datasetFeedRequest, the datasetfeed UUID from the datasetFeed
             link.setHref(urlPattern
                     .replace("{datasetfeed-uuid}", URLEncoder.encode(datasetFeed.getUuid(), StandardCharsets.UTF_8.toString()))
