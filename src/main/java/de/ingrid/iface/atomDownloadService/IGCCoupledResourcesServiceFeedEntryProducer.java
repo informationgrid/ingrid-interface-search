@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +76,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
     @PostConstruct
     public void init() {
 
-        atomDownloadDatasetFeedUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadDatasetFeedUrlPattern = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadDatasetFeedUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_DATASET_FEED_EXTENSION);
     }
 

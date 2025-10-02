@@ -66,7 +66,7 @@ public class ServiceFeedListProducer {
 
     @PostConstruct
     public void init() {
-        atomDownloadServiceFeedlistUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadServiceFeedlistUrlPattern = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadServiceFeedlistUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_FEEDLIST_EXTENSION);
     }
 

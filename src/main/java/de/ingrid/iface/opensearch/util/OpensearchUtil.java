@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,8 @@ package de.ingrid.iface.opensearch.util;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.PlugDescription;
@@ -40,11 +40,11 @@ public class OpensearchUtil {
                                                                             // replace
             { "&quot;", "&amp;", "&lt;", "&gt;" } // & - replace with
     };
-    
+
     public enum XML_TYPE {
-        XML_1_0, XML_1_1  
+        XML_1_0, XML_1_1
     }
-    
+
     private static final String XML_1_0_PATTERN = "[^"
             + "\u0009\r\n"
             + "\u0020-\uD7FF"
@@ -113,7 +113,7 @@ public class OpensearchUtil {
 
     /**
      * Return true if the given iPlug has a specific data type.
-     * 
+     *
      * @param iPlug
      *            The PlugDescription to work on.
      * @param dataType
@@ -133,9 +133,9 @@ public class OpensearchUtil {
     /**
      * Escapes XML special characters into the corresponding escape sequence.
      * The following characters will be replaced.
-     * 
+     *
      * "\"", "&", "<", ">"
-     * 
+     *
      * @param in
      *            The String to escape.
      * @return The escaped String.
@@ -144,10 +144,10 @@ public class OpensearchUtil {
         StringEscapeUtils.escapeXml(in);
         return StringUtils.replaceEach(in, XML_ESCAPE[0], XML_ESCAPE[1]);
     }
-    
+
     /**
      * Remove all illegal chars from a string according to the XML Literal specification.
-     * 
+     *
      * @param in
      * @param xmlType Optional, defaults to XML 1.0.
      * @return

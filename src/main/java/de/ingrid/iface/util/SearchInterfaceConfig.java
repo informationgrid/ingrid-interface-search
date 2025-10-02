@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,17 +25,22 @@
  */
 package de.ingrid.iface.util;
 
-import org.apache.commons.configuration.CombinedConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.configuration.tree.OverrideCombiner;
+import org.apache.commons.configuration2.CombinedConfiguration;
+import org.apache.commons.configuration2.MapConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+import org.apache.commons.configuration2.io.FileHandler;
+import org.apache.commons.configuration2.tree.OverrideCombiner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 /**
  * Provides access to the opensearch preferences.
- * 
+ *
  * @author joachim@wemove.com
  */
 @Service
@@ -67,21 +72,21 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
     public static final String ATOM_DOWNLOAD_SERVICE_FEED_EXTENSION = "atom.download.service.feed.extension";
 
     public static final String ATOM_DOWNLOAD_SERVICE_FEEDLIST_EXTENSION = "atom.download.service.feedlist.extension";
-    
+
     public static final String ATOM_DOWNLOAD_DATASET_FEED_EXTENSION = "atom.download.dataset.feed.extension";
 
     public static final String ATOM_DOWNLOAD_OPENSEARCH_DESCRIBE_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.describe.spatial.dataset.template";
 
     public static final String ATOM_DOWNLOAD_OPENSEARCH_GET_RESULTS_TEMPLATE = "atom.download.opensearch.get.results.template";
-    
+
     public static final String ATOM_DOWNLOAD_OPENSEARCH_GET_SPATIAL_DATASET_TEMPLATE = "atom.download.opensearch.get.spatial.dataset.template";
-    
+
     public static final String ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION = "atom.download.opensearch.definition.extension";
-    
+
     public static final String ATOM_DOWNLOAD_OPENSEARCH_SUPPORTED_LANGUAGES = "atom.download.opensearch.supported.languages";
 
     public static final String ATOM_URL_CONNECTION_TIMEOUT = "atom.url.connect.timeout";
-    
+
     public static final String ATOM_URL_READ_TIMEOUT = "atom.url.read.timeout";
 
     public static final String WEBAPP_DIR = "jetty.webapp";
@@ -112,13 +117,8 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     public static final String  DCAT_CATALOG_TITLE = "opensearch.dcat.catalog.title";
 
-    
+
     public SearchInterfaceConfig() throws ConfigurationException {
-        super(new OverrideCombiner());
-        try {
-            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
-        } catch (ConfigurationException e) {}
-        this.addConfiguration( new PropertiesConfiguration( "interface-search.properties" ) );
     }
 
     /**
@@ -126,7 +126,7 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
      * property file if given or a default file "interface-search.properties". This
      * was introduced especially for tests where a different configuration file is
      * loaded.
-     * 
+     *
      * @param filePath is the path to the property file to be loaded
      * @return the instance of the configuration object
      */
@@ -137,6 +137,7 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
                     instance = new SearchInterfaceConfig(filePath);
                 else
                     instance = new SearchInterfaceConfig("interface-search.properties");
+                System.out.println("HOST: " + instance.getString("opensearch.proxy.url"));
             } catch (Exception e) {
                 if (log.isFatalEnabled()) {
                     log.fatal("Error loading the portal config application config file. (ingrid-search.properties)", e);
@@ -153,9 +154,26 @@ public class SearchInterfaceConfig extends CombinedConfiguration {
 
     private SearchInterfaceConfig(String path) throws Exception {
         super(new OverrideCombiner());
+
+        Parameters params = new Parameters();
+
+        // Try to load optional user properties from classpath
         try {
-            this.addConfiguration( new PropertiesConfiguration( "interface-search-user.properties" ) );
-        } catch (ConfigurationException e) {}
-        this.addConfiguration( new PropertiesConfiguration( path ) );
+            FileBasedConfigurationBuilder<PropertiesConfiguration> userPropertiesBuilder =
+                    new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+                            .configure(params.properties()
+                                    .setURL(getClass().getClassLoader().getResource("interface-search-user.properties")));
+            this.addConfiguration(userPropertiesBuilder.getConfiguration());
+        } catch (Exception e) {
+            // Optional properties file not found, continue
+        }
+
+        // Load main properties from classpath
+        FileBasedConfigurationBuilder<PropertiesConfiguration> mainPropertiesBuilder =
+                new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+                        .configure(params.properties()
+                                .setURL(getClass().getClassLoader().getResource(path)));
+
+        this.addConfiguration(mainPropertiesBuilder.getConfiguration());
     }
 }

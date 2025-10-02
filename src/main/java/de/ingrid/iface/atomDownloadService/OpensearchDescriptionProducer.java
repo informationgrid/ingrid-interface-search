@@ -80,16 +80,16 @@ public class OpensearchDescriptionProducer {
 
     @PostConstruct
     public void init() {
-        atomDownloadServiceOpensearchDescriptionUrlPattern = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadServiceOpensearchDescriptionUrlPattern = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadServiceOpensearchDescriptionUrlPattern += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_DEFINITION_EXTENSION);
 
-        atomDownloadOpensearchDescribeSpatialDatasetUrlTemplate = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadOpensearchDescribeSpatialDatasetUrlTemplate = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadOpensearchDescribeSpatialDatasetUrlTemplate += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_DESCRIBE_SPATIAL_DATASET_TEMPLATE);
 
-        atomDownloadOpensearchGetSpatialDatasetUrlTemplate = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadOpensearchGetSpatialDatasetUrlTemplate = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadOpensearchGetSpatialDatasetUrlTemplate += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_GET_SPATIAL_DATASET_TEMPLATE);
 
-        atomDownloadOpensearchGetResultsTemplate = org.apache.commons.lang.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
+        atomDownloadOpensearchGetResultsTemplate = org.apache.commons.lang3.StringUtils.stripEnd(config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_SERVICE_URL), "/");
         atomDownloadOpensearchGetResultsTemplate += config.getString(SearchInterfaceConfig.ATOM_DOWNLOAD_OPENSEARCH_GET_RESULTS_TEMPLATE);
     }
 
