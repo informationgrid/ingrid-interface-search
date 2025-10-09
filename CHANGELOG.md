@@ -1,4 +1,14 @@
 
+## 8.1.0 (09.10.2025)
+
+### Features
+
+* Trefferseiten-Navigation (#24)
+
+### Bugfixes
+
+* Open Search rdf Paging Links enhalten keine Page Aufrufe (#8007)
+    
 ## 8.0.0 (04.07.2025)
 
 ### Features
