@@ -77,7 +77,7 @@ public class ServiceFeedProducer {
             IngridHit hit = serviceIterator.next();
             Long startTimer = 0L;
             if (log.isDebugEnabled()) {
-                log.debug("Found valid service: '" + hit.getHitDetail().getTitle() + "' from iPlug '" + hit.getPlugId() + "'");
+                log.debug("Found valid service: '" + hit.getHitDetail().getTitle() + "' with id: '"+ hit.getHitDetail().getString("0") + "' from iPlug '" + hit.getPlugId() + "'");
                 startTimer = System.currentTimeMillis();
             }
 

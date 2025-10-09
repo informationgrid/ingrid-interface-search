@@ -95,8 +95,10 @@ public class DatasetFeedProducer {
 
             Link link = new Link();
             String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, datasetFeedRequest.getProtocol() );
+
+            // the servicefeed UUID comes from the datasetFeedRequest, the datasetfeed UUID from the datasetFeed
             link.setHref(urlPattern
-                    .replace("{datasetfeed-uuid}", URLEncoder.encode(datasetFeedRequest.getDatasetFeedUuid(), StandardCharsets.UTF_8.toString()))
+                    .replace("{datasetfeed-uuid}", URLEncoder.encode(datasetFeed.getUuid(), StandardCharsets.UTF_8.toString()))
                     .replace("{servicefeed-uuid}", StringUtils.encodeForPath(datasetFeedRequest.getServiceFeedUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
