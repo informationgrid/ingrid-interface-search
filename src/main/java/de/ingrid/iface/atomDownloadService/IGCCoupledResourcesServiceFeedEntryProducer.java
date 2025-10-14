@@ -23,6 +23,8 @@
 package de.ingrid.iface.atomDownloadService;
 
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -167,14 +169,26 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setDatasetIdentifier(link.getHref());
 
             String identifierPath = "//gmd:identificationInfo//gmd:citation//gmd:identifier/gmd:MD_Identifier/";
+
             String code = XPATH.getString(idfCoupledResourceDoc, identifierPath + "gmd:code/gco:CharacterString|" + identifierPath + "gmd:code/gmx:Anchor");
             if (code != null) {
-                String[] codeParts = code.split("#");
-                if (codeParts.length == 2) {
-                    entry.setSpatialDatasetIdentifierCode(codeParts[1]);
-                    entry.setSpatialDatasetIdentifierNamespace(codeParts[0]);
-                } else {
-                    entry.setSpatialDatasetIdentifierCode(codeParts[0]);
+                // todo what if the identifier has "/" or how to differentiale a whole identifier and having a separate namespace ?
+                try {
+                    URI serviceUri = URI.create(code);
+
+                    String identifier = serviceUri.getPath();
+                    identifier = identifier.substring(1); // remove the slash
+
+                    String namespace = serviceUri.getScheme() + "://" + serviceUri.getHost();
+
+                    entry.setSpatialDatasetIdentifierNamespace(namespace);
+                    entry.setSpatialDatasetIdentifierCode(identifier);
+
+                } catch (Exception e) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("URI error extracting identifier and/or namespace for : " + code + ". Error: " + e.getMessage());
+                    }
+
                 }
             }
             entry.setUpdated(XPATH.getString(idfCoupledResourceDoc, "//gmd:dateStamp/gco:DateTime | //gmd:dateStamp/gco:Date[not(../gco:DateTime)]"));
