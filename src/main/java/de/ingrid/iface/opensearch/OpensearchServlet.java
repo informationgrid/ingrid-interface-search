@@ -671,12 +671,14 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
 
             if (!requestWrapper.getMetadataDetailAsXMLDoc() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
-                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                itemLink = metadataDetailsUrl.concat("?uuid=").concat(docUuid);
             } else if (proxyurl != null && proxyurl.length() > 0) {
-                itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId).concat("&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docuuid=").concat(docUuid);
             } else {
-                itemLink = requestWrapper.getRequest().getRequestURL().substring(0, requestWrapper.getRequest().getRequestURL().lastIndexOf("/")).concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId)
-                        .concat("&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                itemLink = requestWrapper.getRequest().getRequestURL().substring(0, requestWrapper.getRequest().getRequestURL().lastIndexOf("/"))
+                        .concat("/query")
+                        .concat("?q=").concat(qStr)
+                        .concat("&docuuid=").concat(docUuid);
             }
 
             if (altDocId != null && altDocId.length() > 0) {
