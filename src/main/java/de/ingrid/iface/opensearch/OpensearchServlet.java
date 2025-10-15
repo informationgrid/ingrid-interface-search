@@ -658,7 +658,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
 
             if (!requestWrapper.getMetadataDetailAsXMLDoc() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
-                itemLink = metadataDetailsUrl.concat("?uuid=").concat(docUuid);
+                itemLink = metadataDetailsUrl.concat("?docuuid=").concat(docUuid);
             } else if (proxyurl != null && proxyurl.length() > 0) {
                 itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docuuid=").concat(docUuid);
             } else {
