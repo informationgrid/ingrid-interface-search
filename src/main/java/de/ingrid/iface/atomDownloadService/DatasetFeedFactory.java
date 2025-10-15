@@ -121,7 +121,7 @@ public class DatasetFeedFactory {
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
                     if (entry.getSpatialDatasetIdentifierCode() != null
                             && entry.getSpatialDatasetIdentifierNamespace() != null) {
-                        String identifierEntry = entry.getSpatialDatasetIdentifierNamespace() + entry.getSpatialDatasetIdentifierCode();
+                        String identifierEntry = entry.getSpatialDatasetIdentifierNamespace() + "/" + entry.getSpatialDatasetIdentifierCode();
                         String identifierRequest = null;
 
                         if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null
@@ -129,7 +129,7 @@ public class DatasetFeedFactory {
                             identifierRequest = datasetFeedRequest.getSpatialDatasetIdentifierCode();
                         } else if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() != null
                                 && datasetFeedRequest.getSpatialDatasetIdentifierCode() != null) {
-                            identifierRequest = datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + datasetFeedRequest.getSpatialDatasetIdentifierCode();
+                            identifierRequest = datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "/" + datasetFeedRequest.getSpatialDatasetIdentifierCode();
                         }
 
                         if (identifierEntry.equals(identifierRequest)) {

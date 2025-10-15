@@ -22,13 +22,16 @@
  */
 package de.ingrid.iface.atomDownloadService;
 
-import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
+import de.ingrid.iface.atomDownloadService.om.*;
+import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
+import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
+import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
+import de.ingrid.iface.util.*;
+import de.ingrid.utils.IBus;
+import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.xml.IDFNamespaceContext;
+import de.ingrid.utils.xpath.XPathUtils;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -39,31 +42,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.ingrid.iface.atomDownloadService.om.Author;
-import de.ingrid.iface.atomDownloadService.om.Category;
-import de.ingrid.iface.atomDownloadService.om.Link;
-import de.ingrid.iface.atomDownloadService.om.ServiceFeed;
-import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry;
-import de.ingrid.iface.atomDownloadService.om.ServiceFeedEntry.EntryType;
-import de.ingrid.iface.atomDownloadService.requests.ServiceFeedRequest;
-import de.ingrid.iface.atomDownloadService.util.IngridQueryProducer;
-import de.ingrid.iface.util.IBusHelper;
-import de.ingrid.iface.util.IBusQueryResultIterator;
-import de.ingrid.iface.util.IdfUtils;
-import de.ingrid.iface.util.SearchInterfaceConfig;
-import de.ingrid.iface.util.StringUtils;
-import de.ingrid.iface.util.URLUtil;
-import de.ingrid.utils.IBus;
-import de.ingrid.utils.IngridHit;
-import de.ingrid.utils.xml.IDFNamespaceContext;
-import de.ingrid.utils.xpath.XPathUtils;
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedEntryProducer {
 
     private static final XPathUtils XPATH = new XPathUtils(new IDFNamespaceContext());
-    private static final String[] REQUESTED_FIELDS = new String[] {};
+    private static final String[] REQUESTED_FIELDS = new String[]{};
 
     private IngridQueryProducer ingridQueryProducer;
 
@@ -120,7 +108,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             Serializable recordId = IdfUtils.getRecordId(idfCoupledResourceDoc);
             // in case an iPlug might be wrong configured, we have to catch this error
             if (recordId == null) {
-                log.error( "Dataset did not have a record id" );
+                log.error("Dataset did not have a record id");
                 continue;
             }
 
@@ -135,7 +123,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                 if (log.isDebugEnabled()) {
                     log.debug("Found duplicate Record. Duplicate ID: '" + uuid + "'.");
                 }
-        	continue;
+                continue;
             }
             coupledResourceUuids.add(uuid);
 
@@ -160,7 +148,7 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             entry.setDatasetMetadataRecord(link);
 
             link = new Link();
-            String urlPattern = URLUtil.updateProtocol( atomDownloadDatasetFeedUrlPattern, serviceFeedRequest.getProtocol() );
+            String urlPattern = URLUtil.updateProtocol(atomDownloadDatasetFeedUrlPattern, serviceFeedRequest.getProtocol());
             link.setHref(urlPattern.replace("{datasetfeed-uuid}", StringUtils.encodeForPath(entry.getUuid())).replace("{servicefeed-uuid}", StringUtils.encodeForPath(serviceFeed.getUuid())));
             link.setHrefLang("de");
             link.setType("application/atom+xml");
@@ -178,8 +166,8 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
                         code = code.substring(0, code.length() - 1);
                     }
                     int lastSlash = code.lastIndexOf('/');
-                    String identifier = code.substring(lastSlash);
-                    String namespace = code.substring(0, lastSlash );
+                    String identifier = code.substring(lastSlash + 1);
+                    String namespace = code.substring(0, lastSlash);
 
                     entry.setSpatialDatasetIdentifierNamespace(namespace);
                     entry.setSpatialDatasetIdentifierCode(identifier);
