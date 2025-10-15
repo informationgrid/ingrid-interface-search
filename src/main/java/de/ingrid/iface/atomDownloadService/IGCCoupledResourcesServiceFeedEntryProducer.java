@@ -174,16 +174,15 @@ public class IGCCoupledResourcesServiceFeedEntryProducer implements ServiceFeedE
             if (code != null) {
                 // todo what if the identifier has "/" or how to differentiale a whole identifier and having a separate namespace ?
                 try {
-                    URI serviceUri = URI.create(code);
-
-                    String identifier = serviceUri.getPath();
-                    identifier = identifier.substring(1); // remove the slash
-
-                    String namespace = serviceUri.getScheme() + "://" + serviceUri.getHost();
+                    if (code.endsWith("/")) {
+                        code = code.substring(0, code.length() - 1);
+                    }
+                    int lastSlash = code.lastIndexOf('/');
+                    String identifier = code.substring(lastSlash);
+                    String namespace = code.substring(0, lastSlash );
 
                     entry.setSpatialDatasetIdentifierNamespace(namespace);
                     entry.setSpatialDatasetIdentifierCode(identifier);
-
                 } catch (Exception e) {
                     if (log.isDebugEnabled()) {
                         log.debug("URI error extracting identifier and/or namespace for : " + code + ". Error: " + e.getMessage());
