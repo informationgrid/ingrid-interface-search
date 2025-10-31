@@ -1,4 +1,11 @@
 
+## 8.1.1 (31.10.2025)
+
+
+### Bugfixes
+
+* OPENSEARCH Links zum Portal stimmen nicht (#8295)
+    
 ## 8.1.0 (09.10.2025)
 
 ### Features
