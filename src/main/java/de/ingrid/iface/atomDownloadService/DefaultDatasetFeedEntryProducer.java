@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,15 +33,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
-import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +53,8 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     public static final String XPATH_DOWNLOAD_LINK = "//gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine[.//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Download of data' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='download' or .//gmd:function/gmd:CI_OnLineFunctionCode/@codeListValue='Datendownload']";
     public static final String XPATH_SYSTEM_IDENTIFIER = "//gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier";
 
-    private TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
-    private Detector detector = tikaConfig.getDetector();
+    private final TikaConfig tikaConfig = TikaConfig.getDefaultConfig();
+    private final Detector detector = tikaConfig.getDetector();
 
     private final static Log log = LogFactory.getLog(DefaultDatasetFeedEntryProducer.class);
 
@@ -85,10 +84,9 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
     private String getTypeByLinkage(String url, Object linkage) {
         try {
             String redirectedUrl = URLUtil.getRedirectedUrl(url);
-            TikaInputStream stream = TikaInputStream.get(new URL(redirectedUrl));
             Metadata metadata = new Metadata();
-            metadata.add(Metadata.RESOURCE_NAME_KEY, redirectedUrl);
-            String type = detector.detect(stream, metadata).toString();
+            metadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, redirectedUrl);
+            String type = detector.detect(null, metadata).toString();
 
             // if application profile (Datentyp) is GMD and the file is considered a ZIP then set
             // link mime-type to application/x-gmz
@@ -168,7 +166,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
         urls.add(url);
 
         // when a child atom or xml is found, it will be added back to the urls for dissolving.
-        while (urls.size() > 0) {
+        while (!urls.isEmpty()) {
             String redirectedUrl = URLUtil.getRedirectedUrl(urls.get(0));
             Document doc = StringUtils.urlToDocument(redirectedUrl, 1000, 1000);
             NodeList nodeList = doc.getElementsByTagName("entry");
@@ -209,7 +207,7 @@ public class DefaultDatasetFeedEntryProducer implements DatasetFeedEntryProducer
                     // set categories
                     NodeList catNodes = entryEl.getElementsByTagName("category");
                     ArrayList<Category> categories = getCategoriesByEl(catNodes);
-                    if (categories.size() > 0) entry.setCrs(categories);
+                    if (!categories.isEmpty()) entry.setCrs(categories);
 
                     entries.add(entry);
                 } catch (Exception e) {
