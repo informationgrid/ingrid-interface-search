@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,14 @@ package de.ingrid.iface_test.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -42,7 +43,10 @@ public class IdfUtilsTest {
     @Test
     public void testEnclosingBoundingBoxAsPolygon() throws Exception {
 
-        String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml"));
+        String data;
+        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml")) {
+            data = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
         List<Double> results = IdfUtils.getEnclosingBoundingBoxAsPolygon(stringToDocument(data));
         assertEquals(50.323895, results.get(0));
         assertEquals(5.8665085, results.get(1));
