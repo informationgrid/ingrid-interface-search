@@ -42,7 +42,7 @@
   <properties>
     <java.version>17</java.version>
     <iplug.type>INTERFACE_SEARCH</iplug.type>
-    <log4j.version>2.22.1</log4j.version>
+    <log4j.version>2.25.3</log4j.version>
   </properties>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.19.0</version>
     </dependency>
     <dependency>
       <groupId>bitwalker</groupId>
@@ -155,7 +155,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-communication</artifactId>
-      <version>7.0.0</version>
+      <version>8.2.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
