@@ -2,17 +2,17 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2025 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- *
+ * 
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- *
+ * 
  * https://joinup.ec.europa.eu/software/page/eupl
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -119,33 +119,20 @@ public class DatasetFeedFactory {
                 ServiceFeed serviceFeed = serviceFeedProducer.produce(sr);
 
                 for (ServiceFeedEntry entry : serviceFeed.getEntries()) {
+                    if (entry.getSpatialDatasetIdentifierCode() != null
+                            && entry.getSpatialDatasetIdentifierNamespace() != null) {
+                        String identifierEntry = entry.getSpatialDatasetIdentifierNamespace() + "/" + entry.getSpatialDatasetIdentifierCode();
+                        String identifierRequest = null;
 
-                    // if the SpatialDatasetIdentifierNamespace of the request (!) is null, the retrieval is only by SpatialDatasetIdentifierCode
-                    if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null &&
-                            entry.getSpatialDatasetIdentifierCode() != null &&
-                            entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
-
-                        try {
-                            Long startTimer = 0L;
-                            if (log.isDebugEnabled()) {
-                                startTimer = System.currentTimeMillis();
-                            }
-                            doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Fetched ISO record by spatial identifier from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
-                            }
-                        } catch (Exception e) {
-                            log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
+                        if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() == null
+                                && datasetFeedRequest.getSpatialDatasetIdentifierCode() != null) {
+                            identifierRequest = datasetFeedRequest.getSpatialDatasetIdentifierCode();
+                        } else if (datasetFeedRequest.getSpatialDatasetIdentifierNamespace() != null
+                                && datasetFeedRequest.getSpatialDatasetIdentifierCode() != null) {
+                            identifierRequest = datasetFeedRequest.getSpatialDatasetIdentifierNamespace() + "/" + datasetFeedRequest.getSpatialDatasetIdentifierCode();
                         }
-                        datasetFeedRequest.setType(entry.getType());
-                        datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
-                    } else {
 
-                        // use SpatialDatasetIdentifierNamespace and SpatialDatasetIdentifierCode, ignore entry if it has no namespace
-                        if (entry.getSpatialDatasetIdentifierNamespace() != null &&
-                                entry.getSpatialDatasetIdentifierNamespace().equals(datasetFeedRequest.getSpatialDatasetIdentifierNamespace()) &&
-                                entry.getSpatialDatasetIdentifierCode().equals(datasetFeedRequest.getSpatialDatasetIdentifierCode())) {
-
+                        if (identifierEntry.equals(identifierRequest)) {
                             try {
                                 Long startTimer = 0L;
                                 if (log.isDebugEnabled()) {
@@ -153,12 +140,11 @@ public class DatasetFeedFactory {
                                 }
                                 doc = StringUtils.urlToDocument(entry.getDatasetMetadataRecord().getHref(), connectionTimeout, readTimeout);
                                 if (log.isDebugEnabled()) {
-                                    log.debug("Fetched ISO record by spatial identifier AND namespace from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
+                                    log.debug("Fetched ISO record by spatial identifier from '" + entry.getDatasetMetadataRecord().getHref() + "' within " + (System.currentTimeMillis() - startTimer) + " ms.");
                                 }
                             } catch (Exception e) {
                                 log.warn("Unable to obtain XML document from " + entry.getDatasetMetadataRecord().getHref(), e);
                             }
-
                             datasetFeedRequest.setType(entry.getType());
                             datasetFeedRequest.setMetadataUrl(entry.getDatasetMetadataRecord().getHref());
                         }

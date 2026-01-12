@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2025 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -26,10 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -142,7 +143,10 @@ public class DatasetFeedFactoryTest {
             hits[i] = new IngridHit("plugid", i+"", 0, 1.0f);
             hits[i].setHitDetail(new IngridHitDetail("plugid", i+"", 0, 1.0f, "title" + i, "summary" + i));
             Record record = new Record();
-            String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_" + (i + 1) + ".xml"));
+            String data;
+            try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_" + (i + 1) + ".xml")) {
+                data = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
             record.put("compressed", "false");
             record.put("data", data);
             when(mockedIbus.getRecord(hits[i])).thenReturn(record);
@@ -160,7 +164,10 @@ public class DatasetFeedFactoryTest {
             hits[i] = new IngridHit("plugid", (i+2)+"", 0, 1.0f);
             hits[i].setHitDetail(new IngridHitDetail("plugid", (i+2)+"", 0, 1.0f, "service feed " + i, "summary service feed " + i));
             Record record = new Record();
-            String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_service_" + (i + 1) + ".xml"));
+            String data;
+            try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data/idf_service_" + (i + 1) + ".xml")) {
+                data = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
             record.put("compressed", "false");
             record.put("data", data);
             when(mockedIbus.getRecord(hits[i])).thenReturn(record);
@@ -178,7 +185,10 @@ public class DatasetFeedFactoryTest {
             hits[i] = new IngridHit("plugid", (i+3)+"", 0, 1.0f);
             hits[i].setHitDetail(new IngridHitDetail("plugid", (i+3)+"", 0, 1.0f, "service feed " + i, "summary service feed " + i));
             Record record = new Record();
-            String data = IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml"));
+            String data;
+            try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("data/idf_dataset_2.xml")) {
+                data = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
             record.put("compressed", "false");
             record.put("data", data);
             when(mockedIbus.getRecord(hits[i])).thenReturn(record);

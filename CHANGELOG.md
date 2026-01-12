@@ -1,4 +1,12 @@
 
+## 8.2.0 (12.01.2026)
+
+
+### Bugfixes
+
+* Kritische Sicherheitslücke im Interface-Search (#8560)
+* OPENSEARCH Links zum Portal stimmen nicht (#8295)
+    
 ## 8.1.0 (09.10.2025)
 
 ### Features

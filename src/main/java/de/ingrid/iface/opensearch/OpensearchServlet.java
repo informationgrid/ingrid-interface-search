@@ -2,17 +2,17 @@
  * **************************************************-
  * ingrid-interface-search
  * ==================================================
- * Copyright (C) 2014 - 2025 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2026 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- *
+ * 
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- *
+ * 
  * https://joinup.ec.europa.eu/software/page/eupl
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -658,12 +658,14 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             }
 
             if (!requestWrapper.getMetadataDetailAsXMLDoc() && metadataDetailsUrl != null && metadataDetailsUrl.length() > 0) {
-                itemLink = metadataDetailsUrl.concat("?plugid=").concat(plugId).concat("&docid=").concat(docId);
+                itemLink = metadataDetailsUrl.concat("?docuuid=").concat(docUuid);
             } else if (proxyurl != null && proxyurl.length() > 0) {
-                itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId).concat("&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                itemLink = proxyurl.concat("/query").concat("?q=").concat(qStr).concat("&docuuid=").concat(docUuid);
             } else {
-                itemLink = requestWrapper.getRequest().getRequestURL().substring(0, requestWrapper.getRequest().getRequestURL().lastIndexOf("/")).concat("/query").concat("?q=").concat(qStr).concat("&docid=").concat(docId)
-                        .concat("&docuuid=").concat(docUuid).concat("&detail=1&ingrid=1");
+                itemLink = requestWrapper.getRequest().getRequestURL().substring(0, requestWrapper.getRequest().getRequestURL().lastIndexOf("/"))
+                        .concat("/query")
+                        .concat("?q=").concat(qStr)
+                        .concat("&docuuid=").concat(docUuid);
             }
 
             if (altDocId != null && altDocId.length() > 0) {
