@@ -764,11 +764,12 @@ public class MapperService {
         if (datasetElement == null) return null;
         Dataset dataset = new Dataset();
 
-        // about (attrib oder rdf:about)
-        String aboutAttr = datasetElement.getAttribute("about");
-        if (aboutAttr == null || aboutAttr.isEmpty()) {
-            aboutAttr = datasetElement.getAttributeNS(RDF_NS, "about");
-        }
+        // about (try multiple attribute names: rdf:about, about, rdf:resource, and namespace-aware)
+        String aboutAttr = datasetElement.getAttribute("rdf:about");
+        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttribute("about");
+        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttribute("rdf:resource");
+        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttributeNS(RDF_NS, "about");
+        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttributeNS(RDF_NS, "resource");
         if (aboutAttr != null && !aboutAttr.isEmpty()) {
             dataset.setAbout(aboutAttr);
         }
@@ -932,7 +933,8 @@ public class MapperService {
                             Element mEl = (Element) m;
                             String mail = mEl.getAttribute("rdf:resource");
                             if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
-                            if ((mail == null || mail.isEmpty()) && m.getTextContent() != null) mail = m.getTextContent().trim();
+                            if ((mail == null || mail.isEmpty()) && m.getTextContent() != null)
+                                mail = m.getTextContent().trim();
                             if (mail != null && !mail.isEmpty()) {
                                 if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                                 ag.setMbox(mail);
@@ -1001,7 +1003,8 @@ public class MapperService {
                                 Element mEl = (Element) m;
                                 String mail = mEl.getAttribute("rdf:resource");
                                 if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
-                                if ((mail == null || mail.isEmpty()) && m.getTextContent() != null) mail = m.getTextContent().trim();
+                                if ((mail == null || mail.isEmpty()) && m.getTextContent() != null)
+                                    mail = m.getTextContent().trim();
                                 if (mail != null && !mail.isEmpty()) {
                                     if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                                     agent.setMbox(mail);
@@ -1365,7 +1368,8 @@ public class MapperService {
                     // the catalog, paging and opening tags are handled elsewhere
                     // map only the dataset and distributions
 
-                    NodeList datasetNodes = rdfDoc.getElementsByTagName("dcat:Dataset");
+                    NodeList datasetNodes = rdfDoc.getElementsByTagNameNS("*", "Dataset");
+                    if (datasetNodes.getLength() == 0) datasetNodes = rdfDoc.getElementsByTagName("dcat:Dataset");
 
                     for (int i = 0; i < datasetNodes.getLength(); i++) {
                         Element datasetElement = (Element) datasetNodes.item(i);
@@ -1375,7 +1379,9 @@ public class MapperService {
                         datasetIds.add(rdfDataset.getAbout());
                     }
 
-                    NodeList distributionNodes = rdfDoc.getElementsByTagName("dcat:Distribution");
+                    NodeList distributionNodes = rdfDoc.getElementsByTagNameNS("*", "Distribution");
+                    if (distributionNodes.getLength() == 0)
+                        distributionNodes = rdfDoc.getElementsByTagName("dcat:Distribution");
                     for (int i = 0; i < distributionNodes.getLength(); i++) {
                         Element distributionElement = (Element) distributionNodes.item(i);
 
