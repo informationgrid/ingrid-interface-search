@@ -67,7 +67,7 @@ public class MapperService {
 
     public static final String DISTRIBUTION_RESOURCE_POSTFIX = "#distribution";
 
-    private static final List<String> ALLOWED_DISTRIBUTION_FUNCTIONCODES = new ArrayList<String>() {{
+    private static final List<String> ALLOWED_DISTRIBUTION_FUNCTIONCODES = new ArrayList<>() {{
         add("download");
         add("information");
     }};
@@ -782,11 +782,11 @@ public class MapperService {
 
         // about (try multiple attribute names: rdf:about, about, rdf:resource, and namespace-aware)
         String aboutAttribute = datasetElement.getAttribute("rdf:about");
-        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("about");
-        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("rdf:resource");
-        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "about");
-        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "resource");
-        if (aboutAttribute != null && !aboutAttribute.isEmpty()) {
+        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("about");
+        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("rdf:resource");
+        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "about");
+        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "resource");
+        if (!aboutAttribute.isEmpty()) {
             dataset.setAbout(aboutAttribute);
         }
 
@@ -819,8 +819,8 @@ public class MapperService {
             if (contributorIdNode instanceof Element) {
                 Element el = (Element) contributorIdNode;
                 String r = el.getAttribute("rdf:resource");
-                if (r == null || r.isEmpty()) r = el.getAttributeNS(RDF_NS, "resource");
-                if (r != null && !r.isEmpty()) {
+                if (r.isEmpty()) r = el.getAttributeNS(RDF_NS, "resource");
+                if (!r.isEmpty()) {
                     dataset.setContributorID(new ResourceElement(r));
                 }
             }
@@ -883,9 +883,9 @@ public class MapperService {
             if (!(dn instanceof Element)) continue;
             Element distElement = (Element) dn;
             String uri = distElement.getAttribute("rdf:resource");
-            if (uri == null || uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "resource");
-            if (uri == null || uri.isEmpty()) uri = distElement.getAttribute("about");
-            if (uri == null || uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "about");
+            if (uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "resource");
+            if (uri.isEmpty()) uri = distElement.getAttribute("about");
+            if (uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "about");
             if ((uri == null || uri.isEmpty()) && distElement.getTextContent() != null) {
                 uri = distElement.getTextContent().trim();
             }
@@ -978,7 +978,7 @@ public class MapperService {
             creators.add(ow);
         }
         if (!creators.isEmpty()) {
-            dataset.setCreator(creators.toArray(new OrganizationWrapper[creators.size()]));
+            dataset.setCreator(creators.toArray(new OrganizationWrapper[0]));
         }
 
         // publisher (foaf:Agent -> handle resource refs, foaf child elements or literal)
@@ -1217,16 +1217,15 @@ public class MapperService {
 
         // Helper to read attribute with fallback to rdf: namespace
         java.util.function.Function<Element, String> readAboutOrResource = (el) -> {
-            // check common explicit prefixed attributes first
+            // getAttribute(...) returns empty string when absent
             String v = el.getAttribute("rdf:about");
-            if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
+            if (v.isEmpty()) v = el.getAttribute("rdf:resource");
             // then check non-prefixed and namespace-aware attributes
-            if (v == null || v.isEmpty()) v = el.getAttribute("about");
-            if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
-            if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
-            if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
+            if (v.isEmpty()) v = el.getAttribute("about");
+            if (v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
+            if (v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
             // fallback: inspect all attributes for prefixed forms or local names
-            if (v == null || v.isEmpty()) {
+            if (v.isEmpty()) {
                 org.w3c.dom.NamedNodeMap attrs = el.getAttributes();
                 if (attrs != null) {
                     for (int ai = 0; ai < attrs.getLength(); ai++) {
@@ -1238,12 +1237,12 @@ public class MapperService {
                         String val = a.getNodeValue();
                         if (val == null || val.isEmpty()) continue;
                         // accept any prefixed attribute like rdf:about or something:about
-                        if (name != null && (name.endsWith(":about") || name.endsWith(":resource"))) {
+                        if (name.endsWith(":about") || name.endsWith(":resource")) {
                             v = val;
                             break;
                         }
-                        if (local != null && ("about".equals(local) || "resource".equals(local))) {
-                            // if namespace matches RDF or even if missing, accept
+                        if (("about".equals(local) || "resource".equals(local))) {
+                            // accept when namespace is RDF or missing
                             if (ns == null || ns.isEmpty() || RDF_NS.equals(ns)) {
                                 v = val;
                                 break;
@@ -1252,12 +1251,13 @@ public class MapperService {
                     }
                 }
             }
-            return (v != null && !v.isEmpty()) ? v : null;
+            return v.isEmpty() ? null : v;
         };
 
         // Many RDF documents reference a distribution as a resource only (rdf:resource / rdf:about)
         String referencedUri = readAboutOrResource.apply(distributionElement);
         // FIXME check this !
+
         // But only treat it as a reference when there are no element children to parse.
         boolean hasElementChildren = false;
         NodeList children = distributionElement.getChildNodes();
@@ -1316,12 +1316,11 @@ public class MapperService {
         String accessUrl = null;
         // check common attributes on the distribution element (rdf:resource etc.)
         accessUrl = distributionElement.getAttribute("rdf:resource");
-        if (accessUrl == null || accessUrl.isEmpty())
-            accessUrl = distributionElement.getAttributeNS(RDF_NS, "resource");
-        if (accessUrl == null || accessUrl.isEmpty()) accessUrl = distributionElement.getAttribute("about");
-        if (accessUrl == null || accessUrl.isEmpty()) accessUrl = distributionElement.getAttributeNS(RDF_NS, "about");
+        if (accessUrl.isEmpty()) accessUrl = distributionElement.getAttributeNS(RDF_NS, "resource");
+        if (accessUrl.isEmpty()) accessUrl = distributionElement.getAttribute("about");
+        if (accessUrl.isEmpty()) accessUrl = distributionElement.getAttributeNS(RDF_NS, "about");
 
-        if (accessUrl == null || accessUrl.isEmpty()) {
+        if (accessUrl.isEmpty()) {
             NodeList accessUrlNodes = distributionElement.getElementsByTagName("dcat:accessURL");
             if (accessUrlNodes.getLength() == 0) accessUrlNodes = distributionElement.getElementsByTagName("accessURL");
             if (accessUrlNodes.getLength() > 0 && accessUrlNodes.item(0) != null) {
@@ -1330,8 +1329,8 @@ public class MapperService {
                 if (accessNode instanceof Element) {
                     Element accessEl = (Element) accessNode;
                     String attr = accessEl.getAttribute("rdf:resource");
-                    if (attr == null || attr.isEmpty()) attr = accessEl.getAttributeNS(RDF_NS, "resource");
-                    if (attr != null && !attr.isEmpty()) {
+                    if (attr.isEmpty()) attr = accessEl.getAttributeNS(RDF_NS, "resource");
+                    if (!attr.isEmpty()) {
                         accessUrl = attr;
                     } else if (accessNode.getTextContent() != null && !accessNode.getTextContent().trim().isEmpty()) {
                         accessUrl = accessNode.getTextContent().trim();
@@ -1353,8 +1352,8 @@ public class MapperService {
             if (downloadNode instanceof Element) {
                 Element dEl = (Element) downloadNode;
                 String attr = dEl.getAttribute("rdf:resource");
-                if (attr == null || attr.isEmpty()) attr = dEl.getAttributeNS(RDF_NS, "resource");
-                if (attr != null && !attr.isEmpty()) {
+                if (attr.isEmpty()) attr = dEl.getAttributeNS(RDF_NS, "resource");
+                if (!attr.isEmpty()) {
                     distribution.setDownloadURL(new ResourceElement(attr));
                 } else if (downloadNode.getTextContent() != null && !downloadNode.getTextContent().trim().isEmpty()) {
                     String download = downloadNode.getTextContent().trim();
@@ -1374,8 +1373,8 @@ public class MapperService {
             if (pageNode instanceof Element) {
                 Element pEl = (Element) pageNode;
                 String attr = pEl.getAttribute("rdf:resource");
-                if (attr == null || attr.isEmpty()) attr = pEl.getAttributeNS(RDF_NS, "resource");
-                if (attr != null && !attr.isEmpty()) {
+                if (attr.isEmpty()) attr = pEl.getAttributeNS(RDF_NS, "resource");
+                if (!attr.isEmpty()) {
                     distribution.setPage(new ResourceElement(attr));
                 } else if (pageNode.getTextContent() != null && !pageNode.getTextContent().trim().isEmpty()) {
                     String page = pageNode.getTextContent().trim();
@@ -1395,8 +1394,8 @@ public class MapperService {
             if (fNode instanceof Element) {
                 Element fEl = (Element) fNode;
                 String attr = fEl.getAttribute("rdf:resource");
-                if (attr == null || attr.isEmpty()) attr = fEl.getAttributeNS(RDF_NS, "resource");
-                if (attr != null && !attr.isEmpty()) {
+                if (attr.isEmpty()) attr = fEl.getAttributeNS(RDF_NS, "resource");
+                if (!attr.isEmpty()) {
                     distribution.setFormat(new ResourceElement(attr));
                 } else if (fNode.getTextContent() != null && !fNode.getTextContent().trim().isEmpty()) {
                     String formatLiteral = fNode.getTextContent().trim();
@@ -1417,13 +1416,13 @@ public class MapperService {
         // language (dcterms:language) - support rdf:resource or literal
         NodeList languageNodesLocal = distributionElement.getElementsByTagName("dcterms:language");
         if (languageNodesLocal.getLength() == 0) languageNodesLocal = distributionElement.getElementsByTagName("language");
-        if (languageNodesLocal.getLength() > 0 && languageNodesLocal.item(0) != null) {
+        if (languageNodesLocal.getLength() > 0 && languageNodesLocal.item(0).getTextContent() != null) {
             Node lNode = languageNodesLocal.item(0);
             if (lNode instanceof Element) {
                 Element lEl = (Element) lNode;
                 String attr = lEl.getAttribute("rdf:resource");
-                if (attr == null || attr.isEmpty()) attr = lEl.getAttributeNS(RDF_NS, "resource");
-                if (attr != null && !attr.isEmpty()) {
+                if (attr.isEmpty()) attr = lEl.getAttributeNS(RDF_NS, "resource");
+                if (!attr.isEmpty()) {
                     distribution.setLanguage(new ResourceElement(attr));
                 } else if (lNode.getTextContent() != null && !lNode.getTextContent().trim().isEmpty()) {
                     String lang = lNode.getTextContent().trim();
@@ -1493,14 +1492,11 @@ public class MapperService {
                 String[] rdfContentArray = (String[]) hitDetail.get("rdf");
                 if (rdfContentArray != null && rdfContentArray.length > 0) {
                     rdfContent = rdfContentArray[0].replace("\n", "");
-                    ;      // extract
-
                 }
 
                 if (rdfContent != null) {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    ByteArrayInputStream input = new ByteArrayInputStream(
-                            rdfContent.getBytes("UTF-8"));
+                    ByteArrayInputStream input = new ByteArrayInputStream(rdfContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
                     DocumentBuilder builder = factory.newDocumentBuilder();
 
                     Document rdfDoc = builder.parse(input);
