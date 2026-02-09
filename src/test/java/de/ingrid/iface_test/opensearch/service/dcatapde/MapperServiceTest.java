@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import de.ingrid.iface.opensearch.service.dcatapde.FormatMapper;
 import de.ingrid.iface.opensearch.service.dcatapde.MapperService;
@@ -256,7 +257,7 @@ public class MapperServiceTest {
         @SuppressWarnings("unchecked")
         List<Distribution> dists = (List<Distribution>) m.invoke(mapper, el);
         assertNotNull(dists);
-        assertTrue(!dists.isEmpty());
+        assertFalse(dists.isEmpty());
         Distribution d = dists.get(0);
         assertNotNull(d);
         String expectedAbout2 = "/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://ruhige-ressource.com#distribution";
@@ -287,5 +288,127 @@ public class MapperServiceTest {
         String expectedDatasetAbout = "https://opendata-dev.informationgrid.eu/ige-ng/exporter/datasets/2b9db5fc-024f-48ac-984b-fe3c53c2d26e";
         if (ds.getAbout() == null) ds.setAbout(expectedDatasetAbout);
         assertTrue(ds.getAbout() != null && (ds.getAbout().equals(expectedDatasetAbout) || ds.getAbout().contains("opendata-dev.informationgrid.eu")));
+    }
+
+    @Test
+    public void testMapHitsToDcat_mixedDatasetAndDistributions() throws Exception {
+        String xml = "<?xml version=\"1.0\"?>\n"
+                + "<rdf:RDF xmlns:dcat=\"http://www.w3.org/ns/dcat#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">"
+                + "  <dcat:Dataset rdf:about=\"https://opendata-dev.informationgrid.eu/ige-ng/exporter/datasets/2b9db5fc-024f-48ac-984b-fe3c53c2d26e\">"
+                + "    <dcterms:description>Eine bahnbrechende Beschreibung</dcterms:description>"
+                + "    <dcterms:title>Datensatz - vollständig ausgefüllt</dcterms:title>"
+                + "    <dcat:distribution rdf:resource=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://runde-ressource.com#distribution\"/>"
+                + "    <dcat:distribution rdf:resource=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://riesige-ressource.com#distribution\"/>"
+                + "  </dcat:Dataset>"
+                + "  <dcat:Distribution rdf:about=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://runde-ressource.com#distribution\">"
+                + "    <dcat:accessURL rdf:resource=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://runde-ressource.com\"/>"
+                + "    <dcterms:format rdf:resource=\"http://publications.europa.eu/resource/authority/file-type/DBF\"/>"
+                + "    <dcterms:description>Ressourcenbeschreibung</dcterms:description>"
+                + "    <dcterms:title>Runde Ressource</dcterms:title>"
+                + "  </dcat:Distribution>"
+                + "  <dcat:Distribution rdf:about=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://riesige-ressource.com#distribution\">"
+                + "    <dcat:accessURL rdf:resource=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://riesige-ressource.com\"/>"
+                + "    <dcat:downloadURL rdf:resource=\"/documents/opendataingrid/a96367e9-2f66-41c1-9b79-04cd16e5944c/https://riesige-ressource.com\"/>"
+                + "    <dcterms:title>Riesige Ressource</dcterms:title>"
+                + "  </dcat:Distribution>"
+                + "</rdf:RDF>";
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+
+        MapperService mapper = createMapperService();
+        Method mDataset = MapperService.class.getDeclaredMethod("mapDatasetFromRdfElement", Element.class);
+        mDataset.setAccessible(true);
+        Method mDistribution = MapperService.class.getDeclaredMethod("mapDistributionFromRdfElement", Element.class);
+        mDistribution.setAccessible(true);
+
+        List<Dataset> datasets = new java.util.ArrayList<>();
+        List<Distribution> distributions = new java.util.ArrayList<>();
+
+        // dataset loop as in mapHitsToDcat
+        org.w3c.dom.NodeList datasetNodes = doc.getElementsByTagNameNS("*", "Dataset");
+        if (datasetNodes.getLength() == 0) datasetNodes = doc.getElementsByTagName("dcat:Dataset");
+        for (int i = 0; i < datasetNodes.getLength(); i++) {
+            Element datasetElement = (Element) datasetNodes.item(i);
+            Dataset ds = (Dataset) mDataset.invoke(mapper, datasetElement);
+            datasets.add(ds);
+
+            // nested distributions inside dataset
+            org.w3c.dom.NodeList nestedDistNodes = datasetElement.getElementsByTagNameNS("*", "distribution");
+            if (nestedDistNodes.getLength() == 0) nestedDistNodes = datasetElement.getElementsByTagName("dcat:distribution");
+            for (int di = 0; di < nestedDistNodes.getLength(); di++) {
+                org.w3c.dom.Node dn = nestedDistNodes.item(di);
+                if (!(dn instanceof Element)) continue;
+                Element distEl = (Element) dn;
+                boolean hasElemChildren = false;
+                org.w3c.dom.NodeList ch = distEl.getChildNodes();
+                for (int ci = 0; ci < ch.getLength(); ci++) {
+                    if (ch.item(ci).getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) { hasElemChildren = true; break; }
+                }
+                if (hasElemChildren) {
+                    @SuppressWarnings("unchecked")
+                    List<Distribution> mapped = (List<Distribution>) mDistribution.invoke(mapper, distEl);
+                    if (mapped != null && !mapped.isEmpty()) distributions.addAll(mapped);
+                }
+            }
+        }
+
+        // document-level distributions
+        org.w3c.dom.NodeList distributionNodes = doc.getElementsByTagNameNS("*", "Distribution");
+        if (distributionNodes.getLength() == 0) distributionNodes = doc.getElementsByTagName("dcat:Distribution");
+        for (int i = 0; i < distributionNodes.getLength(); i++) {
+            Element distributionElement = (Element) distributionNodes.item(i);
+
+            // skip if inside dataset (same logic as MapperService)
+            boolean insideDataset = false;
+            Node ancestor = distributionElement.getParentNode();
+            while (ancestor != null) {
+                if (ancestor.getNodeType() == Node.ELEMENT_NODE) {
+                    Element ancEl = (Element) ancestor;
+                    String localName = ancEl.getLocalName();
+                    if (localName == null) localName = ancEl.getNodeName();
+                    if ("Dataset".equalsIgnoreCase(localName)) {
+                        insideDataset = true;
+                        break;
+                    }
+                }
+                ancestor = ancestor.getParentNode();
+            }
+            if (insideDataset) continue;
+
+            @SuppressWarnings("unchecked")
+            List<Distribution> mapped = (List<Distribution>) mDistribution.invoke(mapper, distributionElement);
+            if (mapped != null && !mapped.isEmpty()) distributions.addAll(mapped);
+        }
+
+        // assertions: ensure dataset-level distribution references and top-level Distribution elements
+        // exist in the same number and that each dataset reference matches a Distribution rdf:about
+        assertEquals(1, datasets.size());
+        Dataset ds0 = datasets.get(0);
+        assertNotNull(ds0.getDistribution());
+        int datasetRefs = ds0.getDistribution().size();
+        int topLevelDists = distributions.size();
+
+        // counts should be equal
+        assertEquals(datasetRefs, topLevelDists, "Number of dcat:distribution references must equal number of top-level dcat:Distribution elements");
+
+        // build list of top-level rdf:about values
+        java.util.List<String> abouts = new java.util.ArrayList<>();
+        for (Distribution d : distributions) {
+            if (d.getAbout() != null) abouts.add(d.getAbout());
+        }
+
+        // ensure every dataset reference matches one of the Distribution rdf:about values
+        for (int i = 0; i < ds0.getDistribution().size(); i++) {
+            String ref = ds0.getDistribution().get(i).getResource();
+            boolean found = false;
+            for (String about : abouts) {
+                if (about.equals(ref)) { found = true; break; }
+            }
+            assertTrue(found, "Dataset distribution reference '" + ref + "' must match one top-level Distribution rdf:about");
+        }
+
     }
 }
