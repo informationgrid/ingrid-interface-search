@@ -895,29 +895,143 @@ public class MapperService {
             dataset.setKeyword(keywords);
         }
 
-        // FIXME publisher no output
-        // publisher (foaf:Agent -> foaf:mbox)
+        // creator (dcterms:creator) - can be literal or a resource (foaf:Agent/Organization)
+        NodeList creatorNodes = datasetElement.getElementsByTagName("dcterms:creator");
+        if (creatorNodes.getLength() == 0) creatorNodes = datasetElement.getElementsByTagName("creator");
+        List<OrganizationWrapper> creators = new ArrayList<>();
+        for (int i = 0; i < creatorNodes.getLength(); i++) {
+            Node cn = creatorNodes.item(i);
+            if (!(cn instanceof Element)) continue;
+            Element cel = (Element) cn;
+            OrganizationWrapper ow = new OrganizationWrapper();
+            Agent ag = new Agent();
+
+            // check if creator is a reference via rdf:resource
+            String ref = cel.getAttribute("rdf:resource");
+            if (ref == null || ref.isEmpty()) ref = cel.getAttributeNS(RDF_NS, "resource");
+            if (ref != null && !ref.isEmpty()) {
+                ag.setHomepage(ref);
+            } else {
+                // try to find foaf:Agent / Organization child
+                NodeList agentNodes = cel.getElementsByTagName("foaf:Agent");
+                if (agentNodes.getLength() == 0) agentNodes = cel.getElementsByTagName("Agent");
+                if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
+                    Element agEl = (Element) agentNodes.item(0);
+                    // name
+                    NodeList nameNodes = agEl.getElementsByTagName("foaf:name");
+                    if (nameNodes.getLength() == 0) nameNodes = agEl.getElementsByTagName("name");
+                    if (nameNodes.getLength() > 0 && nameNodes.item(0).getTextContent() != null) {
+                        ag.setName(nameNodes.item(0).getTextContent().trim());
+                    }
+                    // mbox (could be attribute rdf:resource or element text)
+                    NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
+                    if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
+                    if (mboxNodes.getLength() > 0) {
+                        Node m = mboxNodes.item(0);
+                        if (m instanceof Element) {
+                            Element mEl = (Element) m;
+                            String mail = mEl.getAttribute("rdf:resource");
+                            if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
+                            if ((mail == null || mail.isEmpty()) && m.getTextContent() != null) mail = m.getTextContent().trim();
+                            if (mail != null && !mail.isEmpty()) {
+                                if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                                ag.setMbox(mail);
+                            }
+                        } else if (m.getTextContent() != null && !m.getTextContent().trim().isEmpty()) {
+                            String mail = m.getTextContent().trim();
+                            if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                            ag.setMbox(mail);
+                        }
+                    }
+                    // homepage
+                    NodeList homepageNodes = agEl.getElementsByTagName("foaf:homepage");
+                    if (homepageNodes.getLength() == 0) homepageNodes = agEl.getElementsByTagName("homepage");
+                    if (homepageNodes.getLength() > 0 && homepageNodes.item(0).getTextContent() != null) {
+                        ag.setHomepage(homepageNodes.item(0).getTextContent().trim());
+                    }
+                } else {
+                    // fallback: literal text content of creator element
+                    if (cel.getTextContent() != null && !cel.getTextContent().trim().isEmpty()) {
+                        ag.setName(cel.getTextContent().trim());
+                    }
+                }
+            }
+            ow.setAgent(ag);
+            creators.add(ow);
+        }
+        if (!creators.isEmpty()) {
+            dataset.setCreator(creators.toArray(new OrganizationWrapper[creators.size()]));
+        }
+
+        // publisher (foaf:Agent -> handle resource refs, foaf child elements or literal)
         NodeList publisherNodes = datasetElement.getElementsByTagName("dcterms:publisher");
         if (publisherNodes.getLength() == 0) publisherNodes = datasetElement.getElementsByTagName("publisher");
         if (publisherNodes.getLength() > 0) {
             Node p = publisherNodes.item(0);
             if (p instanceof Element) {
                 Element pel = (Element) p;
-                NodeList agentNodes = pel.getElementsByTagName("foaf:Agent");
-                if (agentNodes.getLength() == 0) agentNodes = pel.getElementsByTagName("Agent");
-                if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
-                    Element agEl = (Element) agentNodes.item(0);
-                    NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
-                    if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
-                    if (mboxNodes.getLength() > 0 && mboxNodes.item(0).getTextContent() != null) {
-                        Agent agent = new Agent();
-                        String mail = mboxNodes.item(0).getTextContent().trim();
-                        if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
-                        agent.setMbox(mail);
-                        AgentWrapper aw = new AgentWrapper();
-                        aw.setAgent(agent);
-                        dataset.setPublisher(aw);
+                // check if publisher is a reference via rdf:resource
+                String ref = pel.getAttribute("rdf:resource");
+                if (ref == null || ref.isEmpty()) ref = pel.getAttributeNS(RDF_NS, "resource");
+                AgentWrapper aw = new AgentWrapper();
+                Agent agent = new Agent();
+                boolean set = false;
+                if (ref != null && !ref.isEmpty()) {
+                    // set as homepage/resource when external reference
+                    agent.setHomepage(ref);
+                    set = true;
+                } else {
+                    NodeList agentNodes = pel.getElementsByTagName("foaf:Agent");
+                    if (agentNodes.getLength() == 0) agentNodes = pel.getElementsByTagName("Agent");
+                    if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
+                        Element agEl = (Element) agentNodes.item(0);
+                        // name
+                        NodeList nameNodes = agEl.getElementsByTagName("foaf:name");
+                        if (nameNodes.getLength() == 0) nameNodes = agEl.getElementsByTagName("name");
+                        if (nameNodes.getLength() > 0 && nameNodes.item(0).getTextContent() != null) {
+                            agent.setName(nameNodes.item(0).getTextContent().trim());
+                            set = true;
+                        }
+                        // mbox
+                        NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
+                        if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
+                        if (mboxNodes.getLength() > 0) {
+                            Node m = mboxNodes.item(0);
+                            if (m instanceof Element) {
+                                Element mEl = (Element) m;
+                                String mail = mEl.getAttribute("rdf:resource");
+                                if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
+                                if ((mail == null || mail.isEmpty()) && m.getTextContent() != null) mail = m.getTextContent().trim();
+                                if (mail != null && !mail.isEmpty()) {
+                                    if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                                    agent.setMbox(mail);
+                                    set = true;
+                                }
+                            } else if (m.getTextContent() != null && !m.getTextContent().trim().isEmpty()) {
+                                String mail = m.getTextContent().trim();
+                                if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                                agent.setMbox(mail);
+                                set = true;
+                            }
+                        }
+                        // homepage
+                        NodeList homepageNodes = agEl.getElementsByTagName("foaf:homepage");
+                        if (homepageNodes.getLength() == 0) homepageNodes = agEl.getElementsByTagName("homepage");
+                        if (homepageNodes.getLength() > 0 && homepageNodes.item(0).getTextContent() != null) {
+                            agent.setHomepage(homepageNodes.item(0).getTextContent().trim());
+                            set = true;
+                        }
+                    } else {
+                        // literal publisher name in element
+                        if (pel.getTextContent() != null && !pel.getTextContent().trim().isEmpty()) {
+                            agent.setName(pel.getTextContent().trim());
+                            set = true;
+                        }
                     }
+                }
+                if (set) {
+                    aw.setAgent(agent);
+                    dataset.setPublisher(aw);
                 }
             }
         }
@@ -1130,7 +1244,7 @@ public class MapperService {
         // modified
         NodeList modifiedNodes = distributionElement.getElementsByTagName("dcterms:modified");
         if (modifiedNodes.getLength() == 0) modifiedNodes = distributionElement.getElementsByTagName("modified");
-        if (modifiedNodes.getLength() > 0 && modifiedNodes.item(0) != null && modifiedNodes.item(0).getTextContent() != null) {
+        if (modifiedNodes.getLength() > 0 && modifiedNodes.item(0).getTextContent() != null) {
             String modified = modifiedNodes.item(0).getTextContent().trim();
             dist.setModified(new DatatypeTextElement(modified));
             if (modified.contains("T")) {
