@@ -263,6 +263,7 @@ public class MapperService {
                     log.warn("Skip Distribution - Function neither information nor download");
                     continue;
                 }
+
                 distResources.add(new ResourceElement(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (distResources.size() + 1)));
             }
         }
@@ -498,6 +499,13 @@ public class MapperService {
 
         String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
 
+        // Dataset-level language fallback for distributions
+        Node datasetLanguageNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/language/LanguageCode/@codeListValue");
+        String datasetLang = null;
+        if (datasetLanguageNode != null) {
+            datasetLang = datasetLanguageNode.getTextContent().trim();
+        }
+
         NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/transferOptions");
 
         NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/distributionFormat/MD_Format/name/CharacterString|./distributionInfo/MD_Distribution/distributor/MD_Distributor/distributorFormat/MD_Format/name");
@@ -618,6 +626,13 @@ public class MapperService {
                     Distribution dist = new Distribution();
                     dist.getAccessURL().setResource(accessURL);
 
+                    // service-level language fallback
+                    /*
+                    if (datasetLang != null && !datasetLang.isEmpty()) {
+                        dist.setLanguage(new ResourceElement(datasetLang));
+                    }
+                    */
+
                     dist.setAbout(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (dists.size() + 1));
 
                     setLicense(idfMdMetadataNode, dist);
@@ -687,11 +702,12 @@ public class MapperService {
                 }
             }
         }
+        // Only set license when explicitly present in the source RDF. Do NOT add a default license here
         if (licenseURI != null) {
             dist.setLicense(new ResourceElement(licenseURI));
         } else {
-            log.warn("No License found - Use Default License!");
-            dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
+            // No license found in IDF constraints — do not set a default here. Leave distribution.license null.
+            log.debug("No license found in IDF legalConstraints for this distribution; leaving license unset.");
         }
     }
 
@@ -1201,17 +1217,58 @@ public class MapperService {
 
         // Helper to read attribute with fallback to rdf: namespace
         java.util.function.Function<Element, String> readAboutOrResource = (el) -> {
-            String v = el.getAttribute("about");
+            // check common explicit prefixed attributes first
+            String v = el.getAttribute("rdf:about");
+            if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
+            // then check non-prefixed and namespace-aware attributes
+            if (v == null || v.isEmpty()) v = el.getAttribute("about");
             if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
             if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
             if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
+            // fallback: inspect all attributes for prefixed forms or local names
+            if (v == null || v.isEmpty()) {
+                org.w3c.dom.NamedNodeMap attrs = el.getAttributes();
+                if (attrs != null) {
+                    for (int ai = 0; ai < attrs.getLength(); ai++) {
+                        Node a = attrs.item(ai);
+                        if (a == null) continue;
+                        String name = a.getNodeName();
+                        String local = a.getLocalName();
+                        String ns = a.getNamespaceURI();
+                        String val = a.getNodeValue();
+                        if (val == null || val.isEmpty()) continue;
+                        // accept any prefixed attribute like rdf:about or something:about
+                        if (name != null && (name.endsWith(":about") || name.endsWith(":resource"))) {
+                            v = val;
+                            break;
+                        }
+                        if (local != null && ("about".equals(local) || "resource".equals(local))) {
+                            // if namespace matches RDF or even if missing, accept
+                            if (ns == null || ns.isEmpty() || RDF_NS.equals(ns)) {
+                                v = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             return (v != null && !v.isEmpty()) ? v : null;
         };
 
         // Many RDF documents reference a distribution as a resource only (rdf:resource / rdf:about)
         String referencedUri = readAboutOrResource.apply(distributionElement);
-        // If the element only references a resource, return a single Distribution with about set
-        if (referencedUri != null) {
+        // FIXME check this !
+        // But only treat it as a reference when there are no element children to parse.
+        boolean hasElementChildren = false;
+        NodeList children = distributionElement.getChildNodes();
+        for (int ci = 0; ci < children.getLength(); ci++) {
+            if (children.item(ci).getNodeType() == Node.ELEMENT_NODE) {
+                hasElementChildren = true;
+                break;
+            }
+        }
+         // If the element only references a resource, return a single Distribution with about set
+        if (referencedUri != null && !hasElementChildren) {
             Distribution distribution = new Distribution();
             distribution.setAbout(referencedUri);
             distributionsResult.add(distribution);
@@ -1222,10 +1279,8 @@ public class MapperService {
         Distribution distribution = new Distribution();
 
         // about (attribute)
-        String aboutAttribute = distributionElement.getAttribute("about");
-        if (aboutAttribute == null || aboutAttribute.isEmpty()) {
-            aboutAttribute = distributionElement.getAttributeNS(RDF_NS, "about");
-        }
+        // prefer any rdf:about / rdf:resource forms (use helper with namespace fallbacks)
+        String aboutAttribute = readAboutOrResource.apply(distributionElement);
         if (aboutAttribute != null && !aboutAttribute.isEmpty()) {
             distribution.setAbout(aboutAttribute);
         }
@@ -1233,14 +1288,14 @@ public class MapperService {
         // title
         NodeList titleNodesLocal = distributionElement.getElementsByTagName("dcterms:title");
         if (titleNodesLocal.getLength() == 0) titleNodesLocal = distributionElement.getElementsByTagName("title");
-        if (titleNodesLocal.getLength() > 0 && titleNodesLocal.item(0) != null && titleNodesLocal.item(0).getTextContent() != null) {
+        if (titleNodesLocal.getLength() > 0 && titleNodesLocal.item(0).getTextContent() != null) {
             distribution.setTitle(titleNodesLocal.item(0).getTextContent().trim());
         }
 
         // description
         NodeList descriptionNodesLocal = distributionElement.getElementsByTagName("dcterms:description");
         if (descriptionNodesLocal.getLength() == 0) descriptionNodesLocal = distributionElement.getElementsByTagName("description");
-        if (descriptionNodesLocal.getLength() > 0 && descriptionNodesLocal.item(0) != null && descriptionNodesLocal.item(0).getTextContent() != null) {
+        if (descriptionNodesLocal.getLength() > 0 && descriptionNodesLocal.item(0).getTextContent() != null) {
             distribution.setDescription(descriptionNodesLocal.item(0).getTextContent().trim());
         }
 
@@ -1269,38 +1324,114 @@ public class MapperService {
         if (accessUrl == null || accessUrl.isEmpty()) {
             NodeList accessUrlNodes = distributionElement.getElementsByTagName("dcat:accessURL");
             if (accessUrlNodes.getLength() == 0) accessUrlNodes = distributionElement.getElementsByTagName("accessURL");
-            if (accessUrlNodes.getLength() > 0 && accessUrlNodes.item(0) != null && accessUrlNodes.item(0).getTextContent() != null) {
-                accessUrl = accessUrlNodes.item(0).getTextContent().trim();
+            if (accessUrlNodes.getLength() > 0 && accessUrlNodes.item(0) != null) {
+                Node accessNode = accessUrlNodes.item(0);
+                // Prefer rdf:resource attribute on the accessURL element
+                if (accessNode instanceof Element) {
+                    Element accessEl = (Element) accessNode;
+                    String attr = accessEl.getAttribute("rdf:resource");
+                    if (attr == null || attr.isEmpty()) attr = accessEl.getAttributeNS(RDF_NS, "resource");
+                    if (attr != null && !attr.isEmpty()) {
+                        accessUrl = attr;
+                    } else if (accessNode.getTextContent() != null && !accessNode.getTextContent().trim().isEmpty()) {
+                        accessUrl = accessNode.getTextContent().trim();
+                    }
+                } else if (accessNode.getTextContent() != null && !accessNode.getTextContent().trim().isEmpty()) {
+                    accessUrl = accessNode.getTextContent().trim();
+                }
             }
         }
         if (accessUrl != null && !accessUrl.isEmpty()) {
             distribution.getAccessURL().setResource(accessUrl);
         }
 
-        // downloadURL
+        // downloadURL - prefer rdf:resource attribute on child element
         NodeList downloadUrlNodes = distributionElement.getElementsByTagName("dcat:downloadURL");
         if (downloadUrlNodes.getLength() == 0) downloadUrlNodes = distributionElement.getElementsByTagName("downloadURL");
-        if (downloadUrlNodes.getLength() > 0 && downloadUrlNodes.item(0) != null && downloadUrlNodes.item(0).getTextContent() != null) {
-            String download = downloadUrlNodes.item(0).getTextContent().trim();
-            if (!download.isEmpty()) distribution.setDownloadURL(new ResourceElement(download));
+        if (downloadUrlNodes.getLength() > 0 && downloadUrlNodes.item(0) != null) {
+            Node downloadNode = downloadUrlNodes.item(0);
+            if (downloadNode instanceof Element) {
+                Element dEl = (Element) downloadNode;
+                String attr = dEl.getAttribute("rdf:resource");
+                if (attr == null || attr.isEmpty()) attr = dEl.getAttributeNS(RDF_NS, "resource");
+                if (attr != null && !attr.isEmpty()) {
+                    distribution.setDownloadURL(new ResourceElement(attr));
+                } else if (downloadNode.getTextContent() != null && !downloadNode.getTextContent().trim().isEmpty()) {
+                    String download = downloadNode.getTextContent().trim();
+                    if (!download.isEmpty()) distribution.setDownloadURL(new ResourceElement(download));
+                }
+            } else if (downloadNode.getTextContent() != null && !downloadNode.getTextContent().trim().isEmpty()) {
+                String download = downloadNode.getTextContent().trim();
+                if (!download.isEmpty()) distribution.setDownloadURL(new ResourceElement(download));
+            }
         }
 
         // page
         NodeList pageNodesLocal = distributionElement.getElementsByTagName("dcat:page");
         if (pageNodesLocal.getLength() == 0) pageNodesLocal = distributionElement.getElementsByTagName("page");
-        if (pageNodesLocal.getLength() > 0 && pageNodesLocal.item(0) != null && pageNodesLocal.item(0).getTextContent() != null) {
-            String page = pageNodesLocal.item(0).getTextContent().trim();
-            if (!page.isEmpty()) distribution.setPage(new ResourceElement(page));
+        if (pageNodesLocal.getLength() > 0 && pageNodesLocal.item(0) != null) {
+            Node pageNode = pageNodesLocal.item(0);
+            if (pageNode instanceof Element) {
+                Element pEl = (Element) pageNode;
+                String attr = pEl.getAttribute("rdf:resource");
+                if (attr == null || attr.isEmpty()) attr = pEl.getAttributeNS(RDF_NS, "resource");
+                if (attr != null && !attr.isEmpty()) {
+                    distribution.setPage(new ResourceElement(attr));
+                } else if (pageNode.getTextContent() != null && !pageNode.getTextContent().trim().isEmpty()) {
+                    String page = pageNode.getTextContent().trim();
+                    if (!page.isEmpty()) distribution.setPage(new ResourceElement(page));
+                }
+            } else if (pageNode.getTextContent() != null && !pageNode.getTextContent().trim().isEmpty()) {
+                String page = pageNode.getTextContent().trim();
+                if (!page.isEmpty()) distribution.setPage(new ResourceElement(page));
+            }
         }
 
-        // format - try literal text then map with formatMapper
+        // format - try attribute (rdf:resource) first, then literal text then map with formatMapper
         NodeList formatNodesLocal = distributionElement.getElementsByTagName("dcterms:format");
         if (formatNodesLocal.getLength() == 0) formatNodesLocal = distributionElement.getElementsByTagName("format");
-        if (formatNodesLocal.getLength() > 0 && formatNodesLocal.item(0) != null && formatNodesLocal.item(0).getTextContent() != null) {
-            String formatLiteral = formatNodesLocal.item(0).getTextContent().trim();
-            String mappedFormat = formatMapper.map(formatLiteral);
-            if (mappedFormat != null) {
-                distribution.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + mappedFormat));
+        if (formatNodesLocal.getLength() > 0 && formatNodesLocal.item(0) != null) {
+            Node fNode = formatNodesLocal.item(0);
+            if (fNode instanceof Element) {
+                Element fEl = (Element) fNode;
+                String attr = fEl.getAttribute("rdf:resource");
+                if (attr == null || attr.isEmpty()) attr = fEl.getAttributeNS(RDF_NS, "resource");
+                if (attr != null && !attr.isEmpty()) {
+                    distribution.setFormat(new ResourceElement(attr));
+                } else if (fNode.getTextContent() != null && !fNode.getTextContent().trim().isEmpty()) {
+                    String formatLiteral = fNode.getTextContent().trim();
+                    String mappedFormat = formatMapper.map(formatLiteral);
+                    if (mappedFormat != null) {
+                        distribution.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + mappedFormat));
+                    }
+                }
+            } else if (fNode.getTextContent() != null && !fNode.getTextContent().trim().isEmpty()) {
+                String formatLiteral = fNode.getTextContent().trim();
+                String mappedFormat = formatMapper.map(formatLiteral);
+                if (mappedFormat != null) {
+                    distribution.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + mappedFormat));
+                }
+            }
+        }
+
+        // language (dcterms:language) - support rdf:resource or literal
+        NodeList languageNodesLocal = distributionElement.getElementsByTagName("dcterms:language");
+        if (languageNodesLocal.getLength() == 0) languageNodesLocal = distributionElement.getElementsByTagName("language");
+        if (languageNodesLocal.getLength() > 0 && languageNodesLocal.item(0) != null) {
+            Node lNode = languageNodesLocal.item(0);
+            if (lNode instanceof Element) {
+                Element lEl = (Element) lNode;
+                String attr = lEl.getAttribute("rdf:resource");
+                if (attr == null || attr.isEmpty()) attr = lEl.getAttributeNS(RDF_NS, "resource");
+                if (attr != null && !attr.isEmpty()) {
+                    distribution.setLanguage(new ResourceElement(attr));
+                } else if (lNode.getTextContent() != null && !lNode.getTextContent().trim().isEmpty()) {
+                    String lang = lNode.getTextContent().trim();
+                    distribution.setLanguage(new ResourceElement(lang));
+                }
+            } else if (lNode.getTextContent() != null && !lNode.getTextContent().trim().isEmpty()) {
+                String lang = lNode.getTextContent().trim();
+                distribution.setLanguage(new ResourceElement(lang));
             }
         }
 
@@ -1321,11 +1452,20 @@ public class MapperService {
                 licenseUri = licenseNode.getTextContent().trim();
             }
         }
+        // Only set license when explicitly present in the source RDF. Do NOT add a default license here
         if (licenseUri != null && !licenseUri.isEmpty()) {
             distribution.setLicense(new ResourceElement(licenseUri));
-        } else {
-            // fallback to default
-            distribution.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
+        }
+
+        // Ensure rdf:about is present when possible: fall back to accessURL/downloadURL/page
+        if (distribution.getAbout() == null || distribution.getAbout().isEmpty()) {
+            if (distribution.getAccessURL() != null && distribution.getAccessURL().getResource() != null && !distribution.getAccessURL().getResource().isEmpty()) {
+                distribution.setAbout(distribution.getAccessURL().getResource());
+            } else if (distribution.getDownloadURL() != null && distribution.getDownloadURL().getResource() != null && !distribution.getDownloadURL().getResource().isEmpty()) {
+                distribution.setAbout(distribution.getDownloadURL().getResource());
+            } else if (distribution.getPage() != null && distribution.getPage().getResource() != null && !distribution.getPage().getResource().isEmpty()) {
+                distribution.setAbout(distribution.getPage().getResource());
+            }
         }
 
         distributionsResult.add(distribution);
@@ -1377,6 +1517,37 @@ public class MapperService {
                         Dataset rdfDataset = mapDatasetFromRdfElement(datasetElement);
                         datasets.add(rdfDataset);
                         datasetIds.add(rdfDataset.getAbout());
+
+                        // Also map nested dcat:distribution elements inside this Dataset
+                        NodeList nestedDistNodes = datasetElement.getElementsByTagNameNS("*", "distribution");
+                        if (nestedDistNodes.getLength() == 0) nestedDistNodes = datasetElement.getElementsByTagName("dcat:distribution");
+                        for (int di = 0; di < nestedDistNodes.getLength(); di++) {
+                            Node dn = nestedDistNodes.item(di);
+                            if (!(dn instanceof Element)) continue;
+                            Element distEl = (Element) dn;
+                            // if this nested element contains a full Distribution description, parse it
+                            boolean hasElemChildren = false;
+                            NodeList ch = distEl.getChildNodes();
+                            for (int ci = 0; ci < ch.getLength(); ci++) {
+                                if (ch.item(ci).getNodeType() == Node.ELEMENT_NODE) { hasElemChildren = true; break; }
+                            }
+                            if (hasElemChildren) {
+                                List<Distribution> mapped = mapDistributionFromRdfElement(distEl);
+                                if (mapped != null && !mapped.isEmpty()) distributions.addAll(mapped);
+                            } else {
+                                // treat as reference-only distribution: read rdf:resource / rdf:about or text
+                                String ref = distEl.getAttribute("rdf:resource");
+                                if (ref == null || ref.isEmpty()) ref = distEl.getAttributeNS(RDF_NS, "resource");
+                                if (ref == null || ref.isEmpty()) ref = distEl.getAttribute("rdf:about");
+                                if (ref == null || ref.isEmpty()) ref = distEl.getAttributeNS(RDF_NS, "about");
+                                if ((ref == null || ref.isEmpty()) && distEl.getTextContent() != null) ref = distEl.getTextContent().trim();
+                                if (ref != null && !ref.isEmpty()) {
+                                    Distribution d = new Distribution();
+                                    d.setAbout(ref);
+                                    distributions.add(d);
+                                }
+                            }
+                        }
                     }
 
                     NodeList distributionNodes = rdfDoc.getElementsByTagNameNS("*", "Distribution");
