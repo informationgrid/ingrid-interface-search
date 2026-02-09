@@ -765,43 +765,43 @@ public class MapperService {
         Dataset dataset = new Dataset();
 
         // about (try multiple attribute names: rdf:about, about, rdf:resource, and namespace-aware)
-        String aboutAttr = datasetElement.getAttribute("rdf:about");
-        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttribute("about");
-        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttribute("rdf:resource");
-        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttributeNS(RDF_NS, "about");
-        if (aboutAttr == null || aboutAttr.isEmpty()) aboutAttr = datasetElement.getAttributeNS(RDF_NS, "resource");
-        if (aboutAttr != null && !aboutAttr.isEmpty()) {
-            dataset.setAbout(aboutAttr);
+        String aboutAttribute = datasetElement.getAttribute("rdf:about");
+        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("about");
+        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("rdf:resource");
+        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "about");
+        if (aboutAttribute == null || aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "resource");
+        if (aboutAttribute != null && !aboutAttribute.isEmpty()) {
+            dataset.setAbout(aboutAttribute);
         }
 
         // title (dcterms:title oder title)
-        NodeList titleNodes = datasetElement.getElementsByTagName("dcterms:title");
-        if (titleNodes.getLength() == 0) titleNodes = datasetElement.getElementsByTagName("title");
-        if (titleNodes.getLength() > 0 && titleNodes.item(0).getTextContent() != null) {
-            dataset.setTitle(new LangTextElement(titleNodes.item(0).getTextContent().trim()));
+        NodeList datasetTitleNodes = datasetElement.getElementsByTagName("dcterms:title");
+        if (datasetTitleNodes.getLength() == 0) datasetTitleNodes = datasetElement.getElementsByTagName("title");
+        if (datasetTitleNodes.getLength() > 0 && datasetTitleNodes.item(0).getTextContent() != null) {
+            dataset.setTitle(new LangTextElement(datasetTitleNodes.item(0).getTextContent().trim()));
         }
 
         // description (dcterms:description oder description)
-        NodeList descNodes = datasetElement.getElementsByTagName("dcterms:description");
-        if (descNodes.getLength() == 0) descNodes = datasetElement.getElementsByTagName("description");
-        if (descNodes.getLength() > 0 && descNodes.item(0).getTextContent() != null) {
-            dataset.setDescription(new LangTextElement(descNodes.item(0).getTextContent().trim()));
+        NodeList descriptionNodes = datasetElement.getElementsByTagName("dcterms:description");
+        if (descriptionNodes.getLength() == 0) descriptionNodes = datasetElement.getElementsByTagName("description");
+        if (descriptionNodes.getLength() > 0 && descriptionNodes.item(0).getTextContent() != null) {
+            dataset.setDescription(new LangTextElement(descriptionNodes.item(0).getTextContent().trim()));
         }
 
         // identifier (dcterms:identifier oder identifier)
-        NodeList idNodes = datasetElement.getElementsByTagName("dcterms:identifier");
-        if (idNodes.getLength() == 0) idNodes = datasetElement.getElementsByTagName("identifier");
-        if (idNodes.getLength() > 0 && idNodes.item(0).getTextContent() != null) {
-            dataset.setIdentifier(idNodes.item(0).getTextContent().trim());
+        NodeList identifierNodes = datasetElement.getElementsByTagName("dcterms:identifier");
+        if (identifierNodes.getLength() == 0) identifierNodes = datasetElement.getElementsByTagName("identifier");
+        if (identifierNodes.getLength() > 0 && identifierNodes.item(0).getTextContent() != null) {
+            dataset.setIdentifier(identifierNodes.item(0).getTextContent().trim());
         }
 
         // contributorID (rdf:resource)
-        NodeList contribIdNodes = datasetElement.getElementsByTagName("dcatde:contributorID");
-        if (contribIdNodes.getLength() == 0) contribIdNodes = datasetElement.getElementsByTagName("contributorID");
-        if (contribIdNodes.getLength() > 0) {
-            Node n = contribIdNodes.item(0);
-            if (n instanceof Element) {
-                Element el = (Element) n;
+        NodeList contributorIDNodes = datasetElement.getElementsByTagName("dcatde:contributorID");
+        if (contributorIDNodes.getLength() == 0) contributorIDNodes = datasetElement.getElementsByTagName("contributorID");
+        if (contributorIDNodes.getLength() > 0) {
+            Node contributorIdNode = contributorIDNodes.item(0);
+            if (contributorIdNode instanceof Element) {
+                Element el = (Element) contributorIdNode;
                 String r = el.getAttribute("rdf:resource");
                 if (r == null || r.isEmpty()) r = el.getAttributeNS(RDF_NS, "resource");
                 if (r != null && !r.isEmpty()) {
@@ -811,41 +811,41 @@ public class MapperService {
         }
 
         // contactPoint (vcard:Organization)
-        NodeList contactNodes = datasetElement.getElementsByTagName("dcat:contactPoint");
-        if (contactNodes.getLength() == 0) contactNodes = datasetElement.getElementsByTagName("contactPoint");
-        if (contactNodes.getLength() > 0) {
-            Node cpNode = contactNodes.item(0);
-            if (cpNode instanceof Element) {
-                Element cpEl = (Element) cpNode;
+        NodeList contactPointNodes = datasetElement.getElementsByTagName("dcat:contactPoint");
+        if (contactPointNodes.getLength() == 0) contactPointNodes = datasetElement.getElementsByTagName("contactPoint");
+        if (contactPointNodes.getLength() > 0) {
+            Node contactPointNode = contactPointNodes.item(0);
+            if (contactPointNode instanceof Element) {
+                Element contactPointElement = (Element) contactPointNode;
                 // find vcard:Organization child
-                NodeList orgNodes = cpEl.getElementsByTagName("vcard:Organization");
-                if (orgNodes.getLength() == 0) orgNodes = cpEl.getElementsByTagName("Organization");
-                if (orgNodes.getLength() > 0 && orgNodes.item(0) instanceof Element) {
-                    Element orgEl = (Element) orgNodes.item(0);
+                NodeList organizationNodes = contactPointElement.getElementsByTagName("vcard:Organization");
+                if (organizationNodes.getLength() == 0) organizationNodes = contactPointElement.getElementsByTagName("Organization");
+                if (organizationNodes.getLength() > 0 && organizationNodes.item(0) instanceof Element) {
+                    Element organizationElement = (Element) organizationNodes.item(0);
                     VCardOrganization org = new VCardOrganization();
-                    NodeList fnNodes = orgEl.getElementsByTagName("vcard:fn");
-                    if (fnNodes.getLength() == 0) fnNodes = orgEl.getElementsByTagName("fn");
-                    if (fnNodes.getLength() > 0 && fnNodes.item(0).getTextContent() != null) {
-                        org.setFn(fnNodes.item(0).getTextContent().trim());
+                    NodeList fullNameNodes = organizationElement.getElementsByTagName("vcard:fn");
+                    if (fullNameNodes.getLength() == 0) fullNameNodes = organizationElement.getElementsByTagName("fn");
+                    if (fullNameNodes.getLength() > 0 && fullNameNodes.item(0).getTextContent() != null) {
+                        org.setFn(fullNameNodes.item(0).getTextContent().trim());
                     }
                     // email as rdf:resource or element text
-                    NodeList emailNodes = orgEl.getElementsByTagName("vcard:hasEmail");
-                    if (emailNodes.getLength() == 0) emailNodes = orgEl.getElementsByTagName("hasEmail");
+                    NodeList emailNodes = organizationElement.getElementsByTagName("vcard:hasEmail");
+                    if (emailNodes.getLength() == 0) emailNodes = organizationElement.getElementsByTagName("hasEmail");
                     if (emailNodes.getLength() > 0) {
-                        Node em = emailNodes.item(0);
-                        if (em instanceof Element) {
-                            Element emEl = (Element) em;
-                            String mail = emEl.getAttribute("rdf:resource");
-                            if (mail == null || mail.isEmpty()) mail = emEl.getAttributeNS(RDF_NS, "resource");
-                            if ((mail == null || mail.isEmpty()) && em.getTextContent() != null) {
-                                mail = em.getTextContent().trim();
+                        Node emailNode = emailNodes.item(0);
+                        if (emailNode instanceof Element) {
+                            Element emailElement = (Element) emailNode;
+                            String mail = emailElement.getAttribute("rdf:resource");
+                            if (mail == null || mail.isEmpty()) mail = emailElement.getAttributeNS(RDF_NS, "resource");
+                            if ((mail == null || mail.isEmpty()) && emailNode.getTextContent() != null) {
+                                mail = emailNode.getTextContent().trim();
                             }
                             if (mail != null && !mail.isEmpty()) {
                                 if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                                 org.setHasEmail(new ResourceElement(mail));
                             }
-                        } else if (em.getTextContent() != null && !em.getTextContent().trim().isEmpty()) {
-                            String mail = em.getTextContent().trim();
+                        } else if (emailNode.getTextContent() != null && !emailNode.getTextContent().trim().isEmpty()) {
+                            String mail = emailNode.getTextContent().trim();
                             if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                             org.setHasEmail(new ResourceElement(mail));
                         }
@@ -859,19 +859,19 @@ public class MapperService {
 
         // FIXME: the following are missing: attributes, dcat:downloadURL,
         // distribution (simple rdf:resource references)
-        NodeList distNodes = datasetElement.getElementsByTagName("dcat:distribution");
-        if (distNodes.getLength() == 0) distNodes = datasetElement.getElementsByTagName("distribution");
+        NodeList distributionNodesLocal = datasetElement.getElementsByTagName("dcat:distribution");
+        if (distributionNodesLocal.getLength() == 0) distributionNodesLocal = datasetElement.getElementsByTagName("distribution");
         List<ResourceElement> distResources = new ArrayList<>();
-        for (int i = 0; i < distNodes.getLength(); i++) {
-            Node dn = distNodes.item(i);
+        for (int i = 0; i < distributionNodesLocal.getLength(); i++) {
+            Node dn = distributionNodesLocal.item(i);
             if (!(dn instanceof Element)) continue;
-            Element de = (Element) dn;
-            String uri = de.getAttribute("rdf:resource");
-            if (uri == null || uri.isEmpty()) uri = de.getAttributeNS(RDF_NS, "resource");
-            if (uri == null || uri.isEmpty()) uri = de.getAttribute("about");
-            if (uri == null || uri.isEmpty()) uri = de.getAttributeNS(RDF_NS, "about");
-            if ((uri == null || uri.isEmpty()) && de.getTextContent() != null) {
-                uri = de.getTextContent().trim();
+            Element distElement = (Element) dn;
+            String uri = distElement.getAttribute("rdf:resource");
+            if (uri == null || uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "resource");
+            if (uri == null || uri.isEmpty()) uri = distElement.getAttribute("about");
+            if (uri == null || uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "about");
+            if ((uri == null || uri.isEmpty()) && distElement.getTextContent() != null) {
+                uri = distElement.getTextContent().trim();
             }
             if (uri != null && !uri.isEmpty()) {
                 distResources.add(new ResourceElement(uri));
@@ -882,11 +882,11 @@ public class MapperService {
         }
 
         // keywords
-        NodeList keywordNodes = datasetElement.getElementsByTagName("dcat:keyword");
-        if (keywordNodes.getLength() == 0) keywordNodes = datasetElement.getElementsByTagName("keyword");
+        NodeList keywordNodesLocal = datasetElement.getElementsByTagName("dcat:keyword");
+        if (keywordNodesLocal.getLength() == 0) keywordNodesLocal = datasetElement.getElementsByTagName("keyword");
         List<String> keywords = new ArrayList<>();
-        for (int i = 0; i < keywordNodes.getLength(); i++) {
-            Node kn = keywordNodes.item(i);
+        for (int i = 0; i < keywordNodesLocal.getLength(); i++) {
+            Node kn = keywordNodesLocal.item(i);
             if (kn != null && kn.getTextContent() != null) {
                 String t = kn.getTextContent().trim();
                 if (!t.isEmpty()) keywords.add(t);
@@ -901,64 +901,64 @@ public class MapperService {
         if (creatorNodes.getLength() == 0) creatorNodes = datasetElement.getElementsByTagName("creator");
         List<OrganizationWrapper> creators = new ArrayList<>();
         for (int i = 0; i < creatorNodes.getLength(); i++) {
-            Node cn = creatorNodes.item(i);
-            if (!(cn instanceof Element)) continue;
-            Element cel = (Element) cn;
+            Node creatorNode = creatorNodes.item(i);
+            if (!(creatorNode instanceof Element)) continue;
+            Element creatorElement = (Element) creatorNode;
             OrganizationWrapper ow = new OrganizationWrapper();
-            Agent ag = new Agent();
+            Agent agent = new Agent();
 
             // check if creator is a reference via rdf:resource
-            String ref = cel.getAttribute("rdf:resource");
-            if (ref == null || ref.isEmpty()) ref = cel.getAttributeNS(RDF_NS, "resource");
-            if (ref != null && !ref.isEmpty()) {
-                ag.setHomepage(ref);
+            String refUri = creatorElement.getAttribute("rdf:resource");
+            if (refUri == null || refUri.isEmpty()) refUri = creatorElement.getAttributeNS(RDF_NS, "resource");
+            if (refUri != null && !refUri.isEmpty()) {
+                agent.setHomepage(refUri);
             } else {
                 // try to find foaf:Agent / Organization child
-                NodeList agentNodes = cel.getElementsByTagName("foaf:Agent");
-                if (agentNodes.getLength() == 0) agentNodes = cel.getElementsByTagName("Agent");
+                NodeList agentNodes = creatorElement.getElementsByTagName("foaf:Agent");
+                if (agentNodes.getLength() == 0) agentNodes = creatorElement.getElementsByTagName("Agent");
                 if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
-                    Element agEl = (Element) agentNodes.item(0);
+                    Element agentElement = (Element) agentNodes.item(0);
                     // name
-                    NodeList nameNodes = agEl.getElementsByTagName("foaf:name");
-                    if (nameNodes.getLength() == 0) nameNodes = agEl.getElementsByTagName("name");
-                    if (nameNodes.getLength() > 0 && nameNodes.item(0).getTextContent() != null) {
-                        ag.setName(nameNodes.item(0).getTextContent().trim());
+                    NodeList nameNodesLocal = agentElement.getElementsByTagName("foaf:name");
+                    if (nameNodesLocal.getLength() == 0) nameNodesLocal = agentElement.getElementsByTagName("name");
+                    if (nameNodesLocal.getLength() > 0 && nameNodesLocal.item(0).getTextContent() != null) {
+                        agent.setName(nameNodesLocal.item(0).getTextContent().trim());
                     }
                     // mbox (could be attribute rdf:resource or element text)
-                    NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
-                    if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
-                    if (mboxNodes.getLength() > 0) {
-                        Node m = mboxNodes.item(0);
-                        if (m instanceof Element) {
-                            Element mEl = (Element) m;
-                            String mail = mEl.getAttribute("rdf:resource");
-                            if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
-                            if ((mail == null || mail.isEmpty()) && m.getTextContent() != null)
-                                mail = m.getTextContent().trim();
+                    NodeList mboxNodesLocal = agentElement.getElementsByTagName("foaf:mbox");
+                    if (mboxNodesLocal.getLength() == 0) mboxNodesLocal = agentElement.getElementsByTagName("mbox");
+                    if (mboxNodesLocal.getLength() > 0) {
+                        Node mboxNode = mboxNodesLocal.item(0);
+                        if (mboxNode instanceof Element) {
+                            Element mboxElement = (Element) mboxNode;
+                            String mail = mboxElement.getAttribute("rdf:resource");
+                            if (mail == null || mail.isEmpty()) mail = mboxElement.getAttributeNS(RDF_NS, "resource");
+                            if ((mail == null || mail.isEmpty()) && mboxNode.getTextContent() != null)
+                                mail = mboxNode.getTextContent().trim();
                             if (mail != null && !mail.isEmpty()) {
                                 if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
-                                ag.setMbox(mail);
+                                agent.setMbox(mail);
                             }
-                        } else if (m.getTextContent() != null && !m.getTextContent().trim().isEmpty()) {
-                            String mail = m.getTextContent().trim();
+                        } else if (mboxNode.getTextContent() != null && !mboxNode.getTextContent().trim().isEmpty()) {
+                            String mail = mboxNode.getTextContent().trim();
                             if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
-                            ag.setMbox(mail);
+                            agent.setMbox(mail);
                         }
                     }
                     // homepage
-                    NodeList homepageNodes = agEl.getElementsByTagName("foaf:homepage");
-                    if (homepageNodes.getLength() == 0) homepageNodes = agEl.getElementsByTagName("homepage");
-                    if (homepageNodes.getLength() > 0 && homepageNodes.item(0).getTextContent() != null) {
-                        ag.setHomepage(homepageNodes.item(0).getTextContent().trim());
+                    NodeList homepageNodesLocal = agentElement.getElementsByTagName("foaf:homepage");
+                    if (homepageNodesLocal.getLength() == 0) homepageNodesLocal = agentElement.getElementsByTagName("homepage");
+                    if (homepageNodesLocal.getLength() > 0 && homepageNodesLocal.item(0).getTextContent() != null) {
+                        agent.setHomepage(homepageNodesLocal.item(0).getTextContent().trim());
                     }
                 } else {
                     // fallback: literal text content of creator element
-                    if (cel.getTextContent() != null && !cel.getTextContent().trim().isEmpty()) {
-                        ag.setName(cel.getTextContent().trim());
+                    if (creatorElement.getTextContent() != null && !creatorElement.getTextContent().trim().isEmpty()) {
+                        agent.setName(creatorElement.getTextContent().trim());
                     }
                 }
             }
-            ow.setAgent(ag);
+            ow.setAgent(agent);
             creators.add(ow);
         }
         if (!creators.isEmpty()) {
@@ -969,72 +969,72 @@ public class MapperService {
         NodeList publisherNodes = datasetElement.getElementsByTagName("dcterms:publisher");
         if (publisherNodes.getLength() == 0) publisherNodes = datasetElement.getElementsByTagName("publisher");
         if (publisherNodes.getLength() > 0) {
-            Node p = publisherNodes.item(0);
-            if (p instanceof Element) {
-                Element pel = (Element) p;
+            Node publisherNode = publisherNodes.item(0);
+            if (publisherNode instanceof Element) {
+                Element publisherElement = (Element) publisherNode;
                 // check if publisher is a reference via rdf:resource
-                String ref = pel.getAttribute("rdf:resource");
-                if (ref == null || ref.isEmpty()) ref = pel.getAttributeNS(RDF_NS, "resource");
-                AgentWrapper aw = new AgentWrapper();
+                String refUri = publisherElement.getAttribute("rdf:resource");
+                if (refUri == null || refUri.isEmpty()) refUri = publisherElement.getAttributeNS(RDF_NS, "resource");
+                AgentWrapper agentWrapper = new AgentWrapper();
                 Agent agent = new Agent();
-                boolean set = false;
-                if (ref != null && !ref.isEmpty()) {
+                boolean shouldSetPublisher = false;
+                if (refUri != null && !refUri.isEmpty()) {
                     // set as homepage/resource when external reference
-                    agent.setHomepage(ref);
-                    set = true;
+                    agent.setHomepage(refUri);
+                    shouldSetPublisher = true;
                 } else {
-                    NodeList agentNodes = pel.getElementsByTagName("foaf:Agent");
-                    if (agentNodes.getLength() == 0) agentNodes = pel.getElementsByTagName("Agent");
+                    NodeList agentNodes = publisherElement.getElementsByTagName("foaf:Agent");
+                    if (agentNodes.getLength() == 0) agentNodes = publisherElement.getElementsByTagName("Agent");
                     if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
-                        Element agEl = (Element) agentNodes.item(0);
+                        Element agentElement = (Element) agentNodes.item(0);
                         // name
-                        NodeList nameNodes = agEl.getElementsByTagName("foaf:name");
-                        if (nameNodes.getLength() == 0) nameNodes = agEl.getElementsByTagName("name");
-                        if (nameNodes.getLength() > 0 && nameNodes.item(0).getTextContent() != null) {
-                            agent.setName(nameNodes.item(0).getTextContent().trim());
-                            set = true;
+                        NodeList nameNodesLocal = agentElement.getElementsByTagName("foaf:name");
+                        if (nameNodesLocal.getLength() == 0) nameNodesLocal = agentElement.getElementsByTagName("name");
+                        if (nameNodesLocal.getLength() > 0 && nameNodesLocal.item(0).getTextContent() != null) {
+                            agent.setName(nameNodesLocal.item(0).getTextContent().trim());
+                            shouldSetPublisher = true;
                         }
                         // mbox
-                        NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
-                        if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
-                        if (mboxNodes.getLength() > 0) {
-                            Node m = mboxNodes.item(0);
-                            if (m instanceof Element) {
-                                Element mEl = (Element) m;
-                                String mail = mEl.getAttribute("rdf:resource");
-                                if (mail == null || mail.isEmpty()) mail = mEl.getAttributeNS(RDF_NS, "resource");
-                                if ((mail == null || mail.isEmpty()) && m.getTextContent() != null)
-                                    mail = m.getTextContent().trim();
+                        NodeList mboxNodesLocal = agentElement.getElementsByTagName("foaf:mbox");
+                        if (mboxNodesLocal.getLength() == 0) mboxNodesLocal = agentElement.getElementsByTagName("mbox");
+                        if (mboxNodesLocal.getLength() > 0) {
+                            Node mboxNode = mboxNodesLocal.item(0);
+                            if (mboxNode instanceof Element) {
+                                Element mboxElement = (Element) mboxNode;
+                                String mail = mboxElement.getAttribute("rdf:resource");
+                                if (mail == null || mail.isEmpty()) mail = mboxElement.getAttributeNS(RDF_NS, "resource");
+                                if ((mail == null || mail.isEmpty()) && mboxNode.getTextContent() != null)
+                                    mail = mboxNode.getTextContent().trim();
                                 if (mail != null && !mail.isEmpty()) {
                                     if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                                     agent.setMbox(mail);
-                                    set = true;
+                                    shouldSetPublisher = true;
                                 }
-                            } else if (m.getTextContent() != null && !m.getTextContent().trim().isEmpty()) {
-                                String mail = m.getTextContent().trim();
+                            } else if (mboxNode.getTextContent() != null && !mboxNode.getTextContent().trim().isEmpty()) {
+                                String mail = mboxNode.getTextContent().trim();
                                 if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
                                 agent.setMbox(mail);
-                                set = true;
+                                shouldSetPublisher = true;
                             }
                         }
                         // homepage
-                        NodeList homepageNodes = agEl.getElementsByTagName("foaf:homepage");
-                        if (homepageNodes.getLength() == 0) homepageNodes = agEl.getElementsByTagName("homepage");
-                        if (homepageNodes.getLength() > 0 && homepageNodes.item(0).getTextContent() != null) {
-                            agent.setHomepage(homepageNodes.item(0).getTextContent().trim());
-                            set = true;
+                        NodeList homepageNodesLocal = agentElement.getElementsByTagName("foaf:homepage");
+                        if (homepageNodesLocal.getLength() == 0) homepageNodesLocal = agentElement.getElementsByTagName("homepage");
+                        if (homepageNodesLocal.getLength() > 0 && homepageNodesLocal.item(0).getTextContent() != null) {
+                            agent.setHomepage(homepageNodesLocal.item(0).getTextContent().trim());
+                            shouldSetPublisher = true;
                         }
                     } else {
                         // literal publisher name in element
-                        if (pel.getTextContent() != null && !pel.getTextContent().trim().isEmpty()) {
-                            agent.setName(pel.getTextContent().trim());
-                            set = true;
+                        if (publisherElement.getTextContent() != null && !publisherElement.getTextContent().trim().isEmpty()) {
+                            agent.setName(publisherElement.getTextContent().trim());
+                            shouldSetPublisher = true;
                         }
                     }
                 }
-                if (set) {
-                    aw.setAgent(agent);
-                    dataset.setPublisher(aw);
+                if (shouldSetPublisher) {
+                    agentWrapper.setAgent(agent);
+                    dataset.setPublisher(agentWrapper);
                 }
             }
         }
@@ -1196,8 +1196,8 @@ public class MapperService {
 
     // FIXME
     private List<Distribution> mapDistributionFromRdfElement(Element distributionElement) {
-        List<Distribution> result = new ArrayList<>();
-        if (distributionElement == null) return result;
+        List<Distribution> distributionsResult = new ArrayList<>();
+        if (distributionElement == null) return distributionsResult;
 
         // Helper to read attribute with fallback to rdf: namespace
         java.util.function.Function<Element, String> readAboutOrResource = (el) -> {
@@ -1209,127 +1209,127 @@ public class MapperService {
         };
 
         // Many RDF documents reference a distribution as a resource only (rdf:resource / rdf:about)
-        String ref = readAboutOrResource.apply(distributionElement);
+        String referencedUri = readAboutOrResource.apply(distributionElement);
         // If the element only references a resource, return a single Distribution with about set
-        if (ref != null) {
-            Distribution dist = new Distribution();
-            dist.setAbout(ref);
-            result.add(dist);
-            return result;
+        if (referencedUri != null) {
+            Distribution distribution = new Distribution();
+            distribution.setAbout(referencedUri);
+            distributionsResult.add(distribution);
+            return distributionsResult;
         }
 
         // Otherwise parse content
-        Distribution dist = new Distribution();
+        Distribution distribution = new Distribution();
 
         // about (attribute)
-        String aboutAttr = distributionElement.getAttribute("about");
-        if (aboutAttr == null || aboutAttr.isEmpty()) {
-            aboutAttr = distributionElement.getAttributeNS(RDF_NS, "about");
+        String aboutAttribute = distributionElement.getAttribute("about");
+        if (aboutAttribute == null || aboutAttribute.isEmpty()) {
+            aboutAttribute = distributionElement.getAttributeNS(RDF_NS, "about");
         }
-        if (aboutAttr != null && !aboutAttr.isEmpty()) {
-            dist.setAbout(aboutAttr);
+        if (aboutAttribute != null && !aboutAttribute.isEmpty()) {
+            distribution.setAbout(aboutAttribute);
         }
 
         // title
-        NodeList titleNodes = distributionElement.getElementsByTagName("dcterms:title");
-        if (titleNodes.getLength() == 0) titleNodes = distributionElement.getElementsByTagName("title");
-        if (titleNodes.getLength() > 0 && titleNodes.item(0) != null && titleNodes.item(0).getTextContent() != null) {
-            dist.setTitle(titleNodes.item(0).getTextContent().trim());
+        NodeList titleNodesLocal = distributionElement.getElementsByTagName("dcterms:title");
+        if (titleNodesLocal.getLength() == 0) titleNodesLocal = distributionElement.getElementsByTagName("title");
+        if (titleNodesLocal.getLength() > 0 && titleNodesLocal.item(0) != null && titleNodesLocal.item(0).getTextContent() != null) {
+            distribution.setTitle(titleNodesLocal.item(0).getTextContent().trim());
         }
 
         // description
-        NodeList descNodes = distributionElement.getElementsByTagName("dcterms:description");
-        if (descNodes.getLength() == 0) descNodes = distributionElement.getElementsByTagName("description");
-        if (descNodes.getLength() > 0 && descNodes.item(0) != null && descNodes.item(0).getTextContent() != null) {
-            dist.setDescription(descNodes.item(0).getTextContent().trim());
+        NodeList descriptionNodesLocal = distributionElement.getElementsByTagName("dcterms:description");
+        if (descriptionNodesLocal.getLength() == 0) descriptionNodesLocal = distributionElement.getElementsByTagName("description");
+        if (descriptionNodesLocal.getLength() > 0 && descriptionNodesLocal.item(0) != null && descriptionNodesLocal.item(0).getTextContent() != null) {
+            distribution.setDescription(descriptionNodesLocal.item(0).getTextContent().trim());
         }
 
         // modified
-        NodeList modifiedNodes = distributionElement.getElementsByTagName("dcterms:modified");
-        if (modifiedNodes.getLength() == 0) modifiedNodes = distributionElement.getElementsByTagName("modified");
-        if (modifiedNodes.getLength() > 0 && modifiedNodes.item(0).getTextContent() != null) {
-            String modified = modifiedNodes.item(0).getTextContent().trim();
-            dist.setModified(new DatatypeTextElement(modified));
+        NodeList modifiedNodesLocal = distributionElement.getElementsByTagName("dcterms:modified");
+        if (modifiedNodesLocal.getLength() == 0) modifiedNodesLocal = distributionElement.getElementsByTagName("modified");
+        if (modifiedNodesLocal.getLength() > 0 && modifiedNodesLocal.item(0).getTextContent() != null) {
+            String modified = modifiedNodesLocal.item(0).getTextContent().trim();
+            distribution.setModified(new DatatypeTextElement(modified));
             if (modified.contains("T")) {
-                dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                distribution.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
             } else {
-                dist.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+                distribution.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
             }
         }
 
         // accessURL / downloadURL / page - try attributes first, then child elements
-        String accessURL = null;
+        String accessUrl = null;
         // check common attributes on the distribution element (rdf:resource etc.)
-        accessURL = distributionElement.getAttribute("rdf:resource");
-        if (accessURL == null || accessURL.isEmpty())
-            accessURL = distributionElement.getAttributeNS(RDF_NS, "resource");
-        if (accessURL == null || accessURL.isEmpty()) accessURL = distributionElement.getAttribute("about");
-        if (accessURL == null || accessURL.isEmpty()) accessURL = distributionElement.getAttributeNS(RDF_NS, "about");
+        accessUrl = distributionElement.getAttribute("rdf:resource");
+        if (accessUrl == null || accessUrl.isEmpty())
+            accessUrl = distributionElement.getAttributeNS(RDF_NS, "resource");
+        if (accessUrl == null || accessUrl.isEmpty()) accessUrl = distributionElement.getAttribute("about");
+        if (accessUrl == null || accessUrl.isEmpty()) accessUrl = distributionElement.getAttributeNS(RDF_NS, "about");
 
-        if (accessURL == null || accessURL.isEmpty()) {
-            NodeList accessNodes = distributionElement.getElementsByTagName("dcat:accessURL");
-            if (accessNodes.getLength() == 0) accessNodes = distributionElement.getElementsByTagName("accessURL");
-            if (accessNodes.getLength() > 0 && accessNodes.item(0) != null && accessNodes.item(0).getTextContent() != null) {
-                accessURL = accessNodes.item(0).getTextContent().trim();
+        if (accessUrl == null || accessUrl.isEmpty()) {
+            NodeList accessUrlNodes = distributionElement.getElementsByTagName("dcat:accessURL");
+            if (accessUrlNodes.getLength() == 0) accessUrlNodes = distributionElement.getElementsByTagName("accessURL");
+            if (accessUrlNodes.getLength() > 0 && accessUrlNodes.item(0) != null && accessUrlNodes.item(0).getTextContent() != null) {
+                accessUrl = accessUrlNodes.item(0).getTextContent().trim();
             }
         }
-        if (accessURL != null && !accessURL.isEmpty()) {
-            dist.getAccessURL().setResource(accessURL);
+        if (accessUrl != null && !accessUrl.isEmpty()) {
+            distribution.getAccessURL().setResource(accessUrl);
         }
 
         // downloadURL
-        NodeList downloadNodes = distributionElement.getElementsByTagName("dcat:downloadURL");
-        if (downloadNodes.getLength() == 0) downloadNodes = distributionElement.getElementsByTagName("downloadURL");
-        if (downloadNodes.getLength() > 0 && downloadNodes.item(0) != null && downloadNodes.item(0).getTextContent() != null) {
-            String download = downloadNodes.item(0).getTextContent().trim();
-            if (!download.isEmpty()) dist.setDownloadURL(new ResourceElement(download));
+        NodeList downloadUrlNodes = distributionElement.getElementsByTagName("dcat:downloadURL");
+        if (downloadUrlNodes.getLength() == 0) downloadUrlNodes = distributionElement.getElementsByTagName("downloadURL");
+        if (downloadUrlNodes.getLength() > 0 && downloadUrlNodes.item(0) != null && downloadUrlNodes.item(0).getTextContent() != null) {
+            String download = downloadUrlNodes.item(0).getTextContent().trim();
+            if (!download.isEmpty()) distribution.setDownloadURL(new ResourceElement(download));
         }
 
         // page
-        NodeList pageNodes = distributionElement.getElementsByTagName("dcat:page");
-        if (pageNodes.getLength() == 0) pageNodes = distributionElement.getElementsByTagName("page");
-        if (pageNodes.getLength() > 0 && pageNodes.item(0) != null && pageNodes.item(0).getTextContent() != null) {
-            String page = pageNodes.item(0).getTextContent().trim();
-            if (!page.isEmpty()) dist.setPage(new ResourceElement(page));
+        NodeList pageNodesLocal = distributionElement.getElementsByTagName("dcat:page");
+        if (pageNodesLocal.getLength() == 0) pageNodesLocal = distributionElement.getElementsByTagName("page");
+        if (pageNodesLocal.getLength() > 0 && pageNodesLocal.item(0) != null && pageNodesLocal.item(0).getTextContent() != null) {
+            String page = pageNodesLocal.item(0).getTextContent().trim();
+            if (!page.isEmpty()) distribution.setPage(new ResourceElement(page));
         }
 
         // format - try literal text then map with formatMapper
-        NodeList formatNodes = distributionElement.getElementsByTagName("dcterms:format");
-        if (formatNodes.getLength() == 0) formatNodes = distributionElement.getElementsByTagName("format");
-        if (formatNodes.getLength() > 0 && formatNodes.item(0) != null && formatNodes.item(0).getTextContent() != null) {
-            String fmt = formatNodes.item(0).getTextContent().trim();
-            String mapped = formatMapper.map(fmt);
-            if (mapped != null) {
-                dist.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + mapped));
+        NodeList formatNodesLocal = distributionElement.getElementsByTagName("dcterms:format");
+        if (formatNodesLocal.getLength() == 0) formatNodesLocal = distributionElement.getElementsByTagName("format");
+        if (formatNodesLocal.getLength() > 0 && formatNodesLocal.item(0) != null && formatNodesLocal.item(0).getTextContent() != null) {
+            String formatLiteral = formatNodesLocal.item(0).getTextContent().trim();
+            String mappedFormat = formatMapper.map(formatLiteral);
+            if (mappedFormat != null) {
+                distribution.setFormat(new ResourceElement("http://publications.europa.eu/resource/authority/file-type/" + mappedFormat));
             }
         }
 
         // license - try dcterms:license element or license literal/url
         String licenseUri = null;
-        NodeList licenseNodes = distributionElement.getElementsByTagName("dcterms:license");
-        if (licenseNodes.getLength() == 0) licenseNodes = distributionElement.getElementsByTagName("license");
-        if (licenseNodes.getLength() > 0 && licenseNodes.item(0) != null) {
-            Node lic = licenseNodes.item(0);
-            if (lic.getNodeType() == Node.ELEMENT_NODE) {
-                Element licEl = (Element) lic;
-                String l = licEl.getAttribute("rdf:resource");
-                if (l == null || l.isEmpty()) l = licEl.getAttributeNS(RDF_NS, "resource");
-                if (l != null && !l.isEmpty()) licenseUri = l;
-                else if (lic.getTextContent() != null && !lic.getTextContent().trim().isEmpty())
-                    licenseUri = lic.getTextContent().trim();
-            } else if (lic.getTextContent() != null && !lic.getTextContent().trim().isEmpty()) {
-                licenseUri = lic.getTextContent().trim();
+        NodeList licenseNodesLocal = distributionElement.getElementsByTagName("dcterms:license");
+        if (licenseNodesLocal.getLength() == 0) licenseNodesLocal = distributionElement.getElementsByTagName("license");
+        if (licenseNodesLocal.getLength() > 0 && licenseNodesLocal.item(0) != null) {
+            Node licenseNode = licenseNodesLocal.item(0);
+            if (licenseNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element licenseElement = (Element) licenseNode;
+                String licenseAttr = licenseElement.getAttribute("rdf:resource");
+                if (licenseAttr == null || licenseAttr.isEmpty()) licenseAttr = licenseElement.getAttributeNS(RDF_NS, "resource");
+                if (licenseAttr != null && !licenseAttr.isEmpty()) licenseUri = licenseAttr;
+                else if (licenseNode.getTextContent() != null && !licenseNode.getTextContent().trim().isEmpty())
+                    licenseUri = licenseNode.getTextContent().trim();
+            } else if (licenseNode.getTextContent() != null && !licenseNode.getTextContent().trim().isEmpty()) {
+                licenseUri = licenseNode.getTextContent().trim();
             }
         }
         if (licenseUri != null && !licenseUri.isEmpty()) {
-            dist.setLicense(new ResourceElement(licenseUri));
+            distribution.setLicense(new ResourceElement(licenseUri));
         } else {
             // fallback to default
-            dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
+            distribution.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
         }
 
-        result.add(dist);
-        return result;
+        distributionsResult.add(distribution);
+        return distributionsResult;
     }
 
 
