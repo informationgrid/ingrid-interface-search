@@ -1492,9 +1492,8 @@ public class MapperService {
 
                     Document rdfDoc = builder.parse(input);
 
-                    // the catalog, paging and opening tags are handled elsewhere
-                    // map only the dataset and distributions
-
+                    // the catalog, paging and opening tags are handled at the end of the function
+                    // so map only the dataset and distributions
                     NodeList datasetNodes = rdfDoc.getElementsByTagNameNS("*", "Dataset");
                     if (datasetNodes.getLength() == 0) datasetNodes = rdfDoc.getElementsByTagName("dcat:Dataset");
 
