@@ -187,7 +187,8 @@ public class MapperService {
                 }
             }
             if (creator.size() > 0) {
-                dataset.setOriginator(creator.toArray(new OrganizationWrapper[creator.size()]));
+                // previously creators were incorrectly set as originators
+                dataset.setCreator(creator.toArray(new OrganizationWrapper[creator.size()]));
             }
         }
 
