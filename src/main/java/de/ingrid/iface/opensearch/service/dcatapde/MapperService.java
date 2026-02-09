@@ -775,7 +775,6 @@ public class MapperService {
     }
 
 
-    // FIXME
     private Dataset mapDatasetFromRdfElement(Element datasetElement) {
         if (datasetElement == null) return null;
         Dataset dataset = new Dataset();
@@ -783,9 +782,7 @@ public class MapperService {
         // about (try multiple attribute names: rdf:about, about, rdf:resource, and namespace-aware)
         String aboutAttribute = datasetElement.getAttribute("rdf:about");
         if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("about");
-        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttribute("rdf:resource");
         if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "about");
-        if (aboutAttribute.isEmpty()) aboutAttribute = datasetElement.getAttributeNS(RDF_NS, "resource");
         if (!aboutAttribute.isEmpty()) {
             dataset.setAbout(aboutAttribute);
         }
@@ -873,7 +870,6 @@ public class MapperService {
             }
         }
 
-        // FIXME: the following are missing: attributes, dcat:downloadURL,
         // distribution (simple rdf:resource references)
         NodeList distributionNodesLocal = datasetElement.getElementsByTagName("dcat:distribution");
         if (distributionNodesLocal.getLength() == 0) distributionNodesLocal = datasetElement.getElementsByTagName("distribution");
@@ -884,8 +880,7 @@ public class MapperService {
             Element distElement = (Element) dn;
             String uri = distElement.getAttribute("rdf:resource");
             if (uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "resource");
-            if (uri.isEmpty()) uri = distElement.getAttribute("about");
-            if (uri.isEmpty()) uri = distElement.getAttributeNS(RDF_NS, "about");
+
             if ((uri == null || uri.isEmpty()) && distElement.getTextContent() != null) {
                 uri = distElement.getTextContent().trim();
             }
@@ -1210,53 +1205,13 @@ public class MapperService {
         return dataset;
     }
 
-    // FIXME
+
     private List<Distribution> mapDistributionFromRdfElement(Element distributionElement) {
         List<Distribution> distributionsResult = new ArrayList<>();
         if (distributionElement == null) return distributionsResult;
 
-        // Helper to read attribute with fallback to rdf: namespace
-        java.util.function.Function<Element, String> readAboutOrResource = (el) -> {
-            // getAttribute(...) returns empty string when absent
-            String v = el.getAttribute("rdf:about");
-            if (v.isEmpty()) v = el.getAttribute("rdf:resource");
-            // then check non-prefixed and namespace-aware attributes
-            if (v.isEmpty()) v = el.getAttribute("about");
-            if (v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
-            if (v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
-            // fallback: inspect all attributes for prefixed forms or local names
-            if (v.isEmpty()) {
-                org.w3c.dom.NamedNodeMap attrs = el.getAttributes();
-                if (attrs != null) {
-                    for (int ai = 0; ai < attrs.getLength(); ai++) {
-                        Node a = attrs.item(ai);
-                        if (a == null) continue;
-                        String name = a.getNodeName();
-                        String local = a.getLocalName();
-                        String ns = a.getNamespaceURI();
-                        String val = a.getNodeValue();
-                        if (val == null || val.isEmpty()) continue;
-                        // accept any prefixed attribute like rdf:about or something:about
-                        if (name.endsWith(":about") || name.endsWith(":resource")) {
-                            v = val;
-                            break;
-                        }
-                        if (("about".equals(local) || "resource".equals(local))) {
-                            // accept when namespace is RDF or missing
-                            if (ns == null || ns.isEmpty() || RDF_NS.equals(ns)) {
-                                v = val;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            return v.isEmpty() ? null : v;
-        };
-
-        // Many RDF documents reference a distribution as a resource only (rdf:resource / rdf:about)
-        String referencedUri = readAboutOrResource.apply(distributionElement);
-        // FIXME check this !
+        // RDF documents reference a distribution as a resource only (rdf:resource / rdf:about)
+        String referencedUri = readAboutOrResource(distributionElement);
 
         // But only treat it as a reference when there are no element children to parse.
         boolean hasElementChildren = false;
@@ -1267,11 +1222,8 @@ public class MapperService {
                 break;
             }
         }
-         // If the element only references a resource, return a single Distribution with about set
+         // If the element only references a resource, do not create a fallback Distribution — return nothing.
         if (referencedUri != null && !hasElementChildren) {
-            Distribution distribution = new Distribution();
-            distribution.setAbout(referencedUri);
-            distributionsResult.add(distribution);
             return distributionsResult;
         }
 
@@ -1280,7 +1232,7 @@ public class MapperService {
 
         // about (attribute)
         // prefer any rdf:about / rdf:resource forms (use helper with namespace fallbacks)
-        String aboutAttribute = readAboutOrResource.apply(distributionElement);
+        String aboutAttribute = readAboutOrResource(distributionElement);
         if (aboutAttribute != null && !aboutAttribute.isEmpty()) {
             distribution.setAbout(aboutAttribute);
         }
@@ -1471,6 +1423,45 @@ public class MapperService {
         return distributionsResult;
     }
 
+    // Helper to read attribute with fallback to rdf: namespace
+    private String readAboutOrResource(Element el) {
+        if (el == null) return null;
+        // getAttribute(...) returns empty string when absent
+        String v = el.getAttribute("rdf:about");
+        if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
+        // then check non-prefixed and namespace-aware attributes
+        if (v == null || v.isEmpty()) v = el.getAttribute("about");
+        if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
+        if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
+        // fallback: inspect all attributes for prefixed forms or local names
+        if (v == null || v.isEmpty()) {
+            org.w3c.dom.NamedNodeMap attrs = el.getAttributes();
+            if (attrs != null) {
+                for (int ai = 0; ai < attrs.getLength(); ai++) {
+                    Node a = attrs.item(ai);
+                    if (a == null) continue;
+                    String name = a.getNodeName();
+                    String local = a.getLocalName();
+                    String ns = a.getNamespaceURI();
+                    String val = a.getNodeValue();
+                    if (val == null || val.isEmpty()) continue;
+                    // accept any prefixed attribute like rdf:about or something:about
+                    if (name.endsWith(":about") || name.endsWith(":resource")) {
+                        v = val;
+                        break;
+                    }
+                    if (("about".equals(local) || "resource".equals(local))) {
+                        // accept when namespace is RDF or missing
+                        if (ns == null || ns.isEmpty() || RDF_NS.equals(ns)) {
+                            v = val;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return v == null || v.isEmpty() ? null : v;
+    }
 
     public DcatApDe mapHitsToDcat(IBusQueryResultIterator hitIterator, int hitsPerPage) {
         DcatApDe dcatApDe = new DcatApDe();
@@ -1513,37 +1504,6 @@ public class MapperService {
                         Dataset rdfDataset = mapDatasetFromRdfElement(datasetElement);
                         datasets.add(rdfDataset);
                         datasetIds.add(rdfDataset.getAbout());
-
-                        // Also map nested dcat:distribution elements inside this Dataset
-                        NodeList nestedDistNodes = datasetElement.getElementsByTagNameNS("*", "distribution");
-                        if (nestedDistNodes.getLength() == 0) nestedDistNodes = datasetElement.getElementsByTagName("dcat:distribution");
-                        for (int di = 0; di < nestedDistNodes.getLength(); di++) {
-                            Node dn = nestedDistNodes.item(di);
-                            if (!(dn instanceof Element)) continue;
-                            Element distEl = (Element) dn;
-                            // if this nested element contains a full Distribution description, parse it
-                            boolean hasElemChildren = false;
-                            NodeList ch = distEl.getChildNodes();
-                            for (int ci = 0; ci < ch.getLength(); ci++) {
-                                if (ch.item(ci).getNodeType() == Node.ELEMENT_NODE) { hasElemChildren = true; break; }
-                            }
-                            if (hasElemChildren) {
-                                List<Distribution> mapped = mapDistributionFromRdfElement(distEl);
-                                if (mapped != null && !mapped.isEmpty()) distributions.addAll(mapped);
-                            } else {
-                                // treat as reference-only distribution: read rdf:resource / rdf:about or text
-                                String ref = distEl.getAttribute("rdf:resource");
-                                if (ref == null || ref.isEmpty()) ref = distEl.getAttributeNS(RDF_NS, "resource");
-                                if (ref == null || ref.isEmpty()) ref = distEl.getAttribute("rdf:about");
-                                if (ref == null || ref.isEmpty()) ref = distEl.getAttributeNS(RDF_NS, "about");
-                                if ((ref == null || ref.isEmpty()) && distEl.getTextContent() != null) ref = distEl.getTextContent().trim();
-                                if (ref != null && !ref.isEmpty()) {
-                                    Distribution d = new Distribution();
-                                    d.setAbout(ref);
-                                    distributions.add(d);
-                                }
-                            }
-                        }
                     }
 
                     NodeList distributionNodes = rdfDoc.getElementsByTagNameNS("*", "Distribution");
