@@ -75,6 +75,8 @@ public class MapperService {
     private final Pattern URL_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
     private final Pattern QUELLE_PATTERN = Pattern.compile("\"quelle\":\\s*\"([^\"]+)\"");
 
+    private final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
     @Autowired
     private FormatMapper formatMapper;
 
@@ -756,6 +758,7 @@ public class MapperService {
     }
 
 
+    // FIXME
     private Dataset mapDatasetFromRdfElement(Element datasetElement) {
         if (datasetElement == null) return null;
         Dataset dataset = new Dataset();
@@ -763,7 +766,7 @@ public class MapperService {
         // about (attrib oder rdf:about)
         String aboutAttr = datasetElement.getAttribute("about");
         if (aboutAttr == null || aboutAttr.isEmpty()) {
-            aboutAttr = datasetElement.getAttributeNS("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "about");
+            aboutAttr = datasetElement.getAttributeNS(RDF_NS, "about");
         }
         if (aboutAttr != null && !aboutAttr.isEmpty()) {
             dataset.setAbout(aboutAttr);
@@ -790,15 +793,293 @@ public class MapperService {
             dataset.setIdentifier(idNodes.item(0).getTextContent().trim());
         }
 
+        // contributorID (rdf:resource)
+        NodeList contribIdNodes = datasetElement.getElementsByTagName("dcatde:contributorID");
+        if (contribIdNodes.getLength() == 0) contribIdNodes = datasetElement.getElementsByTagName("contributorID");
+        if (contribIdNodes.getLength() > 0) {
+            Node n = contribIdNodes.item(0);
+            if (n instanceof Element) {
+                Element el = (Element) n;
+                String r = el.getAttribute("rdf:resource");
+                if (r == null || r.isEmpty()) r = el.getAttributeNS(RDF_NS, "resource");
+                if (r != null && !r.isEmpty()) {
+                    dataset.setContributorID(new ResourceElement(r));
+                }
+            }
+        }
+
+        // contactPoint (vcard:Organization)
+        NodeList contactNodes = datasetElement.getElementsByTagName("dcat:contactPoint");
+        if (contactNodes.getLength() == 0) contactNodes = datasetElement.getElementsByTagName("contactPoint");
+        if (contactNodes.getLength() > 0) {
+            Node cpNode = contactNodes.item(0);
+            if (cpNode instanceof Element) {
+                Element cpEl = (Element) cpNode;
+                // find vcard:Organization child
+                NodeList orgNodes = cpEl.getElementsByTagName("vcard:Organization");
+                if (orgNodes.getLength() == 0) orgNodes = cpEl.getElementsByTagName("Organization");
+                if (orgNodes.getLength() > 0 && orgNodes.item(0) instanceof Element) {
+                    Element orgEl = (Element) orgNodes.item(0);
+                    VCardOrganization org = new VCardOrganization();
+                    NodeList fnNodes = orgEl.getElementsByTagName("vcard:fn");
+                    if (fnNodes.getLength() == 0) fnNodes = orgEl.getElementsByTagName("fn");
+                    if (fnNodes.getLength() > 0 && fnNodes.item(0).getTextContent() != null) {
+                        org.setFn(fnNodes.item(0).getTextContent().trim());
+                    }
+                    // email as rdf:resource or element text
+                    NodeList emailNodes = orgEl.getElementsByTagName("vcard:hasEmail");
+                    if (emailNodes.getLength() == 0) emailNodes = orgEl.getElementsByTagName("hasEmail");
+                    if (emailNodes.getLength() > 0) {
+                        Node em = emailNodes.item(0);
+                        if (em instanceof Element) {
+                            Element emEl = (Element) em;
+                            String mail = emEl.getAttribute("rdf:resource");
+                            if (mail == null || mail.isEmpty()) mail = emEl.getAttributeNS(RDF_NS, "resource");
+                            if ((mail == null || mail.isEmpty()) && em.getTextContent() != null) {
+                                mail = em.getTextContent().trim();
+                            }
+                            if (mail != null && !mail.isEmpty()) {
+                                if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                                org.setHasEmail(new ResourceElement(mail));
+                            }
+                        } else if (em.getTextContent() != null && !em.getTextContent().trim().isEmpty()) {
+                            String mail = em.getTextContent().trim();
+                            if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                            org.setHasEmail(new ResourceElement(mail));
+                        }
+                    }
+                    VCardOrganizationWrapper wrapper = new VCardOrganizationWrapper();
+                    wrapper.setOrganization(org);
+                    dataset.setContactPoint(wrapper);
+                }
+            }
+        }
+
+        // FIXME: the following are missing: attributes, dcat:downloadURL,
+        // distribution (simple rdf:resource references)
+        NodeList distNodes = datasetElement.getElementsByTagName("dcat:distribution");
+        if (distNodes.getLength() == 0) distNodes = datasetElement.getElementsByTagName("distribution");
+        List<ResourceElement> distResources = new ArrayList<>();
+        for (int i = 0; i < distNodes.getLength(); i++) {
+            Node dn = distNodes.item(i);
+            if (!(dn instanceof Element)) continue;
+            Element de = (Element) dn;
+            String uri = de.getAttribute("rdf:resource");
+            if (uri == null || uri.isEmpty()) uri = de.getAttributeNS(RDF_NS, "resource");
+            if (uri == null || uri.isEmpty()) uri = de.getAttribute("about");
+            if (uri == null || uri.isEmpty()) uri = de.getAttributeNS(RDF_NS, "about");
+            if ((uri == null || uri.isEmpty()) && de.getTextContent() != null) {
+                uri = de.getTextContent().trim();
+            }
+            if (uri != null && !uri.isEmpty()) {
+                distResources.add(new ResourceElement(uri));
+            }
+        }
+        if (!distResources.isEmpty()) {
+            dataset.setDistribution(distResources);
+        }
+
+        // keywords
+        NodeList keywordNodes = datasetElement.getElementsByTagName("dcat:keyword");
+        if (keywordNodes.getLength() == 0) keywordNodes = datasetElement.getElementsByTagName("keyword");
+        List<String> keywords = new ArrayList<>();
+        for (int i = 0; i < keywordNodes.getLength(); i++) {
+            Node kn = keywordNodes.item(i);
+            if (kn != null && kn.getTextContent() != null) {
+                String t = kn.getTextContent().trim();
+                if (!t.isEmpty()) keywords.add(t);
+            }
+        }
+        if (!keywords.isEmpty()) {
+            dataset.setKeyword(keywords);
+        }
+
+        // FIXME publisher no output
+        // publisher (foaf:Agent -> foaf:mbox)
+        NodeList publisherNodes = datasetElement.getElementsByTagName("dcterms:publisher");
+        if (publisherNodes.getLength() == 0) publisherNodes = datasetElement.getElementsByTagName("publisher");
+        if (publisherNodes.getLength() > 0) {
+            Node p = publisherNodes.item(0);
+            if (p instanceof Element) {
+                Element pel = (Element) p;
+                NodeList agentNodes = pel.getElementsByTagName("foaf:Agent");
+                if (agentNodes.getLength() == 0) agentNodes = pel.getElementsByTagName("Agent");
+                if (agentNodes.getLength() > 0 && agentNodes.item(0) instanceof Element) {
+                    Element agEl = (Element) agentNodes.item(0);
+                    NodeList mboxNodes = agEl.getElementsByTagName("foaf:mbox");
+                    if (mboxNodes.getLength() == 0) mboxNodes = agEl.getElementsByTagName("mbox");
+                    if (mboxNodes.getLength() > 0 && mboxNodes.item(0).getTextContent() != null) {
+                        Agent agent = new Agent();
+                        String mail = mboxNodes.item(0).getTextContent().trim();
+                        if (!mail.toLowerCase().startsWith("mailto:")) mail = "mailto:" + mail;
+                        agent.setMbox(mail);
+                        AgentWrapper aw = new AgentWrapper();
+                        aw.setAgent(agent);
+                        dataset.setPublisher(aw);
+                    }
+                }
+            }
+        }
+
+        // accessRights
+        NodeList accessNodes = datasetElement.getElementsByTagName("dcterms:accessRights");
+        if (accessNodes.getLength() == 0) accessNodes = datasetElement.getElementsByTagName("accessRights");
+        if (accessNodes.getLength() > 0 && accessNodes.item(0).getTextContent() != null) {
+            dataset.setAccessRights(new LangTextElement(accessNodes.item(0).getTextContent().trim()));
+        }
+
+        // accrualPeriodicity (rdf:resource)
+        NodeList accrualNodes = datasetElement.getElementsByTagName("dcterms:accrualPeriodicity");
+        if (accrualNodes.getLength() == 0) accrualNodes = datasetElement.getElementsByTagName("accrualPeriodicity");
+        if (accrualNodes.getLength() > 0 && accrualNodes.item(0) instanceof Element) {
+            Element el = (Element) accrualNodes.item(0);
+            String r = el.getAttribute("rdf:resource");
+            if (r == null || r.isEmpty()) r = el.getAttributeNS(RDF_NS, "resource");
+            if (r != null && !r.isEmpty()) {
+                dataset.setAccrualPeriodicity(new ResourceElement(r));
+            }
+        }
+
+        // issued (datatype aware)
+        NodeList issuedNodes = datasetElement.getElementsByTagName("dcterms:issued");
+        if (issuedNodes.getLength() == 0) issuedNodes = datasetElement.getElementsByTagName("issued");
+        if (issuedNodes.getLength() > 0 && issuedNodes.item(0).getTextContent() != null) {
+            String issued = issuedNodes.item(0).getTextContent().trim();
+            dataset.setIssued(issued);
+            if (issued.contains("T")) {
+                if (dataset.getIssued() != null) dataset.getIssued().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+            } else {
+                if (dataset.getIssued() != null) dataset.getIssued().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+            }
+        }
+
+        // spatial (locn:geometry with GeoJSON)
+        NodeList spatialNodes = datasetElement.getElementsByTagName("dcterms:spatial");
+        if (spatialNodes.getLength() == 0) spatialNodes = datasetElement.getElementsByTagName("spatial");
+        if (spatialNodes.getLength() > 0) {
+            Node sp = spatialNodes.item(0);
+            if (sp instanceof Element) {
+                Element spEl = (Element) sp;
+                NodeList locnNodes = spEl.getElementsByTagName("dcterms:Location");
+                if (locnNodes.getLength() == 0) locnNodes = spEl.getElementsByTagName("Location");
+                if (locnNodes.getLength() > 0 && locnNodes.item(0) instanceof Element) {
+                    Element locnEl = (Element) locnNodes.item(0);
+                    NodeList geomNodes = locnEl.getElementsByTagName("locn:geometry");
+                    if (geomNodes.getLength() == 0) geomNodes = locnEl.getElementsByTagName("geometry");
+                    if (geomNodes.getLength() > 0 && geomNodes.item(0) != null) {
+                        Node g = geomNodes.item(0);
+                        String geoText = g.getTextContent().trim();
+                        String dtype = null;
+                        if (g instanceof Element) {
+                            Element gEl = (Element) g;
+                            if (gEl.hasAttribute("rdf:datatype")) dtype = gEl.getAttribute("rdf:datatype");
+                            if ((dtype == null || dtype.isEmpty()) && gEl.hasAttribute("datatype"))
+                                dtype = gEl.getAttribute("datatype");
+                        }
+                        DatatypeTextElement dt = new DatatypeTextElement();
+                        if (dtype != null && !dtype.isEmpty()) dt.setDatatype(dtype);
+                        dt.setText(geoText);
+                        List<DatatypeTextElement> geoms = new ArrayList<>();
+                        geoms.add(dt);
+                        LocationElement location = new LocationElement();
+                        location.setGeometry(geoms);
+                        SpatialElement se = new SpatialElement();
+                        se.setLocation(location);
+                        dataset.setSpatial(se);
+                    }
+                }
+            }
+        }
+
+        // temporal (PeriodOfTime -> start/end)
+        NodeList temporalNodes = datasetElement.getElementsByTagName("dcterms:temporal");
+        if (temporalNodes.getLength() == 0) temporalNodes = datasetElement.getElementsByTagName("temporal");
+        if (temporalNodes.getLength() > 0) {
+            List<TemporalElement> temporalList = new ArrayList<>();
+            for (int i = 0; i < temporalNodes.getLength(); i++) {
+                Node tn = temporalNodes.item(i);
+                if (!(tn instanceof Element)) continue;
+                Element tnEl = (Element) tn;
+                NodeList periodNodes = tnEl.getElementsByTagName("dcterms:PeriodOfTime");
+                if (periodNodes.getLength() == 0) periodNodes = tnEl.getElementsByTagName("PeriodOfTime");
+                for (int p = 0; p < periodNodes.getLength(); p++) {
+                    Node pn = periodNodes.item(p);
+                    if (!(pn instanceof Element)) continue;
+                    Element pnEl = (Element) pn;
+                    PeriodOfTimeElement pot = new PeriodOfTimeElement();
+                    NodeList startNodes = pnEl.getElementsByTagName("dcat:startDate");
+                    if (startNodes.getLength() == 0) startNodes = pnEl.getElementsByTagName("startDate");
+                    if (startNodes.getLength() > 0 && startNodes.item(0).getTextContent() != null) {
+                        DatatypeTextElement start = new DatatypeTextElement();
+                        start.setText(startNodes.item(0).getTextContent().trim());
+                        start.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        pot.setStartDate(start);
+                    }
+                    NodeList endNodes = pnEl.getElementsByTagName("dcat:endDate");
+                    if (endNodes.getLength() == 0) endNodes = pnEl.getElementsByTagName("endDate");
+                    if (endNodes.getLength() > 0 && endNodes.item(0).getTextContent() != null) {
+                        DatatypeTextElement end = new DatatypeTextElement();
+                        end.setText(endNodes.item(0).getTextContent().trim());
+                        end.setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+                        pot.setEndDate(end);
+                    }
+                    TemporalElement te = new TemporalElement();
+                    te.setPeriodOfTime(pot);
+                    temporalList.add(te);
+                }
+            }
+            if (!temporalList.isEmpty()) dataset.setTemporal(temporalList);
+        }
+
+        // modified
+        NodeList modifiedNodes = datasetElement.getElementsByTagName("dcterms:modified");
+        if (modifiedNodes.getLength() == 0) modifiedNodes = datasetElement.getElementsByTagName("modified");
+        if (modifiedNodes.getLength() > 0 && modifiedNodes.item(0).getTextContent() != null) {
+            String modified = modifiedNodes.item(0).getTextContent().trim();
+            dataset.setModified(modified);
+            if (modified.contains("T")) {
+                if (dataset.getModified() != null) dataset.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#dateTime");
+            } else {
+                if (dataset.getModified() != null) dataset.getModified().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+            }
+        }
+
+        // geocodingDescription (multiple)
+        NodeList geocodingNodes = datasetElement.getElementsByTagName("dcatde:geocodingDescription");
+        if (geocodingNodes.getLength() == 0) geocodingNodes = datasetElement.getElementsByTagName("geocodingDescription");
+        List<String> geocodings = new ArrayList<>();
+        for (int i = 0; i < geocodingNodes.getLength(); i++) {
+            Node gn = geocodingNodes.item(i);
+            if (gn != null && gn.getTextContent() != null) {
+                String t = gn.getTextContent().trim();
+                if (!t.isEmpty()) geocodings.add(t);
+            }
+        }
+        if (!geocodings.isEmpty()) dataset.setGeocodingDescription(geocodings);
+
+        // themes (rdf:resource)
+        NodeList themeNodes = datasetElement.getElementsByTagName("dcat:theme");
+        if (themeNodes.getLength() == 0) themeNodes = datasetElement.getElementsByTagName("theme");
+        List<String> themes = new ArrayList<>();
+        for (int i = 0; i < themeNodes.getLength(); i++) {
+            Node tn = themeNodes.item(i);
+            if (!(tn instanceof Element)) continue;
+            Element tEl = (Element) tn;
+            String r = tEl.getAttribute("rdf:resource");
+            if (r == null || r.isEmpty()) r = tEl.getAttributeNS(RDF_NS, "resource");
+            if (r != null && !r.isEmpty()) themes.add(r);
+        }
+        if (!themes.isEmpty()) {
+            dataset.setThemes(themes.toArray(new String[0]));
+        }
+
         return dataset;
     }
 
-
+    // FIXME
     private List<Distribution> mapDistributionFromRdfElement(Element distributionElement) {
         List<Distribution> result = new ArrayList<>();
         if (distributionElement == null) return result;
-
-        final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
         // Helper to read attribute with fallback to rdf: namespace
         java.util.function.Function<Element, String> readAboutOrResource = (el) -> {
