@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,8 @@
 package de.ingrid.iface.opensearch.model.dcatapde;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -31,13 +33,20 @@ import de.ingrid.iface.opensearch.util.QueryParameterUtil;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "RDF", namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DcatApDe {
+
+    private static final Logger log = LogManager.getLogger(DcatApDe.class);
 
     @JacksonXmlProperty(localName = "PagedCollection", namespace = "http://www.w3.org/ns/hydra/core#")
     private HydraCollection collection;
@@ -64,6 +73,41 @@ public class DcatApDe {
     @JacksonXmlProperty(localName = "Checksum")
     @JacksonXmlElementWrapper(useWrapping = false)
     private Checksum checksum;
+
+    /**
+     * constructor: accept RDF/XML content as String and attempt to parse with Jackson.
+     * Falls back silently (DOM parsing in MapperService) if parsing fails.
+     */
+    public DcatApDe(String rdfContent) {
+        if (rdfContent == null) {
+            log.debug("DcatApDe: constructed with null rdfContent");
+            return;
+        }
+
+        // using Jackson XmlMapper
+        try (ByteArrayInputStream input = new ByteArrayInputStream(rdfContent.getBytes(StandardCharsets.UTF_8))) {
+            XmlMapper mapper = new XmlMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            DcatApDe parsed = mapper.readValue(input, DcatApDe.class);
+            if (parsed != null) {
+                this.collection = parsed.getCollection();
+                this.catalog = parsed.getCatalog() == null ? new Catalog() : parsed.getCatalog();
+                this.catalogRecord = parsed.getCatalogRecord();
+                this.dataset = parsed.getDataset() == null ? new ArrayList<>() : parsed.getDataset();
+                this.distribution = parsed.getDistribution() == null ? new ArrayList<>() : parsed.getDistribution();
+                this.checksum = parsed.getChecksum();
+            }
+
+            int ds = this.dataset == null ? 0 : this.dataset.size();
+            int dists = this.distribution == null ? 0 : this.distribution.size();
+            log.debug("DcatApDe: attempted Jackson parse from String; datasets={}, distributions={}", ds, dists);
+        } catch (IOException e) {
+            log.debug("DcatApDe: Jackson deserialization failed: {}", e.getMessage());
+        }
+    }
+
+    public DcatApDe() {
+    }
 
     /*public String getAgent() {
         return agent;

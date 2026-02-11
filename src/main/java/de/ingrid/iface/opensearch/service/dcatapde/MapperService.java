@@ -1486,34 +1486,19 @@ public class MapperService {
                 }
 
                 if (rdfContent != null) {
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    ByteArrayInputStream input = new ByteArrayInputStream(rdfContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    // String-based parsing via DcatApDe constructor
+                    DcatApDe rdfDoc = new DcatApDe(rdfContent);
 
-                    Document rdfDoc = builder.parse(input);
+                    // obtain a single Dataset since we work with a single RDF document
 
-                    // the catalog, paging and opening tags are handled at the end of the function
-                    // so map only the dataset and distributions
-                    NodeList datasetNodes = rdfDoc.getElementsByTagNameNS("*", "Dataset");
-                    if (datasetNodes.getLength() == 0) datasetNodes = rdfDoc.getElementsByTagName("dcat:Dataset");
+                    List<Dataset> rdfDatasetList = rdfDoc.getDataset();
 
-                    for (int i = 0; i < datasetNodes.getLength(); i++) {
-                        Element datasetElement = (Element) datasetNodes.item(i);
-
-                        Dataset rdfDataset = mapDatasetFromRdfElement(datasetElement);
-                        datasets.add(rdfDataset);
-                        datasetIds.add(rdfDataset.getAbout());
+                    if (rdfDatasetList != null) {
+                        datasets.add(rdfDatasetList.get(0));
+                        String datasetAbout = rdfDatasetList.get(0).getAbout();
+                        if (datasetAbout != null) datasetIds.add(datasetAbout);
                     }
-
-                    NodeList distributionNodes = rdfDoc.getElementsByTagNameNS("*", "Distribution");
-                    if (distributionNodes.getLength() == 0)
-                        distributionNodes = rdfDoc.getElementsByTagName("dcat:Distribution");
-                    for (int i = 0; i < distributionNodes.getLength(); i++) {
-                        Element distributionElement = (Element) distributionNodes.item(i);
-
-                        List<Distribution> distribution = mapDistributionFromRdfElement(distributionElement);
-                        distributions.addAll(distribution);
-                    }
+                     distributions.addAll(rdfDoc.getDistribution());
 
                     // skip the normal IDF -> DCAT mapping for this hit
                     continue;
