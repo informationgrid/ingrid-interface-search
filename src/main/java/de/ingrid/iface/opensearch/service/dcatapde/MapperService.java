@@ -75,10 +75,8 @@ public class MapperService {
         add("information");
     }};
 
-    private final Pattern URL_PATTERN = Pattern.compile("\"url\":\\s*\"([^\"]+)\"");
-    private final Pattern QUELLE_PATTERN = Pattern.compile("\"quelle\":\\s*\"([^\"]+)\"");
-
-    private final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    private final Pattern URL_PATTERN = Pattern.compile("\\\"url\\\":\\s*\\\"([^\\\"]+)\\\"");
+    private final Pattern QUELLE_PATTERN = Pattern.compile("\\\"quelle\\\":\\s*\\\"([^\\\"]+)\\\"");
 
     @Autowired
     private FormatMapper formatMapper;
@@ -502,13 +500,6 @@ public class MapperService {
 
         String modified = getDateOrDateTime(XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/*/citation/CI_Citation/date/CI_Date/date"));
 
-        // Dataset-level language fallback for distributions
-        Node datasetLanguageNode = XPATH.getNode(idfMdMetadataNode, "./identificationInfo[1]/MD_DataIdentification/language/LanguageCode/@codeListValue");
-        String datasetLang = null;
-        if (datasetLanguageNode != null) {
-            datasetLang = datasetLanguageNode.getTextContent().trim();
-        }
-
         NodeList transferOptionNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/transferOptions");
 
         NodeList formatNodes = XPATH.getNodeList(idfMdMetadataNode, "./distributionInfo/MD_Distribution/distributionFormat/MD_Format/name/CharacterString|./distributionInfo/MD_Distribution/distributor/MD_Distributor/distributorFormat/MD_Format/name");
@@ -629,13 +620,6 @@ public class MapperService {
                     Distribution dist = new Distribution();
                     dist.getAccessURL().setResource(accessURL);
 
-                    // service-level language fallback
-                    /*
-                    if (datasetLang != null && !datasetLang.isEmpty()) {
-                        dist.setLanguage(new ResourceElement(datasetLang));
-                    }
-                    */
-
                     dist.setAbout(datasetURI + DISTRIBUTION_RESOURCE_POSTFIX + "-" + (dists.size() + 1));
 
                     setLicense(idfMdMetadataNode, dist);
@@ -709,8 +693,8 @@ public class MapperService {
         if (licenseURI != null) {
             dist.setLicense(new ResourceElement(licenseURI));
         } else {
-            // No license found in IDF constraints — do not set a default here. Leave distribution.license null.
-            log.debug("No license found in IDF legalConstraints for this distribution; leaving license unset.");
+            log.warn("No License found - Use Default License!");
+            dist.setLicense(new ResourceElement(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_DEFAULT_LICENSE, "http://dcat-ap.de/def/licenses/other-open")));
         }
     }
 
@@ -777,45 +761,6 @@ public class MapperService {
         catalog.setAbout(SearchInterfaceConfig.getInstance().getString(SearchInterfaceConfig.DCAT_CATALOG_PUPLISHER_URL));
     }
 
-    // Helper to read attribute with fallback to rdf: namespace
-    private String readAboutOrResource(Element el) {
-        if (el == null) return null;
-        // getAttribute(...) returns empty string when absent
-        String v = el.getAttribute("rdf:about");
-        if (v == null || v.isEmpty()) v = el.getAttribute("rdf:resource");
-        // then check non-prefixed and namespace-aware attributes
-        if (v == null || v.isEmpty()) v = el.getAttribute("about");
-        if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "about");
-        if (v == null || v.isEmpty()) v = el.getAttributeNS(RDF_NS, "resource");
-        // fallback: inspect all attributes for prefixed forms or local names
-        if (v == null || v.isEmpty()) {
-            org.w3c.dom.NamedNodeMap attrs = el.getAttributes();
-            if (attrs != null) {
-                for (int ai = 0; ai < attrs.getLength(); ai++) {
-                    Node a = attrs.item(ai);
-                    if (a == null) continue;
-                    String name = a.getNodeName();
-                    String local = a.getLocalName();
-                    String ns = a.getNamespaceURI();
-                    String val = a.getNodeValue();
-                    if (val == null || val.isEmpty()) continue;
-                    // accept any prefixed attribute like rdf:about or something:about
-                    if (name.endsWith(":about") || name.endsWith(":resource")) {
-                        v = val;
-                        break;
-                    }
-                    if (("about".equals(local) || "resource".equals(local))) {
-                        // accept when namespace is RDF or missing
-                        if (ns == null || ns.isEmpty() || RDF_NS.equals(ns)) {
-                            v = val;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return v == null || v.isEmpty() ? null : v;
-    }
 
     public DcatApDe mapHitsToDcat(IBusQueryResultIterator hitIterator, int hitsPerPage) {
         DcatApDe dcatApDe = new DcatApDe();
