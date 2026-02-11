@@ -149,7 +149,7 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
                 // convert Java class to XML
                 String xmlDcat = xmlService.getMapper().writeValueAsString(dcat);
 
-                // add namespaces to header area of XML
+                // add namespaces to the header-area of XML
                 xmlDcat = xmlService.attachNamespaces(xmlDcat);
 
                 if (pout == null) {
@@ -331,6 +331,10 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             requestedMetadata.add("t01_object.obj_id");
             requestedMetadata.add("t01_object.mod_time");
             requestedMetadata.add("t01_object.metadata_time");
+
+            // get rdf field if metadata type TODO: should check if request type == rdf ? if yes, add requestWrapper method.
+            requestedMetadata.add("rdf");
+
             // check if GeoRSS data shall be checked too
             if (requestWrapper.withGeoRSS()) {
                 requestedMetadata.add("x1");
