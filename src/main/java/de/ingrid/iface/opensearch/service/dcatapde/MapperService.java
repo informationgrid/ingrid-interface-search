@@ -22,6 +22,8 @@
  */
 package de.ingrid.iface.opensearch.service.dcatapde;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import de.ingrid.iface.opensearch.model.dcatapde.Catalog;
 import de.ingrid.iface.opensearch.model.dcatapde.Dataset;
 import de.ingrid.iface.opensearch.model.dcatapde.DcatApDe;
@@ -51,6 +53,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -837,11 +840,11 @@ public class MapperService {
                 }
 
                 if (rdfContent != null) {
-                    // String-based parsing via DcatApDe constructor
-                    DcatApDe rdfDoc = new DcatApDe(rdfContent);
+                    XmlMapper mapper = new XmlMapper();
+                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                    DcatApDe rdfDoc = mapper.readValue(rdfContent, DcatApDe.class);
 
                     // obtain a single Dataset since we work with a single RDF document
-
                     List<Dataset> rdfDatasetList = rdfDoc.getDataset();
 
                     if (rdfDatasetList != null) {

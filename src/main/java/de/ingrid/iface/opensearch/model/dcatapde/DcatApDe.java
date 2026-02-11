@@ -23,8 +23,6 @@
 package de.ingrid.iface.opensearch.model.dcatapde;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -36,9 +34,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,40 +69,6 @@ public class DcatApDe {
     @JacksonXmlElementWrapper(useWrapping = false)
     private Checksum checksum;
 
-    /**
-     * constructor: accept RDF/XML content as String and attempt to parse with Jackson.
-     * Falls back silently (DOM parsing in MapperService) if parsing fails.
-     */
-    public DcatApDe(String rdfContent) {
-        if (rdfContent == null) {
-            log.debug("DcatApDe: constructed with null rdfContent");
-            return;
-        }
-
-        // using Jackson XmlMapper
-        try (ByteArrayInputStream input = new ByteArrayInputStream(rdfContent.getBytes(StandardCharsets.UTF_8))) {
-            XmlMapper mapper = new XmlMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            DcatApDe parsed = mapper.readValue(input, DcatApDe.class);
-            if (parsed != null) {
-                this.collection = parsed.getCollection();
-                this.catalog = parsed.getCatalog() == null ? new Catalog() : parsed.getCatalog();
-                this.catalogRecord = parsed.getCatalogRecord();
-                this.dataset = parsed.getDataset() == null ? new ArrayList<>() : parsed.getDataset();
-                this.distribution = parsed.getDistribution() == null ? new ArrayList<>() : parsed.getDistribution();
-                this.checksum = parsed.getChecksum();
-            }
-
-            int ds = this.dataset == null ? 0 : this.dataset.size();
-            int dists = this.distribution == null ? 0 : this.distribution.size();
-            log.debug("DcatApDe: attempted Jackson parse from String; datasets={}, distributions={}", ds, dists);
-        } catch (IOException e) {
-            log.debug("DcatApDe: Jackson deserialization failed: {}", e.getMessage());
-        }
-    }
-
-    public DcatApDe() {
-    }
 
     /*public String getAgent() {
         return agent;
