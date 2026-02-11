@@ -24,6 +24,7 @@ package de.ingrid.iface.opensearch.service.dcatapde;
 
 import com.ctc.wstx.api.WstxInputProperties;
 import com.ctc.wstx.stax.WstxOutputFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
@@ -72,6 +73,9 @@ public class XmlService {
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
         xmlMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
+
+        // ensure deserialization does not fail on unknown properties for RDF -> POJO mapping
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public XmlMapper getMapper() {

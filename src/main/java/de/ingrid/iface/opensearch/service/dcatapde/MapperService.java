@@ -53,7 +53,6 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,6 +85,14 @@ public class MapperService {
 
     @Autowired
     private IBusHelper iBusHelper;
+
+    @Autowired
+    private XmlService xmlService;
+
+    // Use XmlService's mapper instead of creating our own
+    private XmlMapper mapper() {
+        return xmlService.getMapper();
+    }
 
     private Dataset mapDataset(Element idfDataNode) {
         Dataset dataset = new Dataset();
@@ -785,9 +792,7 @@ public class MapperService {
                 }
 
                 if (rdfContent != null) {
-                    XmlMapper mapper = new XmlMapper();
-                    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    DcatApDe rdfDoc = mapper.readValue(rdfContent, DcatApDe.class);
+                    DcatApDe rdfDoc = mapper().readValue(rdfContent, DcatApDe.class);
 
                     // obtain a single Dataset since we work with a single RDF document
                     List<Dataset> rdfDatasetList = rdfDoc.getDataset();
