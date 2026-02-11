@@ -210,7 +210,7 @@ public class MapperService {
         if (categories.size() > 0 || keywords.size() > 0) {
             Collection<Theme> themes = ThemeMapper.mapThemes(categories, keywords);
             if (themes.size() > 0) {
-                dataset.setThemes(themes.stream().map(theme -> "http://publications.europa.eu/resource/authority/data-theme/" + theme.toString()).toArray(String[]::new));
+                dataset.setThemesExplicit(themes.stream().map(theme -> "http://publications.europa.eu/resource/authority/data-theme/" + theme.toString()).toArray(String[]::new));
             } else {
                 log.warn("No Themes!");
             }
@@ -842,7 +842,7 @@ public class MapperService {
             }
         }
         mapCatalog(dcatApDe.getCatalog());
-        dcatApDe.getCatalog().setDataset(datasetIds.toArray(new String[0]));
+        dcatApDe.getCatalog().setDatasetExplicit(datasetIds.toArray(new String[0]));
         dcatApDe.setDataset(datasets);
         dcatApDe.setDistribution(distributions);
         return dcatApDe;
