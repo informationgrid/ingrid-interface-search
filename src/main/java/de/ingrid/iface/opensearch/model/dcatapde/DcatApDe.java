@@ -31,8 +31,6 @@ import de.ingrid.iface.opensearch.util.QueryParameterUtil;
 import de.ingrid.iface.util.SearchInterfaceConfig;
 import de.ingrid.iface.util.URLUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +38,6 @@ import java.util.List;
 @JacksonXmlRootElement(localName = "RDF", namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DcatApDe {
-
-    private static final Logger log = LogManager.getLogger(DcatApDe.class);
 
     @JacksonXmlProperty(localName = "PagedCollection", namespace = "http://www.w3.org/ns/hydra/core#")
     private HydraCollection collection;
