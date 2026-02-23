@@ -209,7 +209,7 @@ public class Dataset {
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
-    private ResourceElement legalBasis;
+    private LangTextElement legalBasis;
 
     @JacksonXmlProperty(isAttribute = true, namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     private String about;
@@ -522,11 +522,11 @@ public class Dataset {
         this.geocodingDescription = geocodingDescription;
     }
 
-    public ResourceElement getLegalBasis() {
+    public LangTextElement getLegalBasis() {
         return legalBasis;
     }
 
-    public void setLegalBasis(ResourceElement legalBasis) {
+    public void setLegalBasis(LangTextElement legalBasis) {
         this.legalBasis = legalBasis;
     }
 
