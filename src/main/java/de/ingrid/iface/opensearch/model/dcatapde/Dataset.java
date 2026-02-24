@@ -26,12 +26,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import de.ingrid.iface.opensearch.model.dcatapde.catalog.AgentWrapper;
-import de.ingrid.iface.opensearch.model.dcatapde.catalog.OrganizationWrapper;
+import de.ingrid.iface.opensearch.model.dcatapde.catalog.GeneralAgent;
 import de.ingrid.iface.opensearch.model.dcatapde.catalog.VCardOrganizationWrapper;
 import de.ingrid.iface.opensearch.model.dcatapde.general.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,22 +89,22 @@ public class Dataset {
     // 0..n
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
     @JacksonXmlElementWrapper(useWrapping = false)
-    private OrganizationWrapper[] originator;
+    private GeneralAgent[] originator;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://dcat-ap.de/def/dcatde/")
     @JacksonXmlElementWrapper(useWrapping = false)
-    private AgentWrapper[] maintainer;
+    private GeneralAgent[] maintainer;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://purl.org/dc/terms/")
     @JacksonXmlElementWrapper(useWrapping = false)
-    private AgentWrapper[] contributor;
+    private GeneralAgent[] contributor;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://purl.org/dc/terms/")
     @JacksonXmlElementWrapper(useWrapping = false)
-    private OrganizationWrapper[] creator;
+    private GeneralAgent[] creator;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://xmlns.com/foaf/0.1/")
@@ -313,35 +312,35 @@ public class Dataset {
         this.conformsTo = conformsTo;
     }
 
-    public OrganizationWrapper[] getOriginator() {
+    public GeneralAgent[] getOriginator() {
         return originator;
     }
 
-    public void setOriginator(OrganizationWrapper[] agents) {
+    public void setOriginator(GeneralAgent[] agents) {
         this.originator = agents;
     }
 
-    public AgentWrapper[] getMaintainer() {
+    public GeneralAgent[] getMaintainer() {
         return maintainer;
     }
 
-    public void setMaintainer(AgentWrapper[] maintainer) {
+    public void setMaintainer(GeneralAgent[] maintainer) {
         this.maintainer = maintainer;
     }
 
-    public AgentWrapper[] getContributor() {
+    public GeneralAgent[] getContributor() {
         return contributor;
     }
 
-    public void setContributor(AgentWrapper[] contributor) {
+    public void setContributor(GeneralAgent[] contributor) {
         this.contributor = contributor;
     }
 
-    public OrganizationWrapper[] getCreator() {
+    public GeneralAgent[] getCreator() {
         return creator;
     }
 
-    public void setCreator(OrganizationWrapper[] creator) {
+    public void setCreator(GeneralAgent[] creator) {
         this.creator = creator;
     }
 

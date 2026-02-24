@@ -22,19 +22,17 @@
  */
 package de.ingrid.iface.opensearch.model.dcatapde.catalog;
 
-public class AgentWrapper extends GeneralAgent {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-    @com.fasterxml.jackson.annotation.JsonUnwrapped
-    private Agent agent = new Agent();
-
-    @Override
-    public Agent getAgent() {
-        return agent;
-    }
-
-    @Override
-    public void setAgent(Agent agent) {
-        this.agent = agent;
-    }
-
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = AgentWrapper.class, name = "Agent"),
+        @JsonSubTypes.Type(value = OrganizationWrapper.class, name = "Organization") }
+)
+public abstract class GeneralAgent {
+    public abstract Agent getAgent();
+    public abstract void setAgent(Agent agent);
 }
