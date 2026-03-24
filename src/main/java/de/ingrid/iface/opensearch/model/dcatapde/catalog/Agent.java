@@ -24,6 +24,7 @@ package de.ingrid.iface.opensearch.model.dcatapde.catalog;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import de.ingrid.iface.opensearch.model.dcatapde.general.ResourceElement;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Agent {
@@ -34,7 +35,7 @@ public class Agent {
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://xmlns.com/foaf/0.1/")
-    private String mbox;
+    private ResourceElement mbox;
 
     // 0..n
     @JacksonXmlProperty(namespace = "http://xmlns.com/foaf/0.1/")
@@ -82,11 +83,11 @@ public class Agent {
         this.homepage = homepage;
     }
 
-    public String getMbox() {
+    public ResourceElement getMbox() {
         return mbox;
     }
 
-    public void setMbox(String mbox) {
+    public void setMbox(ResourceElement mbox) {
         this.mbox = mbox;
     }
 
