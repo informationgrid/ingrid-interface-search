@@ -1,4 +1,11 @@
 
+## 8.3.0 (01.04.2026)
+
+### Features
+
+* opensearch Schnittstelle erweitern um Abgabe der neuen OpenData-Metadaten (#8314)
+
+    
 ## 8.2.0 (12.01.2026)
 
 

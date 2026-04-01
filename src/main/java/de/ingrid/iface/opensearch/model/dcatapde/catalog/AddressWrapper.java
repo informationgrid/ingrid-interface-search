@@ -22,19 +22,19 @@
  */
 package de.ingrid.iface.opensearch.model.dcatapde.catalog;
 
-public class AgentWrapper extends GeneralAgent {
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-    @com.fasterxml.jackson.annotation.JsonUnwrapped
-    private Agent agent = new Agent();
+public class AddressWrapper {
 
-    @Override
-    public Agent getAgent() {
-        return agent;
+    @JacksonXmlProperty(localName = "Address", namespace = "http://www.w3.org/ns/locn#")
+    private AddressElement address = new AddressElement();
+
+    public AddressElement getAddress() {
+        return address;
     }
 
-    @Override
-    public void setAgent(Agent agent) {
-        this.agent = agent;
+    public void setAddress(AddressElement agent) {
+        this.address = agent;
     }
 
 }

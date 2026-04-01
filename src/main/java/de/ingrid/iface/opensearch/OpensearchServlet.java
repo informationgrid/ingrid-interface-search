@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * https://joinup.ec.europa.eu/software/page/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -146,10 +146,22 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
                 dcat.handlePaging(request, page, pageSize, hitIterator.getTotalResults());
 
+                // Fix datatype of temporal property
+                dcat.getDataset().forEach(dataset -> {
+                    if (dataset.getTemporal() != null) {
+                        dataset.getTemporal().forEach(temporal -> {
+                            if (temporal.getPeriodOfTime().getStartDate() != null)
+                                temporal.getPeriodOfTime().getStartDate().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+                            if (temporal.getPeriodOfTime().getEndDate() != null)
+                                temporal.getPeriodOfTime().getEndDate().setDatatype("http://www.w3.org/2001/XMLSchema#date");
+                        });
+                    }
+                });
+
                 // convert Java class to XML
                 String xmlDcat = xmlService.getMapper().writeValueAsString(dcat);
 
-                // add namespaces to header area of XML
+                // add namespaces to the header-area of XML
                 xmlDcat = xmlService.attachNamespaces(xmlDcat);
 
                 if (pout == null) {
@@ -331,6 +343,10 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             requestedMetadata.add("t01_object.obj_id");
             requestedMetadata.add("t01_object.mod_time");
             requestedMetadata.add("t01_object.metadata_time");
+
+            // get rdf field if metadata type TODO: should check if request type == rdf ? if yes, add requestWrapper method.
+            requestedMetadata.add("rdf");
+
             // check if GeoRSS data shall be checked too
             if (requestWrapper.withGeoRSS()) {
                 requestedMetadata.add("x1");
