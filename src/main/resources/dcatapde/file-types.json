@@ -1,9 +1,48 @@
 {
+  "7Z": [
+    "7Z"
+  ],
+  "AAB": [
+    "AAB"
+  ],
+  "AAC": [
+    "AAC"
+  ],
+  "AKN4EU": [
+    "AKN4EU"
+  ],
+  "AKN4EU_LEG": [
+    "AKN4EU_LEG"
+  ],
+  "AKN4EU_ZIP": [
+    "AKN4EU_ZIP"
+  ],
+  "APK": [
+    "APK"
+  ],
+  "APPX": [
+    "APPX"
+  ],
   "ARC": [
     "ARC"
   ],
   "ARC_GZ": [
     "ARC_GZ"
+  ],
+  "ARCINFO_COV": [
+    "ARCINFO_COV"
+  ],
+  "ARFF": [
+    "ARFF"
+  ],
+  "ARJ": [
+    "ARJ"
+  ],
+  "ARROW_FILE": [
+    "ARROW_FILE"
+  ],
+  "ARROW_STREAM": [
+    "ARROW_STREAM"
   ],
   "ATOM": [
     "ATOM",
@@ -20,10 +59,14 @@
     "BITS"
   ],
   "BMP": [
-    "BMP"
+    "BMP",
+    "Bitmap"
   ],
   "BWF": [
     "BWF"
+  ],
+  "BZIP2": [
+    "BZIP2"
   ],
   "CSS": [
     "CSS"
@@ -31,11 +74,23 @@
   "CSV": [
     "CSV"
   ],
+  "DAPK": [
+    "DAPK"
+  ],
   "DBF": [
     "DBF"
   ],
   "DCR": [
     "DCR"
+  ],
+  "DEB": [
+    "DEB"
+  ],
+  "DGN": [
+    "DGN"
+  ],
+  "DMG": [
+    "DMG"
   ],
   "DMP": [
     "DMP"
@@ -52,17 +107,38 @@
   "DTD_XML": [
     "DTD_XML"
   ],
+  "DWCA": [
+    "DWCA"
+  ],
+  "DWG": [
+    "DWG"
+  ],
+  "DXF": [
+    "DXF"
+  ],
   "E00": [
     "E00"
   ],
+  "EAR": [
+    "EAR"
+  ],
   "ECW": [
     "ECW"
+  ],
+  "EFORMS_XML": [
+    "EFORMS_XML"
   ],
   "EPS": [
     "EPS"
   ],
   "EPUB": [
     "EPUB"
+  ],
+  "ETSI_TSL": [
+    "ETSI_TSL"
+  ],
+  "ETSI_XML": [
+    "ETSI_XML"
   ],
   "EXE": [
     "EXE"
@@ -76,11 +152,17 @@
   "FMX4": [
     "FMX4"
   ],
+  "FMX4_ZIP": [
+    "FMX4_ZIP"
+  ],
   "GDB": [
     "GDB"
   ],
   "GEOJSON": [
     "GEOJSON"
+  ],
+  "GEOTIFF": [
+    "GEOTIFF"
   ],
   "GIF": [
     "GIF"
@@ -91,11 +173,22 @@
   "GMZ": [
     "GMZ"
   ],
+  "GPKG": [
+    "GPKG",
+    "GeoPackage"
+  ],
+  "GPX": [
+    "GPX"
+  ],
   "GRID": [
     "GRID"
   ],
   "GRID_ASCII": [
-    "GRID_ASCII"
+    "GRID_ASCII",
+    "GRID-ASCII"
+  ],
+  "GTFS": [
+    "GTFS"
   ],
   "GZIP": [
     "GZIP"
@@ -114,6 +207,9 @@
   "HTML_SIMPL": [
     "HTML_SIMPL"
   ],
+  "HTML5": [
+    "HTML5"
+  ],
   "ICS": [
     "ICS"
   ],
@@ -123,11 +219,17 @@
   "INDD": [
     "INDD"
   ],
+  "IPA": [
+    "IPA"
+  ],
   "ISO": [
     "ISO"
   ],
   "ISO_ZIP": [
     "ISO_ZIP"
+  ],
+  "JAR": [
+    "JAR"
   ],
   "JATS": [
     "JATS"
@@ -162,11 +264,38 @@
   "LEG": [
     "LEG"
   ],
+  "LEGALHTML": [
+    "LEGALHTML"
+  ],
+  "LHA": [
+    "LHA"
+  ],
+  "LPK": [
+    "LPK"
+  ],
+  "LZIP": [
+    "LZIP"
+  ],
+  "LZMA": [
+    "LZMA"
+  ],
+  "LZO": [
+    "LZO"
+  ],
   "MAP_PRVW": [
     "MAP_PRVW"
   ],
   "MAP_SRVC": [
     "MAP_SRVC"
+  ],
+  "MARKDOWN": [
+    "MARKDOWN"
+  ],
+  "MATHML": [
+    "MATHML"
+  ],
+  "MATLAB_MAT": [
+    "MATLAB_MAT"
   ],
   "MBOX": [
     "MBOX"
@@ -183,11 +312,20 @@
   "MHTML": [
     "MHTML"
   ],
+  "MIF_MID": [
+    "MIF_MID"
+  ],
   "MOBI": [
     "MOBI"
   ],
   "MOP": [
     "MOP"
+  ],
+  "MOV": [
+    "MOV"
+  ],
+  "MP3": [
+    "MP3"
   ],
   "MPEG2": [
     "MPEG2"
@@ -204,6 +342,9 @@
   "MSG_HTTP": [
     "MSG_HTTP"
   ],
+  "MSI": [
+    "MSI"
+  ],
   "MXD": [
     "MXD"
   ],
@@ -212,6 +353,9 @@
   ],
   "NETCDF": [
     "NETCDF"
+  ],
+  "OAPK": [
+    "OAPK"
   ],
   "OCTET": [
     "OCTET"
@@ -228,17 +372,29 @@
   "ODG": [
     "ODG"
   ],
+  "ODP": [
+    "ODP"
+  ],
   "ODS": [
     "ODS"
   ],
   "ODT": [
     "ODT"
   ],
+  "OGCFEAT": [
+    "OGCFEAT"
+  ],
+  "OP_DATPRO": [
+    "OP_DATPRO"
+  ],
   "OVF": [
     "OVF"
   ],
   "OWL": [
     "OWL"
+  ],
+  "PARQUET": [
+    "PARQUET"
   ],
   "PDF": [
     "PDF"
@@ -260,6 +416,18 @@
   ],
   "PDFA3": [
     "PDFA3"
+  ],
+  "PDFA3A": [
+    "PDFA3A"
+  ],
+  "PDFA3B": [
+    "PDFA3B"
+  ],
+  "PDFA3U": [
+    "PDFA3U"
+  ],
+  "PDFUA": [
+    "PDFUA"
   ],
   "PDFX": [
     "PDFX"
@@ -306,6 +474,9 @@
   "RAR": [
     "RAR"
   ],
+  "RDATA": [
+    "RDATA"
+  ],
   "RDF": [
     "RDF"
   ],
@@ -315,8 +486,14 @@
   "RDF_N_TRIPLES": [
     "RDF_N_TRIPLES"
   ],
+  "RDF_THRIFT": [
+    "RDF_THRIFT"
+  ],
   "RDF_TRIG": [
     "RDF_TRIG"
+  ],
+  "RDF_TRIX": [
+    "RDF_TRIX"
   ],
   "RDF_TURTLE": [
     "RDF_TURTLE"
@@ -330,11 +507,23 @@
   "REST": [
     "REST"
   ],
+  "RPM": [
+    "RPM"
+  ],
   "RSS": [
     "RSS"
   ],
   "RTF": [
     "RTF"
+  ],
+  "SAS": [
+    "SAS"
+  ],
+  "SB3": [
+    "SB3"
+  ],
+  "SCH": [
+    "SCH"
   ],
   "SCHEMA_XML": [
     "SCHEMA_XML"
@@ -347,7 +536,9 @@
   ],
   "SHP": [
     "SHP",
-    "Shape"
+    "Shape",
+    "3D-Shape",
+    "Shapefiles"
   ],
   "SKOS_XML": [
     "SKOS_XML"
@@ -358,11 +549,23 @@
   "SPARQLQRES": [
     "SPARQLQRES"
   ],
+  "SPSS_SAV": [
+    "SPSS_SAV"
+  ],
   "SQL": [
     "SQL"
   ],
+  "STATA_DTA": [
+    "STATA_DTA"
+  ],
+  "STL": [
+    "STL"
+  ],
   "SVG": [
     "SVG"
+  ],
+  "SWM": [
+    "SWM"
   ],
   "TAB": [
     "TAB"
@@ -379,6 +582,15 @@
   "TAR_XZ": [
     "TAR_XZ"
   ],
+  "THRIFT_BINARY": [
+    "THRIFT_BINARY"
+  ],
+  "THRIFT_COMPACT": [
+    "THRIFT_COMPACT"
+  ],
+  "THRIFT_JSON": [
+    "THRIFT_JSON"
+  ],
   "TIFF": [
     "TIFF"
   ],
@@ -394,19 +606,45 @@
   "TXT": [
     "TXT"
   ],
+  "UNGEN": [
+    "UNGEN"
+  ],
+  "VCF": [
+    "VCF"
+  ],
+  "WAR": [
+    "WAR"
+  ],
   "WARC": [
     "WARC"
   ],
   "WARC_GZ": [
     "WARC_GZ"
   ],
+  "WAV": [
+    "WAV"
+  ],
+  "WCS_SRVC": [
+    "WCS_SRVC",
+    "WCS"
+  ],
+  "WEBP": [
+    "WEBP"
+  ],
   "WFS_SRVC": [
     "WFS_SRVC",
     "WFS"
   ],
+  "WIM": [
+    "WIM"
+  ],
   "WMS_SRVC": [
     "WMS_SRVC",
     "WMS"
+  ],
+  "WMTS_SRVC": [
+    "WMTS_SRVC",
+    "WMTS"
   ],
   "WORLD": [
     "WORLD"
@@ -416,6 +654,9 @@
   ],
   "XHTML_SIMPL": [
     "XHTML_SIMPL"
+  ],
+  "XHTML5": [
+    "XHTML5"
   ],
   "XLIFF": [
     "XLIFF"
@@ -443,6 +684,15 @@
   ],
   "XYZ": [
     "XYZ"
+  ],
+  "XZ": [
+    "XZ"
+  ],
+  "YAML": [
+    "YAML"
+  ],
+  "Z": [
+    "Z"
   ],
   "ZIP": [
     "ZIP"
