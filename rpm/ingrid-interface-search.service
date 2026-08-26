@@ -1,0 +1,19 @@
+[Unit]
+Description=InGrid Interface Search
+After=network.target
+
+[Service]
+Environment=
+Type=simple
+User=ingrid
+Group=ingrid
+WorkingDirectory=/opt/ingrid/ingrid-interface-search
+ExecStart=/opt/ingrid/ingrid-interface-search/start.sh start
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ingrid-interface-search
+
+[Install]
+WantedBy=multi-user.target

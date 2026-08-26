@@ -342,6 +342,20 @@
           </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <executions>
+              <execution>
+                  <phase>package</phase>
+                  <goals>
+                      <goal>makeAggregateBom</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+
       <!--
         This plugin configures the git-flow for this project
       -->
