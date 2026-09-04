@@ -1,4 +1,11 @@
 
+## 8.4.1 (04.09.2026)
+
+### Features
+
+* Datenformate fehlen in opensearch Schnittstelle für RDF Abgabe von OpenData Datensätze (#9130)
+
+    
 ## 8.3.0 (01.04.2026)
 
 ### Features
