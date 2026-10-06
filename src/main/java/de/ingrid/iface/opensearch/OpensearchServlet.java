@@ -77,11 +77,12 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
 
     private final static Log log = LogFactory.getLog(OpensearchServlet.class);
 
-    private final static String[] UVP_PHASES = new String[]{
-            "Öffentliche Auslegung",
-            "Erörterungstermin",
-            "Entscheidung über die Zulassung"
-    };
+    private final static Map<String, String> UVP_PHASES = Map.ofEntries(
+            Map.entry("phase1", "Öffentliche Auslegung"),
+            Map.entry("phase2", "Erörterungstermin"),
+            Map.entry("phase3", "Entscheidung über die Zulassung"),
+            Map.entry("scopeOfInvestigation", "Unterrichtung über den Untersuchungsrahmen")
+    );
 
     @Autowired
     private IBusHelper iBusHelper;
@@ -468,14 +469,11 @@ public class OpensearchServlet extends HttpServlet implements SearchInterfaceSer
             if (!modTime.isEmpty()) item.addElement("pubDate").addText(modTime);
 
             String phases = OpensearchUtil.getDetailValue(detail, "uvp_steps");
-            if (phases != null && phases.length() > 0) {
+            if (!phases.isEmpty()) {
                 try {
-                    // get last phaseX String
                     String latestPhaseType = phases.split(", ")[phases.split(", ").length - 1];
-                    // extract number from phase type
-                    int latestPhaseIndex = Integer.valueOf(latestPhaseType.substring(latestPhaseType.length() - 1)) - 1;
                     // map to phase name
-                    String latestPhaseName = UVP_PHASES[latestPhaseIndex];
+                    String latestPhaseName = UVP_PHASES.get(latestPhaseType);
                     item.addElement("uvp:latest-phase").addText(latestPhaseName);
                 } catch (IndexOutOfBoundsException e) {
                     log.error("Could not extract UVP Phase from '" + phases + "'", e);
